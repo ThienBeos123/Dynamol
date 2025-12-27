@@ -22,7 +22,9 @@
 *
 /* Terms Explanation:
 *   +) Mutative Model: Changes an existing bigInt object/variable value in place (Eg: x += 10; )
-*   +) Functional Model: Creates a new variable with the value of the expression (Eg: int x = 5 + 10; ) 
+*   +) Functional Model: -) Creates a new variable with the value of the expression (Eg: int x = 5 + 10; ) 
+*                        -) This transfer ownership of the allocated limbs to the caller, 
+                            forcing a manual deletion of the object (See more detailed explanation below on Functional Arithmetic)
 */
 /* ----------------- CONSTRUCTORS & DESCTRUCTORS --------------- */
 void __BIGINT_EMPTY_INIT__(bigInt *x) { 
@@ -162,7 +164,7 @@ uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt *a, const bigInt *b) {
 /* - IMPORTANT NOTE / CLARIFICATION
 *       +) This arithmetic layer exclusively handles pure,
 *          magnituded arithmetic (|a| with |b|)
-*       +) This function assumes the average, normal case, 
+*       +) This function assumes the average, normalized cases,
 *          and ignores special cases (handled by their signed counterparts)
 *       +) Therefore, it assumes inputs to be automatically:
 *           o) non-negative
@@ -170,10 +172,14 @@ uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt *a, const bigInt *b) {
 *           o) normalized
 *           o) no invalid/illegal operations (eg: division by 0)
 *           o) the output integer (res) is capable of storing the output
+*       +) Edge cases, Special Cases, Illegal Operations, Normalization, etc are all done inside
+*          signed arithmetic functions (Mutative arithmetic and Functional Arithmetic), which are
+*          displayed in the public interface and aliased in bigInt.h
+*
 *       -----> +) These functions are not aliased in bigInt.h with a more user-friendly name, 
 *                 as they are never meant to be used on the surface level
 *       +) Note: 
-*           These functions also follows the "Functional" model API, 
+*           These functions also follows the "Functional" model API (see explanation below), 
 *           which means it copies the final output, and pastes it into a different, newly created bigInt
 *
 *       -----> WARNING!: 
@@ -191,7 +197,6 @@ void __BIGINT_MAGNITUDED_ADD_UI64__(bigInt *res, const bigInt *x, const uint64_t
     for (; i < x->n; ++i) { res->limbs[i] = x->limbs[i]; }
                  res->n               = x->n;
     if (carry) { res->limbs[res->n++] = carry; } // Handle remaining carry if it propagated to the end
-    __BIGINT_NORMALIZE__(res);
 }
 void __BIGINT_MAGNITUDED_SUB_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
     /* Design choice of __BIGINT_MAGNITUDED_SUB_UI64__():
@@ -210,8 +215,6 @@ void __BIGINT_MAGNITUDED_SUB_UI64__(bigInt *res, const bigInt *x, const uint64_t
                                                                        Next iterations: Subtract borrow from last limb */ }
     assert(!borrow); // Check for Magnitude Underflow
     for (; i < x->n; ++i) { res->limbs[i] = x->limbs[i]; }
-    __BIGINT_NORMALIZE__(res); // Might leave leading/trailing zeros after subtraction 
-                               //  ---> Decrease amount of used limbs (n) to avoid arithmetic errors
 }
 void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
     __BIGINT_ENSURE_CAPACITY__(res, x->n + 1);
@@ -225,19 +228,22 @@ void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *res, const bigInt *x, const uint64_t
     }
     res->n = x->n;
     if (carry) { res->limbs[res->n++] = carry; }
-    __BIGINT_NORMALIZE__(res);
 }
-void __BIGINT_MAGNITUDED_DIV_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
-    assert(val != 0); // Checks for invalid operation ( x / 0 )
+void __BIGINT_MAGNITUDED_DIVMOD_UI64__(bigInt *quot, uint64_t *rem, const bigInt *x, const uint64_t val) {
+    assert(val); // Checks for invalid operation ( x / 0 )
+    __BIGINT_ENSURE_CAPACITY__(&quot, x->n+1); quot->n = x->n;
     uint64_t remainder = 0;
     for (size_t i = x->n; i-- > 0;) {
-        res->limbs[i] = __DIV_HELPER_128_64__(remainder << sizeof(uint64_t) * 8, x->limbs[i], 
-                                              val, &remainder);
+        #if HAVE_UINT128
+            unsigned __int128 __INTERMEDIATE__ = ((unsigned __int128)remainder << 64);
+            quot->limbs[i] = (uint64_t)(__INTERMEDIATE__ / val);
+            remainder      = (uint64_t)(__INTERMEDIATE__ % val);
+        #else
+
+        #endif
     }
-    __BIGINT_NORMALIZE__(x);
-}
-void __BIGINT_MAGNITUDED_MOD_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
-    __BIGINT_NORMALIZE__(x);
+    *rem = remainder;
+    __BIGINT_NORMALIZE__(quot);
 }
 void __BIGINT_MAGNITUDED_ADD__(bigInt *res, const bigInt *a, const bigInt *b) {
     size_t max = (a->n > b->n) ? a->n : b->n;
@@ -251,7 +257,6 @@ void __BIGINT_MAGNITUDED_ADD__(bigInt *res, const bigInt *a, const bigInt *b) {
     }
     if (carry) res->limbs[max] = carry; // If carry still needed ---> stores the carry in the (res->cap - 1) limb
     res->n = max + (carry != 0);
-    __BIGINT_NORMALIZE__(res);
 }
 void __BIGINT_MAGNITUDED_SUB__(bigInt *res, const bigInt *a, const bigInt *b) {
     __BIGINT_ENSURE_CAPACITY__(res, a->n);
@@ -261,7 +266,6 @@ void __BIGINT_MAGNITUDED_SUB__(bigInt *res, const bigInt *a, const bigInt *b) {
         res->limbs[i] = __SUB_UI64__(a->limbs[i], y, &borrow); // Do single-limb subtraction with borrow ---> Stores the borrow
     }
     res->n = a->n;
-    __BIGINT_NORMALIZE__(res); // Subtraction may leave trailing/leading 0s ---> Normalize
 }
 void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {
     __BIGINT_ENSURE_CAPACITY__(res, a->n + b->n);
@@ -288,15 +292,107 @@ void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {
                                        // most significant limb of the current sum
     }
     res->n = a->n + b->n;
-    __BIGINT_NORMALIZE__(res);
 }
-void __BIGINT_MAGNITUDED_DIV__(bigInt *res, const bigInt *a, const bigInt *b) {
-    __BIGINT_NORMALIZE__(res);
-}
-void __BIGINT_MAGNITUDED_MOD__(bigInt *res, const bigInt *a, const bigInt *b) {
-    __BIGINT_NORMALIZE__(res);
+void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, const bigInt *b) {
+    assert(b->n > 0);
+    uint8_t shift = clz(b->limbs[b->n - 1]);
+    bigInt a_copy, b_copy;
+    size_t m = a->n, n = b->n;
+    __BIGINT_EMPTY_INIT__(&a_copy);         __BIGINT_EMPTY_INIT__(&b_copy);
+    __BIGINT_ENSURE_CAPACITY__(&a_copy, m + 1);   __BIGINT_ENSURE_CAPACITY__(&b_copy, n);
+    /* 1. Normalization */
+    uint64_t carry = 0;
+    for (size_t i = 0; i < m; ++i) {
+        uint64_t x = a->limbs[i];
+        a_copy.limbs[i] = (x << shift) || carry;
+        carry = (shift ? x >> BITS_IN_UINT64_T : 0);
+    }
+    a_copy.limbs[m] = carry; a_copy.n = m + 1;
+    carry = 0;
+    for (size_t i = 0; i < n; ++i) {
+        uint64_t x = b->limbs[i];
+        b_copy.limbs[i] = (x << shift) | carry;
+        carry = (shift ? x >> BITS_IN_UINT64_T : 0);
+    }
+    b_copy.n = n;
+
+    /* 2. Quotient init */
+    __BIGINT_EMPTY_INIT__(quot);
+    __BIGINT_ENSURE_CAPACITY__(quot, m - n + 1);
+
+    quot->n = m - n + 1;
+    /* 3-5. Calculation & Estimation */
+    for (size_t j = m - n + 1; j > 0; --j) {
+        /* 3. Estimation */
+        uint64_t a2 = a_copy.limbs[j + n];
+        uint64_t a1 = a_copy.limbs[j + n - 1];
+        uint64_t a0 = (n >= 2) ? a_copy.limbs[j + n - 2] : 0;
+        uint64_t b1 = b_copy.limbs[n - 1];
+        uint64_t b0 = (n >= 2) ? b_copy.limbs[n - 2] : 0;
+        #if HAVE_UINT128
+            unsigned __int128 __INTERMEDIATE__ = ((unsigned __int128)a2 << BITS_IN_UINT64_T) | a1;
+            uint64_t qhat = (uint64_t)(__INTERMEDIATE__ / b1);
+            uint64_t rhat = (uint64_t)(__INTERMEDIATE__ % b1);
+        #else
+        #endif
+        if (qhat == UINT64_MAX) --qhat;
+        while (qhat * b0 > ((unsigned __int128)rhat << BITS_IN_UINT64_T) + a0) {
+            --qhat; rhat += b1;
+            if (rhat < b1) break;
+        }
+
+        /* 4. Multiply-subtract */
+        uint64_t borrow = 0;
+        for (size_t i = 0; i < n; ++i) {
+            uint64_t low, high;
+            __MUL_UI64__(qhat, b_copy.limbs[i], low, high);
+            uint64_t x = a_copy.limbs[j + 1];
+            uint64_t t = x - low - borrow;
+            borrow = (t > x) + high;
+            a_copy.limbs[j + i] = t;
+        }
+        uint64_t x = a_copy.limbs[j + n];
+        a_copy.limbs[j + n] = x - borrow;
+
+        /* 5. Correction */
+        if (x < borrow) {
+            --qhat;
+            uint64_t carry2 = 0;
+            for (size_t i = 0; i < n; ++i) {
+                uint64_t t = a_copy.limbs[j + i] + b_copy.limbs[i] + carry2;
+                carry2 = (t < a_copy.limbs[j + i]);
+                a_copy.limbs[j + i] = t;
+            }
+            a_copy.limbs[j + n] += carry2;
+        }
+        quot->limbs[j] = qhat;
+    }
+
+    /* 6. Denormalize */
+    __BIGINT_EMPTY_INIT__(rem); __BIGINT_ENSURE_CAPACITY__(rem, n);
+    carry = 0;
+    for (size_t i = n; i > 0; --i) {
+        uint64_t x = a_copy.limbs[i];
+        rem->limbs[i] = (x >> shift) | carry;
+        carry = (shift ? x << BITS_IN_UINT64_T : 0);
+    }
+    rem->n = n;
+    __BIGINT_NORMALIZE__(quot); __BIGINT_NORMALIZE__(rem);
+    __BIGINT_FREE__(&a_copy); __BIGINT_FREE__(&b_copy);
 }
 
+/* -------------------- SIGNED ARITHMETIC --------------------- */
+/*  - These arithmetic functions handles:
+*       +) Special/Edge cases
+*       +) Fast Paths
+*       +) Normalization
+*       +) Illegal Operation
+*   - They are designed to improve performance by implementing fast paths, 
+*     decrease boilerplate, and provide safe, public, surface-level interface for bigInt operations
+*   - These function are included in two different sections below:
+*       +) MUTATIVE ARITHMETIC
+*       +) FUNCTIONAL ARITHMETIC 
+*/
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
 void __BIGINT_MUT_ADD_UI64__(bigInt *x, int64_t val) {
     int8_t val_sign = (val < 0) ? -1 : 1;
@@ -305,7 +401,8 @@ void __BIGINT_MUT_ADD_UI64__(bigInt *x, int64_t val) {
         else { bigInt __TEMP_BUFF__; 
                __BIGINT_EMPTY_INIT__(&__TEMP_BUFF__);
                __BIGINT_MAGNITUDED_ADD_UI64__(&__TEMP_BUFF__, x, val);
-               __BIGINT_COPY_INTO__(&__TEMP_BUFF__, x); }
+               __BIGINT_COPY_INTO__(&__TEMP_BUFF__, x);
+               __BIGINT_NORMALIZE__(&x); }
     }
     else {
         int8_t __compare_res__ = __BIGINT_COMPARE_MAGNITUDE_UI64__(x, val);
@@ -313,7 +410,8 @@ void __BIGINT_MUT_ADD_UI64__(bigInt *x, int64_t val) {
         else if ( __compare_res__ > 0 ) { bigInt __TEMP_BUFF__; 
                                           __BIGINT_EMPTY_INIT__(&__TEMP_BUFF__);
                                           __BIGINT_MAGNITUDED_SUB_UI64__(&__TEMP_BUFF__, x, val);
-                                          __BIGINT_COPY_INTO__(&__TEMP_BUFF__, x); }
+                                          __BIGINT_COPY_INTO__(&__TEMP_BUFF__, x);
+                                          __BIGINT_NORMALIZE__(&x); }
     }
 }
 void __BIGINT_MUT_SUB_UI64__(bigInt *x, int64_t val) {}
@@ -322,33 +420,40 @@ void __BIGINT_MUT_DIV_UI64__(bigInt *x, int64_t val) {}
 void __BIGINT_MUT_MOD_UI64__(bigInt *x, int64_t val) {}
 
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
-void __BIGINT_ADD__(bigInt *res, const bigInt *x, const bigInt *y) {
+bigInt __BIGINT_ADD__(const bigInt *x, const bigInt *y) {
+    bigInt __CALLER_BUFF__; __BIGINT_EMPTY_INIT__(&__CALLER_BUFF__);
     if (x->sign == y->sign) { // Same sign
-        if (x->n == 0 && y->n == 0) __BIGINT_EMPTY_INIT__(res);
-        else { __BIGINT_MAGNITUDED_ADD__(res, x, y); res->sign = x->sign; }
+        __BIGINT_MAGNITUDED_ADD__(&__CALLER_BUFF__, x, y); 
+        __CALLER_BUFF__.sign = x->sign;
         /* Two scenarios: +x + +y ----> x + y
         *                 -x + -y ----> -x - y ----> -|x + y| */
     } 
     else { // Different signs
         int8_t __compare_res__ = __BIGINT_COMPARE_MAGNITUDE__(x, y);
-        if (__compare_res__ == 0) __BIGINT_EMPTY_INIT__(res); // __BIGINT_EMPTY_INIT__ instead of __BIGINT_WIPE__ because we're creating a new bigInt
-        else if(__compare_res__ > 0) { __BIGINT_MAGNITUDED_SUB__(res, x, y); res->sign = x->sign; }
-        else { __BIGINT_MAGNITUDED_SUB__(res, y, x); res->sign = y->sign; }
+        if(__compare_res__ > 0)       { __BIGINT_MAGNITUDED_SUB__(&__CALLER_BUFF__, x, y); __CALLER_BUFF__.sign = x->sign; }
+        else if (__compare_res__ < 0) { __BIGINT_MAGNITUDED_SUB__(&__CALLER_BUFF__, y, x); __CALLER_BUFF__.sign = y->sign; }
     }
+    __BIGINT_NORMALIZE__(&__CALLER_BUFF__);
+    return __CALLER_BUFF__;
 }
-void __BIGINT_SUB__(bigInt *res, const bigInt *x, const bigInt *y) {
+bigInt __BIGINT_SUB__(const bigInt *x, const bigInt *y) {
     bigInt neg = *y; // Copy only
     neg.sign   = -y->sign;
-    __BIGINT_ADD__(x, &neg, res);   /* Function not really neccesary, 
-                                       could've manually negate y when calling ADD */
+    return __BIGINT_ADD__(x, &neg);
 }
-void __BIGINT_MUL__(bigInt *res, const bigInt *x, const bigInt *y) {
-    if (x->n == 0 || y->n == 0) { __BIGINT_EMPTY_INIT__(res); return; }
-    __BIGINT_MAGNITUDED_MUL__(res, x, y); res->sign = x->sign * y->sign;
+bigInt __BIGINT_MUL__(const bigInt *x, const bigInt *y) {
+    bigInt __CALLER_BUFF__; __BIGINT_EMPTY_INIT__(&__CALLER_BUFF__);
+    if (x && y) {
+        __BIGINT_MAGNITUDED_MUL__(&__CALLER_BUFF__, x, y); 
+        __CALLER_BUFF__.sign = x->sign * y->sign;
+    }
+    __BIGINT_NORMALIZE__(&__CALLER_BUFF__);
+    return __CALLER_BUFF__;
 }
-void __BIGINT_DIV__(bigInt *res, const bigInt *x, const bigInt *y) {
+bigInt __BIGINT_DIV__(const bigInt *x, const bigInt *y) {
+    
 }
-void __BIGINT_MOD__(bigInt *res, const bigInt *x, const bigInt *y) {
+bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y) {
 
 }
 
@@ -379,6 +484,7 @@ void __BIGINT_RESET__(bigInt *x) {
     x->n    = 0;
     x->sign = 1;
 }
+// o- Copy exactly every single details (Deep copy)
 uint8_t __BIGINT_COPY__(const bigInt *source__, bigInt *copycat__) {
     if (copycat__ == source__) return 0; // Same input ---> Unneccesary, fail X
     __BIGINT_FREE__(copycat__); // Free the space inside copycat__ for copying

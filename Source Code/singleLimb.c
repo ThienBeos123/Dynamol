@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <assert.h>
+#include <limits.h>
 #include "../Headers/singleLimb.h"
 
 /* ADDITION + SUBTRACTION
@@ -129,43 +130,39 @@ static inline void __MUL_UI64__(uint64_t a, uint64_t b, uint64_t *low_res, uint6
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */
 /* DIVISION & MODULO
-*   +) This section contains mostly small, single-limb helpers that 
-*      deal with portability issues of 128 bit integer data types
+*   +) This section is not included to reserve the sanity of a high-schooler
+*   +) Single-limb helpers requires overly-complicated disassembly of Knuth's D algorith
+*   +) It requires unnecessary emulation of a 128 bit integer as highs and lows
+*   ------> I'm not going to do one for "DIVMOD"
 */
-#if HAVE_UINT128
-static inline uint64_t __DIV_HELPER_128_64__(uint64_t high, uint64_t low, uint64_t divisor, uint64_t *remainder) {
-    unsigned __int128 n = ((unsigned __int128)high << 64) | low;
-    *remainder = (uint64_t)(n % divisor);
-    return (uint64_t)(n / divisor);
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */
+/* BITWISE OEPRATORS
+*/
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */
+/* HELPING TASKS
+*/
+#if HAVE_BUILTIN_CLZ == 1
+static inline uint8_t __COUNT_LZ__(uint64_t x) { 
+    if (!x) return sizeof(uint64_t) * CHAR_BIT;
+    return __builtin_clzll(x)
+}
+#elif HAVE_BUILTIN_CLZ == 2
+#include <intrin.h>
+static inline uint8_t __COUNT_LZ__(uint64_t x) { 
+    if (!x) return sizeof(uint64_t) * CHAR_BIT;
+    uint8_t index;
+    _BitScanReverse(&index, x);
+    return sizeof(uint64_t) - 1 - index;
 }
 #else
-// Base 2^32 Division Helper (System-Independent)
-static inline uint64_t __DIV_HELPER_128_64__(uint64_t high, uint64_t low, uint64_t divisor, uint64_t *remainder) {
-    // Full curr = high + low = 2^96(n3) + 2^64(n2) + 2^32(n1) + 2^0(n0)
-    uint32_t n3 = high >> sizeof(uint32_t); /* Seperate upper 32 bits of high ---> 2^64 base of high * 2^32 from the upper position in high = 2^96 */
-    uint32_t n2 = high & 0xFFFFFFFF; /* Seperate lower 32 bits of high ----> 2^64 base of high * 2^0 from the lower position in high = 2^64 */
-    uint32_t n1 = low >> sizeof(uint32_t); /* Seperate the upper 32 bits of low ---> 2^0 base of low * 2^32 from the upper position in low = 2^32 */
-    uint32_t n0 = low & 0xFFFFFFFF; /* Seperate the lower 32 bits of low ----> 2^0 base of low * 2^0 from the lower position in low = 2^0 */
-
-    uint32_t d1 = divisor >> 32; /* Upper 32 bits of divisor */
-    uint32_t d0 = divisor & 0xFFFFFFFF; /* Lower 32 bits of divisor */
-
-    uint64_t r = 0, q;
-
-    r = n3;
-    q = r / d1;
-    r -= q * d1;
-    r = (r << 32) | n2;
-    q = (q << 32) | (r / d1);
-    r -= (uint64_t)(r / d1) * d1;
-    r = (r << 32) | n1;
-    q = (q << 32) | (r / divisor);
-    r -= (uint64_t)(r / divisor) * divisor;
-
-    *remainder = r;
-    return q;
+static inline uint8_t __COUNT_LZ__(uint64_t x) {
+    if (!x) return sizeof(uint64_t) * CHAR_BIT;
+    uint8_t __COUNT = 0;
+    while (x) { x >>= 1; ++__COUNT; }
+    return sizeof(uint64_t) * CHAR_BIT - __COUNT;
 }
-static inline uint64_t __DIV_HELPER_128_64__
 #endif
 
 /* ----------------------------------------    --   TESTING LAB    --   ----------------------------------------- */

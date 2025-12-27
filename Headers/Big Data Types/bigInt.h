@@ -8,14 +8,13 @@ extern "C" {
 
 #define LIMB_BITS uint64_t
 #define LIMB_MASK UINT64_MAX
+#define BITS_IN_UINT64_T (sizeof(uint64_t) * CHAR_BIT)
 
 #ifdef __SIZEOF_INT128__
 #define HAVE_UINT128 1
 #else
 #define HAVE_UINT128 0
 #endif
-
-#ifdef LIMB_BITS
 typedef struct {
     int8_t sign;                    LIMB_BITS *limbs; 
     size_t n; /* Used limbs */      size_t cap; /* Maximum limbs */
@@ -123,11 +122,11 @@ void __BIGINT_MUT_DIV_UI64__(bigInt *__x__, int64_t __I64VAL);
 void __BIGINT_MUT_MOD_UI64__(bigInt *__x__, int64_t __I64VAL);
 
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
-void __BIGINT_ADD__(bigInt *__final_result_bigInteger, const bigInt *__x__, const bigInt *__y__);
-void __BIGINT_SUB__(bigInt *__final_result_bigInteger, const bigInt *__x__, const bigInt *__y__);
-void __BIGINT_MUL__(bigInt *__final_result_bigInteger, const bigInt *__x__, const bigInt *__y__);
-void __BIGINT_DIV__(bigInt *__final_result_bigInteger, const bigInt *__x__, const bigInt *__y__);
-void __BIGINT_MOD__(bigInt *__final_result_bigInteger, const bigInt *__x__, const bigInt *__y__);
+bigInt __BIGINT_ADD__(const bigInt *__x__, const bigInt *__y__);
+bigInt __BIGINT_SUB__(const bigInt *__x__, const bigInt *__y__);
+bigInt __BIGINT_MUL__(const bigInt *__x__, const bigInt *__y__);
+bigInt __BIGINT_DIV__(const bigInt *__x__, const bigInt *__y__);
+bigInt __BIGINT_MOD__(const bigInt *__x__, const bigInt *__y__);
 
 /* --------------------- UTILITIES --------------------- */
 void __BIGINT_NORMALIZE__(bigInt *__bigInteger); // Normalize (no trailing 0s + guanratees 0 no -0)
@@ -154,8 +153,6 @@ void __BIGINT_SPECIAL_MUL_UI64__(bigInt *__x__, uint64_t __I64VAL);
 #define bigInt_normalize        __BIGINT_NORMALIZE__
 #define bigInt_ensureCapacity   __BIGINT_ENSURE_CAPACITY__
 #define bigInt_reset            __BIGINT_RESET__
-
-#endif
 
 
 #ifdef __cplusplus
