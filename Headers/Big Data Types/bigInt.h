@@ -8,7 +8,6 @@ extern "C" {
 
 #define LIMB_BITS uint64_t
 #define LIMB_MASK UINT64_MAX
-#define BITS_IN_UINT64_T (sizeof(uint64_t) * CHAR_BIT)
 
 #ifdef __SIZEOF_INT128__
 #define HAVE_UINT128 1
