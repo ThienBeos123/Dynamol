@@ -2,22 +2,7 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <limits.h>
-#include <stdlib.h>
-
-#define LIMB_BITS uint64_t
-#define LIMB_MASK UINT64_MAX
-
-#ifdef __SIZEOF_INT128__
-#define HAVE_UINT128 1
-#else
-#define HAVE_UINT128 0
-#endif
-typedef struct {
-    int8_t sign;                    LIMB_BITS *limbs; 
-    size_t n; /* Used limbs */      size_t cap; /* Maximum limbs */
-} bigInt;
+#include "bigNums.h"
 
 /* ------------------------------------    --   INTEGER FUNCTIONS    --   --------------------------------------- */
 /* ------------- CONSTRUCTORS & DESCTRUCTORS -------------- */
@@ -65,6 +50,9 @@ uint8_t __BIGINT_FLOAT_INIT__(bigInt *__bigInteger, long double __float );
         default:                    __BIGINT_EMPTY_INIT__                   \
     )(x, ##__VA_ARGS__) /* ##__VA_ARGS__: __VA_ARGS__ + accepts no input */
 
+/* ------------------- SPECIALIZED ALGORITHMS ------------------ */
+void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem);
+void __BIGINT_NEWTON_RAPHSON__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem);
 
 /* ------------------------ COMPARISONS ------------------------ */
 int8_t __BIGINT_COMPARE_MAGNITUDE_UI64__(const bigInt *__x__, const uint64_t __I64VAL);
@@ -152,7 +140,6 @@ void __BIGINT_SPECIAL_MUL_UI64__(bigInt *__x__, uint64_t __I64VAL);
 #define bigInt_normalize        __BIGINT_NORMALIZE__
 #define bigInt_ensureCapacity   __BIGINT_ENSURE_CAPACITY__
 #define bigInt_reset            __BIGINT_RESET__
-
 
 #ifdef __cplusplus
 }

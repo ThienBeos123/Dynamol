@@ -4,9 +4,9 @@
 #include <inttypes.h>
 #include <string.h>
 
-#include "../Headers/singleLimb.h"
-#include "../Headers/Big Data Types/bigFloat.h"
-#include "../Headers/Big Data Types/bigFloat.hpp"
+#include "../../Headers/calculation.h"
+#include "../../Headers/Big Data Types/bigFloat.h"
+#include "../../Headers/Big Data Types/bigFloat.hpp"
 
 /* ----------------------------------------    --   FLOAT TYPES    --   ------------------------------------------ */
 /* ------------ CONSTRUCTORS & DESCTRUCTORS ------------- */
