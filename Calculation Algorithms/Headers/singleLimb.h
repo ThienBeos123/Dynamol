@@ -5,8 +5,8 @@ extern "C" {
 #include <stdint.h>
 #include <limits.h>
 
-#include "../Type Headers/bigNums.h"
-#include "../Type Headers/staticNums.h"
+#include "../../Big Numbers/bigNums.h"
+#include "../../Static Numbers/staticNums.h"
 
 #ifdef __SIZEOF_INT128__ 
     #define HAVE_UINT128 1

@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <assert.h>
 #include <limits.h>
-#include "../../Headers/Calculation Algorithms/singleLimb.h"
+#include "../Calculation Algorithms/Headers/singleLimb.h"
 
 /* ADDITION + SUBTRACTION
 *  +) Uses the principles of Elementary Addition and Subtraction (using Carries & Borrows)
@@ -26,8 +26,7 @@
 static inline uint64_t __ADD_UI64__(uint64_t a, uint64_t b, uint64_t *carry) {
     // Limb's sum
     uint64_t sum           = a + b;
-    uint64_t sum_overflow  = (sum < a); /* When overflowed, unsigned ints do a modulo to reverse back
-    // Limb's Carry                        -----> If overflow --> sum < a ---> return true (1)        */
+    uint64_t sum_overflow  = (sum < a); /* When overflowed, unsigned ints do a modulo to reverse back */
     sum                      += *carry;
     uint64_t carry_overflow  = (sum < *carry); /* Same as above, if sum overflowed after adding the carry 
                                                   from the last limb, return true (1) */

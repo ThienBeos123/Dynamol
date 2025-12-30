@@ -1,8 +1,8 @@
-#include "Calculation Algorithms/singleLimb.h"
-#include "Calculation Algorithms/div.h"
-#include "Calculation Algorithms/mul.h"
-#include "Calculation Algorithms/pow_root.h"
-#include "Calculation Algorithms/num_theory.h"
+#include "Headers/singleLimb.h"
+#include "Headers/div.h"
+#include "Headers/mul.h"
+#include "Headers/pow_root.h"
+#include "Headers/num_theory.h"
 
 #if HAVE_BUILTIN_CLZ == 1
 static inline uint8_t __COUNT_LZ__(uint64_t x) { 

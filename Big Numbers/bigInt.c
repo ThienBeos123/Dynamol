@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <assert.h>
 #include <inttypes.h>
 #include <string.h>
 
-#include "../../Headers/calculation.h"
-#include "../../Headers/Type Headers/bigNums.h"
-#include "../../Headers/Type Headers/bigNums_func.h"
+#include "bigNums.h"
+#include "bigNums_func.h"
+#include "../Calculation Algorithms/calculation.h"
 
     /* NOTE: +) For any function of type uint8_t, 
     *           it is to be treated like a void function that handles errors (0 = success, 1 = error)  
@@ -268,6 +267,7 @@ void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {
     else                                    __BIGINT_KARATSUBA__(res, a, b);
 
     /* FULLY FINISHED BRANCHES FOR PERFORMANCE OPTIMIZATION */
+    // if (max(a->n, b->n) < SCHOOLBOOK)       __BIGINT_SCHOOLBOOK__(res, a, b);
     // else if (max(a->n, b->n) < KARATSUBA)   __BIGINT_KARATSUBA__(res, a, b);
     // else if (max(a->n, b->n) < TOOM)        __BIGINT_TOOM_3__(res, a, b);
     // else                                    __BIGINT_SSA__(res, a, b);
@@ -278,6 +278,7 @@ void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, co
     else                        __BIGINT_NEWTON_RECIPROCAL__(a, b, quot, rem);
 
     /* FULLY FINISHED BRANCHES FOR PERFORMANCE OPTIMIZATION */
+    // if (b->n < KNUTH_D)         __BIGINT_KNUTH_D__(a, b, quot, rem);
     // else if (b->n < NEWTON)     __BIGINT_NEWTON_RECIPROCAL__(a, b, quot, rem);
     // else                        __BIGINT_NEWTON_FFT(a, b, quot, rem);
 }
@@ -291,8 +292,8 @@ void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, co
 *   - They are designed to improve performance by implementing fast paths, 
 *     decrease boilerplate, and provide safe, public, surface-level interface for bigInt operations
 *   - These function are included in two different sections below:
-*       +) MUTATIVE ARITHMETIC
-*       +) FUNCTIONAL ARITHMETIC 
+*       +) MUTATIVE ARITHMETIC      ---> In-place mutation of a variable                (Eg: x += 1     )
+*       +) FUNCTIONAL ARITHMETIC    ---> Return a new copy of a value to be asigned     (Eg: x  = 1 + 2;)
 */
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
 void __BIGINT_MUT_ADD_UI64__(bigInt *x, const int64_t val) {
@@ -302,7 +303,7 @@ void __BIGINT_MUT_ADD_UI64__(bigInt *x, const int64_t val) {
         else { bigInt __TEMP_BUFF__; 
                __BIGINT_EMPTY_INIT__(&__TEMP_BUFF__);
                __BIGINT_MAGNITUDED_ADD_UI64__(&__TEMP_BUFF__, x, val);
-               __BIGINT_COPY__(&__TEMP_BUFF__, x);
+               __BIGINT_MUT_COPY__(&__TEMP_BUFF__, x);
                __BIGINT_FREE__(&__TEMP_BUFF__);
                __BIGINT_NORMALIZE__(&x); }
     }
@@ -312,7 +313,7 @@ void __BIGINT_MUT_ADD_UI64__(bigInt *x, const int64_t val) {
         else if ( __compare_res__ > 0 ) { bigInt __TEMP_BUFF__; 
                                           __BIGINT_EMPTY_INIT__(&__TEMP_BUFF__);
                                           __BIGINT_MAGNITUDED_SUB_UI64__(&__TEMP_BUFF__, x, val);
-                                          __BIGINT_COPY__(&__TEMP_BUFF__, x);
+                                          __BIGINT_MUT_COPY__(&__TEMP_BUFF__, x);
                                           __BIGINT_FREE__(&__TEMP_BUFF__);
                                           __BIGINT_NORMALIZE__(&x); }
     }
@@ -327,14 +328,13 @@ void __BIGINT_MUT_MUL_UI64__(bigInt *x, const int64_t val) {
         __BIGINT_EMPTY_INIT__(&__TEMP_BUFF__);
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_BUFF__, x, val);
         __TEMP_BUFF__.sign = x->sign & val_sign;
-        __BIGINT_COPY__(&__TEMP_BUFF__, x);
+        __BIGINT_MUT_COPY__(&__TEMP_BUFF__, x);
         __BIGINT_FREE__(&__TEMP_BUFF__);
     }
     __BIGINT_NORMALIZE__(x);
 }
 void __BIGINT_MUT_DIV_UI64__(bigInt *x, int64_t val) {}
 void __BIGINT_MUT_MOD_UI64__(bigInt *x, int64_t val) {}
-
 void __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y) {}
 void __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {}
 void __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {}
@@ -347,7 +347,6 @@ bigInt __BIGIN_INT_SUB_UI64__(const bigInt *x, const int64_t val) {}
 bigInt __BIGIN_INT_MUL_UI64__(const bigInt *x, const int64_t val) {}
 bigInt __BIGIN_INT_DIV_UI64__(const bigInt *x, const int64_t val) {}
 bigInt __BIGIN_INT_MOD_UI64__(const bigInt *x, const int64_t val) {}
-
 bigInt __BIGINT_ADD__(const bigInt *x, const bigInt *y) {
     bigInt __CALLER_BUFF__; __BIGINT_EMPTY_INIT__(&__CALLER_BUFF__);
     if (x->sign == y->sign) { // Same sign
@@ -371,22 +370,133 @@ bigInt __BIGINT_SUB__(const bigInt *x, const bigInt *y) {
 }
 bigInt __BIGINT_MUL__(const bigInt *x, const bigInt *y) {
     bigInt __CALLER_BUFF__; __BIGINT_EMPTY_INIT__(&__CALLER_BUFF__);
-    if (x && y) {
-        __BIGINT_MAGNITUDED_MUL__(&__CALLER_BUFF__, x, y); 
-        __CALLER_BUFF__.sign = x->sign * y->sign;
+    // Zero-case
+    if (x->n == 0 || y->n == 0) return __CALLER_BUFF__;
+    // Single-limb Fast Paths
+    else if (x->n == 1 && y->n == 1) { 
+        if (x->limbs[0] == 1)      { __BIGINT_MUT_COPY__(y, &__CALLER_BUFF__); } // Case 1: x = 1 --> 1 * y = y
+        else if (y->limbs[0] == 1) { __BIGINT_MUT_COPY__(x, &__CALLER_BUFF__); } // Case 2: y = 1 --> 1 * x = x
+        else {
+            if (x->n == 1) { __BIGINT_MAGNITUDED_MUL_UI64__(&__CALLER_BUFF__, y, x->limbs[0]); // Case 3: multi-limb (y)    * single-limb (x)
+                            __CALLER_BUFF__.sign = x->sign * y->sign; }                        // Case 4: single-limb (y)   * single-limb (x)
+            else           { __BIGINT_MAGNITUDED_MUL_UI64__(&__CALLER_BUFF__, x, y->limbs[0]); // Case 5: single-limb (y)   * multi-limb (x)
+                             __CALLER_BUFF__.sign = x->sign * y->sign; }
+        }
     }
-    __BIGINT_NORMALIZE__(&__CALLER_BUFF__);
+    // Multi-limb standard path
+    else { __BIGINT_MAGNITUDED_MUL__(&__CALLER_BUFF__, x, y); // Case 6 (average case): multi-limb x multi-limb
+           __CALLER_BUFF__.sign = x->sign * y->sign; }
+    __BIGINT_NORMALIZE__(&__CALLER_BUFF__); // Update n, prevent trailing zeros and "-0"
     return __CALLER_BUFF__;
 }
 bigInt __BIGINT_DIV__(const bigInt *x, const bigInt *y) {
-    
+    assert(y->n > 0); // Disallowing division by 0 (x / 0)
+    bigInt __CALLER_QUOT__,                         __TEMP_REM__; 
+    __BIGINT_EMPTY_INIT__(&__CALLER_QUOT__);        __BIGINT_EMPTY_INIT__(&__TEMP_REM__);
+    // Zero dividend case
+    if (x->n == 0) { __BIGINT_FREE__(&__TEMP_REM__); // Case 1: 0 / y = 0
+                     return __CALLER_QUOT__; }
+    // Single-limb divisor case
+    else if (y->n == 1) {
+        if (y->limbs[0] == 1) { __BIGINT_MUT_COPY__(x, &__CALLER_QUOT__); }                             // Case 2: x / 1 = x
+        else                  { __BIGINT_MAGNITUDED_DIVMOD_UI64__(&__CALLER_QUOT__, &__TEMP_REM__,  // Case 3: multi-limb (x)   / single-limb (y)
+                                                                  x, y->limbs[0]);                  // Case 4: single-limb (x)  / single-limb (y)
+                                __CALLER_QUOT__.sign = x->sign * y->sign; }
+    }
+    // (Multi-limb) standard case
+    else {
+        // Case 5: single-limb (x)  / multi-limb (y)
+        // Case 6: multi-limb (x)   / multi-limb (y)
+        __BIGINT_MAGNITUDED_DIVMOD__(&__CALLER_QUOT__, &__TEMP_REM__, x, y);
+        __CALLER_QUOT__.sign = x->sign * y->sign;
+    }
+    __BIGINT_FREE__(&__TEMP_REM__);
+    __BIGINT_NORMALIZE__(&__CALLER_QUOT__);
+    return __CALLER_QUOT__;
+
 }
 bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y) {
-
+    assert(y->n > 0); // Disallowing modulo by 0 (x % 0)
+    bigInt __TEMP_QUOT__,                         __CALLER_REM__; 
+    __BIGINT_EMPTY_INIT__(&__TEMP_QUOT__);        __BIGINT_EMPTY_INIT__(&__CALLER_REM__);
+    // Zero dividend case
+    if (x->n == 0) { __BIGINT_FREE__(&__TEMP_QUOT__); // Case 1: 0 % y = 0
+                     return __CALLER_REM__; }
+    // Single-limb divisor case
+    else if (y->n == 1) { 
+        if (y->limbs[0] == 1) { __BIGINT_FREE__(&__TEMP_QUOT__); // Case 2: a % 1 = 0
+                                return __CALLER_REM__; }
+        __BIGINT_MAGNITUDED_DIVMOD_UI64__(&__TEMP_QUOT__, &__CALLER_REM__, x, y->limbs[0]);  
+        // Case 3: multi-limb (x)   / single-limb (y)
+        // Case 4: single-limb (x)  / single-limb (y)                                                                                    
+    }
+    // Multi-limb standard case
+    else {
+        // Case 5: single-limb (x)  / multi-limb (y)
+        // Case 6: multi-limb (x)   / multi-limb (y)
+        __BIGINT_MAGNITUDED_DIVMOD__(&__TEMP_QUOT__, &__CALLER_REM__, x, y);
+        __CALLER_REM__.sign = 1;
+    }
+    __BIGINT_FREE__(&__TEMP_QUOT__);
+    __BIGINT_NORMALIZE(&__CALLER_REM__);
+    return __CALLER_REM__;
 }
 
-/* ------------------------- UTILITIES ------------------------- */
-// o- Exact Copy on the byte level (Same value + Capacity)
+/* ------------------------- COPIES --------------------------- */
+/* MUTATIVE API MODELS */
+uint8_t __BIGINT_MUT_COPY__(const bigInt *source__, bigInt *copycat__) { // o- Copy exactly every single details (Deep copy)
+    if (copycat__ == source__) return 0; // Same input ---> Unneccesary, fail X
+    __BIGINT_FREE__(copycat__); // Free the space inside copycat__ for copying
+    if (source__->n == 0) { copycat__->limbs = NULL;
+                            copycat__->n     = 0;
+                            copycat__->cap   = 0; 
+                            copycat__->sign  = source__->sign; return 0; } // Empty initializing if copycat__ copies a blank value
+    copycat__->limbs = malloc(source__->cap * sizeof(uint64_t)); // Initialize a block with equal elements as source__ of size 64 bits
+    if (!copycat__->limbs) { copycat__->n = 0; return 1; } // Handle allocating an empty block for limbs
+    for (size_t i = 0; i < source__->cap; ++i) copycat__->limbs[i] = source__->limbs[i];
+                                               copycat__->n        = source__->n;
+                                               copycat__->cap      = source__->cap;
+                                               copycat__->sign     = source__->sign; return 0;
+    // ---> Initialize/Copy values from source__
+    // ---> Hence the usage of MALLOC() (Unintialized array saves time ---> Initialized later anyways)
+}
+uint8_t __BIGINT_MUT_COPY_OVER__(const bigInt *source__, bigInt *copycat__) { // o- Copy value, Keep Capacity (Fails when value > capacity)
+    if (copycat__ == source__) return 0;
+    if (source__->n == 0) { copycat__->n     = 0;
+                            copycat__->sign  = source__->sign; return 0; }
+    if (source__->n > copycat__->cap) return 1;
+    for (size_t i = 0; i < source__->n; ++i) copycat__->limbs[i] = source__->limbs[i];
+                                             copycat__->n        = source__->n;
+                                             copycat__->sign     = source__->sign; return 0;
+}
+uint8_t __BIGINT_MUT_COPY_TRUNCOVER__(const bigInt *source__, bigInt *copycat__) { // o- Copy value, Keep Capacity (Truncate value by n - cap limbs)
+    if (copycat__ == source__) return 0;
+    if (source__->n == 0) { copycat__->n     = 0;
+                            copycat__->sign  = source__->sign; return 0; }
+    if (source__->n > copycat__->cap) {
+        for (size_t i = 0; i < copycat__->n; ++i) copycat__->limbs[i] = source__->limbs[i];
+                                                  copycat__->n        = copycat__->cap;
+                                                  copycat__->sign     = source__->sign; return 0;
+    }
+    for (size_t i = 0; i < source__->n; ++i) copycat__->limbs[i] = source__->limbs[i];
+                                             copycat__->n        = source__->n;
+                                             copycat__->sign     = source__->sign; return 0;
+}
+/* FUNCTIONAL API MODELS */
+bigInt __BIGINT_COPY__(const bigInt *source__) {
+    bigInt copycat__ = {0}; __BIGINT_MUT_COPY__(source__, &copycat__);
+    return copycat__;
+}
+bigInt __BIGINT_COPY_OVER__(const bigInt *source__) {
+    bigInt copycat__ = {0}; __BIGINT_MUT_COPY_OVER__(source__, &copycat__);
+    return copycat__;
+}
+bigInt __BIGINT_COPY_TRUNCOVER__(const bigInt *source__) {
+    bigInt copycat__ = {0}; __BIGINT_MUT_COPY_TRUNCOVER__(source__, &copycat__);
+    return copycat__;
+}
+
+/* -------------------- GENERAL UTILITIES --------------------- */
 void __BIGINT_NORMALIZE__(bigInt *x) {
     while (x->n > 0 && x->limbs[x->n - 1] == 0) --x->n; // Delete trailing/leading zeros
     if (x->n == 0) x->sign = 1; // Guarantees 0, not -0
@@ -411,60 +521,6 @@ void __BIGINT_RESET__(bigInt *x) {
    if (x->limbs && x->n > 0) memset(x->limbs, 0, x->n * sizeof(uint64_t));
     x->n    = 0;
     x->sign = 1;
-}
-// o- Copy exactly every single details (Deep copy)
-uint8_t __BIGINT_COPY__(const bigInt *source__, bigInt *copycat__) {
-    if (copycat__ == source__) return 0; // Same input ---> Unneccesary, fail X
-    __BIGINT_FREE__(copycat__); // Free the space inside copycat__ for copying
-    if (source__->n == 0) { copycat__->limbs = NULL;
-                            copycat__->n     = 0;
-                            copycat__->cap   = 0; 
-                            copycat__->sign  = source__->sign; return 0; } // Empty initializing if copycat__ copies a blank value
-    copycat__->limbs = malloc(source__->cap * sizeof(uint64_t)); // Initialize a block with equal elements as source__ of size 64 bits
-    if (!copycat__->limbs) { copycat__->n = 0; return 1; } // Handle allocating an empty block for limbs
-    for (size_t i = 0; i < source__->cap; ++i) copycat__->limbs[i] = source__->limbs[i];
-                                               copycat__->n        = source__->n;
-                                               copycat__->cap      = source__->cap;
-                                               copycat__->sign     = source__->sign; return 0;
-    // ---> Initialize/Copy values from source__
-    // ---> Hence the usage of MALLOC() (Unintialized array saves time ---> Initialized later anyways)
-}
-// o- Copy value, Keep Capacity (Fails when value > capacity)
-uint8_t __BIGINT_COPY_INTO__(const bigInt *source__, bigInt *copycat__) {
-    if (copycat__ == source__) return 0;
-    if (source__->n == 0) { copycat__->n     = 0;
-                            copycat__->sign  = source__->sign; return 0; }
-    if (source__->n > copycat__->cap) return 1;
-    for (size_t i = 0; i < source__->n; ++i) copycat__->limbs[i] = source__->limbs[i];
-                                             copycat__->n        = source__->n;
-                                             copycat__->sign     = source__->sign; return 0;
-}
-// o- Copy value, Keep Capacity (Truncate value by n - cap limbs ---> DOWNCASTING)
-uint8_t __BIGINT_COPY_TRUNCINTO__(const bigInt *source__, bigInt *copycat__) {
-    if (copycat__ == source__) return 0;
-    if (source__->n == 0) { copycat__->n     = 0;
-                            copycat__->sign  = source__->sign; return 0; }
-    if (source__->n > copycat__->cap) {
-        for (size_t i = 0; i < copycat__->n; ++i) copycat__->limbs[i] = source__->limbs[i];
-                                                  copycat__->n        = copycat__->cap;
-                                                  copycat__->sign     = source__->sign; return 0;
-    }
-    for (size_t i = 0; i < source__->n; ++i) copycat__->limbs[i] = source__->limbs[i];
-                                             copycat__->n        = source__->n;
-                                             copycat__->sign     = source__->sign; return 0;
-}
-// Shortcut for the above functions
-bigInt __BIGINT_SHORT_COPY__(const bigInt *source__) {
-    bigInt copycat__ = {0}; __BIGINT_COPY__(source__, &copycat__);
-    return copycat__;
-}
-bigInt __BIGINT_SHORT_COPY_INTO__(const bigInt *source__) {
-    bigInt copycat__ = {0}; __BIGINT_COPY_INTO__(source__, &copycat__);
-    return copycat__;
-}
-bigInt __BIGINT_SHORT_TRUNCINTO__(const bigInt *source__) {
-    bigInt copycat__ = {0}; __BIGINT_COPY_TRUNCINTO__(source__, &copycat__);
-    return copycat__;
 }
 
 /* ------------------------ SPECIAL UTILITIES --------------------- */
