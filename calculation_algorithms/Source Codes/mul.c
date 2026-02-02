@@ -1,8 +1,15 @@
-#include "../../Headers/Calculation Algorithms/mul.h"
+#include <stdlib.h>
+#include <math.h>
+#include <stdint.h>
+#include <inttypes.h>
+
+#include "../Headers/div.h"
+#include "../../big_numbers/bigNums.h"
+#include "../../internal_utils/util.h"
 
 /* SIMPLE - INTERMEDIATE ALGORITHMS */
 void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b) {
-    __BIGINT_ENSURE_CAPACITY__(res, a->n + b->n);
+    __BIGINT_INTERNAL_ENSCAP__(res, a->n + b->n);
     memset(res->limbs, 0, (a->n + b->n) * sizeof(uint64_t)); // Set every bytes to 0 in res, basically CALLOC() without the MALLOC()
     // Implementing schoolbook multiplication, treating each limb like a digit
     // -----> Inner loop access each limb of b and multiplying by 1 limb of a before going to the next a's limb
@@ -29,6 +36,8 @@ void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b) {
 }
 void __BIGINT_KARATSUBA__(bigInt *res, const bigInt *a, const bigInt *b) {}
 void __BIGINT_TOOM_3__(bigInt *res, const bigInt *a, const bigInt *b) {}
+void __BIGINT_SSA__(bigInt *res, const bigInt *a, const bigInt *b) {}
 
-/* ADVANCED - FFT ALGORITHMS */
-void __BIGINT_SSA__(bigInt *res, const bigInt *a, const bigInt *b) {} // Not used
+void __BIGINT_MUL_DISPATCH__(bigInt *res, const bigInt *a, const bigInt *b) {
+
+}

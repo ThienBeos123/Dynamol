@@ -29,12 +29,12 @@ extern "C" {
 #define KNUTH_D     64      // n <  64
 #define NEWTON      1024    // n < 1024 (Threshold only needed in special conditionals)
 
-typedef struct {
+typedef struct __424947696E7465676572__ {
     int8_t sign;                    LIMB_BITS *limbs; 
     size_t n; /* Used limbs */      size_t cap; /* Maximum limbs */
 } bigInt;
 
-typedef struct {
+typedef struct __424947666C6F6174__ {
     bigInt mantissa; uint32_t exponent; 
     // RAM Space needed to calculate the maxmimum exponent value as a power of 2 (2^(2^32 - 1))
     // ------> Approximately 550MB

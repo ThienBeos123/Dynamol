@@ -5,16 +5,16 @@
 #include <string.h>
 
 #include "../Headers/div.h"
-#include "../../Big Numbers/bigNums.h"
-#include "../../Static Numbers/staticNums.h"
+#include "../../internal_utils/util.h"
+#include "../../big_numbers/bigNums.h"
 
 /* SIMPLE ALGORITHMS */
 void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {
     uint8_t shift = __COUNT_LZ__(b->limbs[b->n - 1]);
     bigInt a_copy, b_copy;
     size_t m = a->n, n = b->n;
-    __BIGINT_EMPTY_INIT__(&a_copy);                 __BIGINT_EMPTY_INIT__(&b_copy);
-    __BIGINT_ENSURE_CAPACITY__(&a_copy, m + 1);     __BIGINT_ENSURE_CAPACITY__(&b_copy, n);
+    __BIGINT_INTERNAL_EMPINIT__(&a_copy);           __BIGINT_INTERNAL_EMPINIT__(&b_copy);
+    __BIGINT_INTERNAL_ENSCAP__(&a_copy, m + 1);     __BIGINT_INTERNAL_ENSCAP__(&b_copy, n);
     /* 1. Normalization */
     /*  - This stage basically make sure b is large enough to be divided by a
     *     by making b's most significant limb's highest bit is 1
@@ -36,8 +36,8 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
     b_copy.n = n;
 
     /* 2. Quotient init */
-    __BIGINT_EMPTY_INIT__(quot);
-    __BIGINT_ENSURE_CAPACITY__(quot, m - n + 1);
+    __BIGINT_INTERNAL_EMPINIT__(quot);
+    __BIGINT_INTERNAL_ENSCAP__(quot, m - n + 1);
 
     quot->n = m - n + 1;
     /* 3-5. Main Loop */
@@ -136,7 +136,7 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
     }
 
     /* 6. Denormalize */
-    __BIGINT_EMPTY_INIT__(rem); __BIGINT_ENSURE_CAPACITY__(rem, n);
+    __BIGINT_INTERNAL_EMPINIT__(rem); __BIGINT_INTERNAL_ENSCAP__(rem, n);
     carry = 0;
     for (size_t i = n; i > 0; --i) {
         uint64_t x = a_copy.limbs[i];
@@ -144,12 +144,10 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
         carry = (shift ? x << BITS_IN_UINT64_T : 0);
     }
     rem->n = n;
-    __BIGINT_NORMALIZE__(quot); __BIGINT_NORMALIZE__(rem);
-    __BIGINT_FREE__(&a_copy);   __BIGINT_FREE__(&b_copy);
+    __BIGINT_INTERNAL_TRIM_LZ__(quot); __BIGINT_INTERNAL_TRIM_LZ__(rem);
+    __BIGINT_INTERNAL_FREE__(&a_copy); __BIGINT_INTERNAL_FREE__(&b_copy);
 }
-
-/* INTERMEDIATE ALGORITHMS */
 void __BIGINT_NEWTON_RECIPROCAL__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
-
-/* ADVANCED - FFT ALGORITHMS */
-void __BIGINT_NEWTON_FFT__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
+void __BIGINT_DIVMOD_DISPATCH__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {
+    
+}

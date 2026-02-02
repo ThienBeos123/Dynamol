@@ -1,5 +1,5 @@
-#include "../../Headers/Calculation Algorithms/pow_root.h"
-#include "../../Headers/Type Headers/bigNums.h"
+#include "../Headers/pow_root.h"
+#include "../../big_numbers/bigNums.h"
 
 /* SIMPLE - INTERMEDIATE ALGORITHMS */
 void __BIGINT_BINARY_EXP__(bigInt *res, const bigInt *a, const bigInt *b) {}

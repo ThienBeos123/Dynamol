@@ -1,6 +1,4 @@
-#include "../../Big Numbers/bigNums.h"
-#include "../../Dynamic Numbers/dynamicNums.h"
-#include "../../Static Numbers/staticNums.h"
+#include "../../big_numbers/bigNums.h"
 
 /* --------------------------------------------------- BIGNUMS --------------------------------------------------- */
 void __BIGINT_BINARY_EXP__(bigInt *res, const bigInt *a, const bigInt *b);

@@ -1,8 +1,7 @@
-#include "../../Headers/Calculation Algorithms/num_theory.h"
-#include "../../Headers/Type Headers/bigNums.h"
+#include "../Headers/num_theory.h"
+#include "../../big_numbers/bigNums.h"
 
 /* GCD - GREATEST COMMON DENOMINATOR */
-void __BIGINT_EUCLIDEAN_GCD__(bigInt *res, const bigInt *a, const bigInt *b) {}
 void __BIGINT_STEIN_GCD__(bigInt *res, const bigInt *a, const bigInt *b) {}
 void __BIGINT_LEHMER_GCD__(bigInt *res, const bigInt *a, const bigInt *b) {}
 
