@@ -6,6 +6,7 @@
 
 #include "../big_numbers/bigNums.h"
 #include "util.h"
+#include "../system/compiler.h"
 
 /* Constructors and Destructors */
 inline void __BIGINT_INTERNAL_EMPINIT__(bigInt *x) {

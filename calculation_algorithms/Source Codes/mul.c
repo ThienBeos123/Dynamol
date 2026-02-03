@@ -1,11 +1,4 @@
-#include <stdlib.h>
-#include <math.h>
-#include <stdint.h>
-#include <inttypes.h>
-
-#include "../Headers/div.h"
-#include "../../big_numbers/bigNums.h"
-#include "../../internal_utils/util.h"
+#include "../Headers/mul.h"
 
 /* SIMPLE - INTERMEDIATE ALGORITHMS */
 void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b) {

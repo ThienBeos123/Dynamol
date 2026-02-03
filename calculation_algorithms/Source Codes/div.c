@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <inttypes.h>
-#include <string.h>
-
 #include "../Headers/div.h"
-#include "../../internal_utils/util.h"
-#include "../../big_numbers/bigNums.h"
 
 /* SIMPLE ALGORITHMS */
 void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {

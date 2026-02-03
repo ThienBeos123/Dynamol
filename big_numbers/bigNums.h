@@ -2,35 +2,44 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <limits.h>
-#include <stdlib.h>
+#include "../system/include.h"
+#include "../system/numeric_config.h"
+#include "../system/compiler.h"
 
-/* Essential Details */
-#define LIMB_BITS uint64_t
-#define LIMB_MASK UINT64_MAX
 
-#define BITS_IN_UINT64_T ((sizeof(uint64_t)) * CHAR_BIT)
+//todo ========================================= ALGORITHMS THRESHOLD ==========================================
+/* Multiplication */
+#define SCHOOLBOOK          64
+#define KARATSUBA           256
+#define TOOM                1024
+#define SSA                 1024
 
-/* Compiler/System specific implementations */
-#ifdef __SIZEOF_INT128__
-#define HAVE_UINT128 1
-#else
-#define HAVE_UINT128 0
-#endif
+/* Division + Euclidean Modulo */
+#define KNUTH               64
+#define BARETT              512
+#define NEWTON              512
 
-/* Multiplication Threshold */
-#define SCHOOLBOOK  32      // n <  32
-#define KARATSUBA   256     // n <  256
-#define TOOM        1024    // n <  1024
-#define FFT         1024    // n >= 1024 (Threshold only needed in special conditionals)
+/* GCD - Greatest Common Divisor */
+#define STEIN               512
+#define LEHMER              2048
+#define HALF                2048
 
-/* Division Threshold */
-#define KNUTH_D     64      // n <  64
-#define NEWTON      1024    // n < 1024 (Threshold only needed in special conditionals)
+/* Modular Inverse */
+#define EXTENDED_EUCLID     256
+#define BINARY_XGCD         2048
+#define HALF-BINARY_XGCD    2048
 
+/* Primality Testing */
+#define DETERMINISTIC_MR    64
+#define MILLER-RABIN        1024
+#define MR_BPSW             4096
+#define ECPP                4096    
+
+
+
+//todo =========================================== TYPE DEFINITION =============================================
 typedef struct __424947696E7465676572__ {
-    int8_t sign;                    LIMB_BITS *limbs; 
+    int8_t sign;                    bigint_limb *limbs; 
     size_t n; /* Used limbs */      size_t cap; /* Maximum limbs */
 } bigInt;
 

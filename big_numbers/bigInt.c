@@ -1,14 +1,4 @@
-#include <stdlib.h>
-#include <assert.h>
-#include <inttypes.h>
-#include <math.h>
-#include <stdint.h>
-#include <errno.h>
-
-#include "bigNums.h"
 #include "bigNums_func.h"
-#include "../calculation_algorithms/calculation.h"
-#include "../internal_utils/util.h"
 
     /* NOTE: +) For any function of type uint8_t, 
     *           it is to be treated like a void function that handles errors (0 = success, 1 = error)  
@@ -318,24 +308,18 @@ void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {
 }
 void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, const bigInt *b) {
     assert(b->n == 0);
-    if (b->n < KNUTH_D)         __BIGINT_KNUTH_D__(a, b, quot, rem);
+    if (b->n < KNUTH)           __BIGINT_KNUTH_D__(a, b, quot, rem);
     else                        __BIGINT_NEWTON_RECIPROCAL__(a, b, quot, rem);
-
-    /* FULLY FINISHED BRANCHES FOR PERFORMANCE OPTIMIZATION */
-    // if (b->n < KNUTH_D)         __BIGINT_KNUTH_D__(a, b, quot, rem);
-    // else if (b->n < NEWTON)     __BIGINT_NEWTON_RECIPROCAL__(a, b, quot, rem);
-    // else                        __BIGINT_NEWTON_FFT(a, b, quot, rem);
 }
 /* --------------- MAGNITUDED CORE NUMBER-THEORETIC ---------------- */
 uint64_t ___GCD_UI64___() {}
 void __BIGINT_MAGNITUDED_GCD_UI64__() {}
-void __BIGINT_MAGNITUDED_LCM_UI64__() {}
-void __BIGINT_MAGNITUDED_EUCMOD_UI64__() {}
 void __BIGINT_MAGNITUDED_GCD__() {}
+void __BIGINT_MAGNITUDED_LCM_UI64__() {}
 void __BIGINT_MAGNITUDED_LCM__() {}
+void __BIGINT_MAGNITUDED_EUCMOD_UI64__() {}
 void __BIGINT_MAGNITUDED_EUCMOD__() {}
-void __BIGINT_MAGNITUDED_MODSQR__() {}
-void __BIGINT_MAGNITUDED_MODINV__() {}
+void __BIGINT_MAGNITUDED_PRIMATEST__() {}
 /* ----------------- MAGNITUDED MODULAR-ARITHMETIC ------------------ */
 void __BIGINT_MAGNITUDED_MODADD_UI64__() {}
 void __BIGINT_MAGNITUDED_MODSUB_UI64__() {}
@@ -347,6 +331,8 @@ void __BIGINT_MAGNITUDED_MODSUB__() {}
 void __BIGINT_MAGNITUDED_MODMUL__() {}
 void __BIGINT_MAGNITUDED_MODDIV__() {}
 void __BIGINT_MAGNITUDED_MODEXP__() {}
+void __BIGINT_MAGNITUDED_MODSQR__() {}
+void __BIGINT_MAGNITUDED_MODINV__() {}
 
 
 
@@ -402,10 +388,27 @@ bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y) {}
 
 
 
-//todo ======================================== SIGNED NUMBER THEORY ========================================= */
-
-
-
+//todo ====================================== SIGNED NUMBER THEORETIC ======================================== */
+/* -------------- Pure Number Theoretic -------------- */
+uint64_t __BIGINT_GCD_UI64__() {}
+int64_t __BIGINT_GCD_I64__() {}
+long double __BIGINT_GCD_LD__() {}
+bigInt __BIGINT_GCD__() {}
+bigInt __BIGINT_LCM_UI64__() {}
+bigInt __BIGINT_LCM_I64__() {}
+bigInt __BIGINT_LCM_LD__() {}
+bigInt __BIGINT_LCM__() {}
+uint8_t __BIGINT_IS_PRIME__() {}
+/* ------------- Core Modular Arithmetic ------------- */
+uint8_t __BIGINT_MUT_MODULO_UI64__() {}
+uint8_t __BIGINT_MUT_MODULO_I64__() {}
+uint8_t __BIGINT_MUT_MODULO_LD__() {}
+uint8_t __BIGINT_MUT_MODULO__() {}
+uint64_t __BIGINT_MODULO_UI64__() {}
+int64_t __BIGINT_MODULO_I64__() {}
+long double __BIGINT_MODULO_LD__() {}
+bigInt __BIGINT_MODULO__() {}
+/* ---------------- Modular SMALL Arithmetic --------------- */
 
 
 //todo =============================================== COPIES ================================================ */
