@@ -45,15 +45,19 @@ inline void __BIGINT_INTERNAL_FREE__(bigInt *x) {
 }
 
 /* Safety Utilities */
-inline uint8_t __BIGINT_INTERNAL_VALID__() {}
-inline uint8_t __BIGINT_INTERNAL_PVALID__() {}
+inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x) {
+    if (x->limbs == NULL) return 0;
+    if (x->cap < 1) return 0;
+    if (x->n > x->limbs) return 0;
+    if (x->sign != 1 && x->sign != -1) return 0;
+    return 1;
+}
 
 /* General Utilities */
 void __BIGINT_INTERNAL_TRIM_LZ__(bigInt *x) {
     while (x->n > 0 && x->limbs[x->n - 1] == 0) --x->n;
 }
 inline void __BIGINT_INTERNAL_ZSET__(bigInt *x) {
-    assert(x->limbs != NULL);
     x->n    = 0;
     x->sign = 1;
 }

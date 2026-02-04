@@ -14,7 +14,6 @@ inline void __BIGINT_INTERNAL_LINIT__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_ENSCAP__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_REALLOC__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_FREE__(bigInt *x);
-inline uint8_t __BIGINT_INTERNAL_VALID__();
 inline uint8_t __BIGINT_INTERNAL_PVALID__();
 void __BIGINT_INTERNAL_TRIM_LZ__(bigInt *x);
 inline void __BIGINT_INTERNAL_ZSET__(bigInt *x);

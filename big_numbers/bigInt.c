@@ -22,7 +22,7 @@
 
 
 
-//todo ====================================== CONSTRUCTORS & DESTRUCTOR ====================================== */
+//* ======================================== CONSTRUCTORS & DESTRUCTOR ======================================= */
 uint8_t __BIGINT_EMPTY_INIT__(bigInt *x) {
     uint64_t *P_BUFFER__ = malloc(sizeof(uint64_t));
     if (P_BUFFER__ == NULL) return 1;
@@ -41,8 +41,9 @@ uint8_t __BIGINT_FREE__(bigInt *x) {
     return 0;
 }
 uint8_t __BIGINT_LIMBS_INIT__(bigInt *x, size_t n) {
-    x->limbs = calloc(n, sizeof(uint64_t)); // Allocate n spaces of 64 bits for n limbs in the heap
-    if (!x->limbs) return 1;                // ----> CALLOC() (provide safety by zero-initializing each element)
+    if (n == 0) x->limbs == NULL;
+    else { x->limbs = calloc(n, sizeof(uint64_t)); }
+    if (x->limbs == NULL) return 1;
     x->cap   = n; // A capacity of n (n spaces in the heap)
     x->n     = 0; // Currently using no limb
     x->sign  = 1; return 0;
@@ -71,7 +72,7 @@ uint8_t __BIGINT_LD_INIT__(bigInt *x, long double in) {}
 
 
 
-//todo ============================================= ASSIGNMENTS ============================================= */
+//* =============================================== ASSIGNMENTS ============================================== */
 /* --------- BigInt --> Primitive Types --------- */
 uint8_t __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver) {}
 uint8_t __BIGINT_SET_I64__(const bigInt x, int64_t *receiver) {}
@@ -87,7 +88,7 @@ uint8_t __BIGINT_GET_LD_SAFE__(long double x, bigInt *receiver) {}
 
 
 
-//todo ============================================= CONVERSIONS ============================================= */
+//* =============================================== CONVERSIONS ============================================== */
 /* --------- BigInt --> Primitive Types --------- */
 uint64_t __BIGINT_TO_UI64__(const bigInt x) {}
 int64_t __BIGINT_TO_I64__(const bigInt x) {}
@@ -103,7 +104,7 @@ bigInt __BIGINT_FROM_LD_SAFE__(long double x) {}
 
 
 
-//todo ============================================= COMPARISONS ============================================= */
+//* =============================================== COMPARISONS ============================================== */
 int8_t __BIGINT_COMPARE_MAGNITUDE_UI64__(const bigInt *x, const uint64_t val) {
     if (x->n > 1) return 1;
     if (x->sign == -1) return -1;
@@ -200,12 +201,6 @@ uint8_t __BIGINT_MORE_OR_EQUALL_UI64__(const bigInt x, const uint64_t val) {
     if (x.n    > 1) return 1;
     return (x.limbs[0] >= val);
 }
-/* ------------ Floating Point - LD ------------ */
-uint8_t __BIGINT_EQUAL_LD__(const bigInt x, const long double val) {}
-uint8_t __BIGINT_LESS_LD__(const bigInt x, const long double val) {}
-uint8_t __BIGINT_MORE_LD__(const bigInt x, const long double val) {}
-uint8_t __BIGINT_LESS_OR_EQUAL_LD__(const bigInt x, const long double val) {}
-uint8_t __BIGINT_MORE_OR_EQUALL_LD__(const bigInt x, const long double val) {}
 /* ------------------- BigInt ------------------ */
 uint8_t __BIGINT_EQUAL__(const bigInt a, const bigInt b) {}
 uint8_t __BIGINT_LESS__(const bigInt a, const bigInt b) {}
@@ -217,63 +212,8 @@ uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b) {}
 
 
 
-//todo ======================================= MAGNITUDE MATHEMATICA ========================================= */
+//* ========================================= MAGNITUDE MATHEMATICA ========================================== */
 /* -------------------- MAGNITUDED ARITHMETIC --------------------- */
-void __BIGINT_MAGNITUDED_ADD_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
-    __BIGINT_ENSURE_CAPACITY(res, x->n + 1); // Ensure at least enough capacity even when carry is propagated to the end
-    uint64_t carry = val; size_t i = 0;
-    // Add when there is still carry to be propagated
-    for (; (carry && i < x->n); ++i) {
-        res->limbs[i] = __ADD_UI64__(x->limbs[i], carry, &carry); /* Initially:  Add val on first iteration, (carry = val)
-                                                                     Afterwards: Add carry from the previous limb to the next limb */ }
-    // Copy the remaining limbs of x (if the carry didn't propagate to the very end)
-    for (; i < x->n; ++i) { res->limbs[i] = x->limbs[i]; }
-                 res->n               = x->n;
-    if (carry) { res->limbs[res->n++] = carry; } // Handle remaining carry if it propagated to the end
-}
-void __BIGINT_MAGNITUDED_SUB_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
-    /* Design choice of __BIGINT_MAGNITUDED_SUB_UI64__():
-    *       +) One critical design choice that was made is the decision to abort()
-    *          magnitude subtraction on the occurence of underflowing (|x| < |y|)
-    *       +) This is because when we subtract magnitudes, we also expect a magnitude value
-    *       ------> |x| - |y| = |result|
-    *       +) Underflow happens when |x| < |y| ----> |x| - |y| = -negative_value
-    *       -----> Violate the contract by returning a negative value 
-    *              that is illegal for an absolute value */
-
-    __BIGINT_ENSURE_CAPACITY__(res, x->n); res->n = x->n;
-    uint64_t borrow = val; size_t i = 0;
-    for (; (borrow && i < x->n); ++i) {
-        res->limbs[i] = __SUB_UI64__(x->limbs[i], borrow, &borrow); /* First iteration: Subtract val (borrow = val)
-                                                                       Next iterations: Subtract borrow from last limb */ }
-    assert(!borrow); // Check for Magnitude Underflow
-    for (; i < x->n; ++i) { res->limbs[i] = x->limbs[i]; }
-}
-void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
-    // Since the divisor size is small (n <= 1), we implement inline schoolbook multiplication
-    __BIGINT_ENSURE_CAPACITY__(res, x->n + 1);
-    uint64_t carry = 0;
-    for (size_t i = 0; i < x->n; ++i) {
-        uint64_t low, high;
-        __MUL_UI64__(x->limbs[i], val, &low, &high);
-        uint64_t sum = low + carry;
-        carry = high + (sum < low) + (sum < carry);
-        res->limbs[i] = sum;
-    }
-    res->n = x->n;
-    if (carry) { res->limbs[res->n++] = carry; }
-}
-void __BIGINT_MAGNITUDED_DIVMOD_UI64__(bigInt *quot, uint64_t *rem, const bigInt *x, const uint64_t val) {
-    // Since the divisior size is small (n <= 1), we implement inline normal/long division
-    assert(val); // Checks for invalid operation ( x / 0 )
-    __BIGINT_ENSURE_CAPACITY__(&quot, x->n+1); quot->n = x->n;
-    uint64_t remainder = 0;
-    for (size_t i = x->n; i-- > 0;) {
-       __DIV_HELPER_UI64__(remainder, 0, val, &quot->limbs[i], &remainder);
-    }
-    *rem = remainder;
-    __BIGINT_NORMALIZE__(quot);
-}
 void __BIGINT_MAGNITUDED_ADD__(bigInt *res, const bigInt *a, const bigInt *b) {
     size_t max = (a->n > b->n) ? a->n : b->n;
     __BIGINT_ENSURE_CAPACITY__(res, max + 1); /* Set the minimum capacity of res to be 1 bigger
@@ -296,88 +236,75 @@ void __BIGINT_MAGNITUDED_SUB__(bigInt *res, const bigInt *a, const bigInt *b) {
     }
     res->n = a->n;
 }
-void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {
-    if (max(a->n, b->n) < SCHOOLBOOK)       __BIGINT_SCHOOLBOOK__(res, a, b);
-    else                                    __BIGINT_KARATSUBA__(res, a, b);
-
-    /* FULLY FINISHED BRANCHES FOR PERFORMANCE OPTIMIZATION */
-    // if (max(a->n, b->n) < SCHOOLBOOK)       __BIGINT_SCHOOLBOOK__(res, a, b);
-    // else if (max(a->n, b->n) < KARATSUBA)   __BIGINT_KARATSUBA__(res, a, b);
-    // else if (max(a->n, b->n) < TOOM)        __BIGINT_TOOM_3__(res, a, b);
-    // else                                    __BIGINT_SSA__(res, a, b);
+void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {}
+void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, const bigInt *b) {}
+void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
+    // Since the divisor size is small (n <= 1), we implement inline schoolbook multiplication
+    __BIGINT_ENSURE_CAPACITY__(res, x->n + 1);
+    uint64_t carry = 0;
+    for (size_t i = 0; i < x->n; ++i) {
+        uint64_t low, high;
+        low = __MUL_UI64__(x->limbs[i], val, &high);
+        uint64_t sum = low + carry;
+        carry = high + (sum < low) + (sum < carry);
+        res->limbs[i] = sum;
+    }
+    res->n = x->n;
+    if (carry) { res->limbs[res->n++] = carry; }
 }
-void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, const bigInt *b) {
-    assert(b->n == 0);
-    if (b->n < KNUTH)           __BIGINT_KNUTH_D__(a, b, quot, rem);
-    else                        __BIGINT_NEWTON_RECIPROCAL__(a, b, quot, rem);
+void __BIGINT_MAGNITUDED_DIVMOD_UI64__(bigInt *quot, uint64_t *rem, const bigInt *x, const uint64_t val) {
+    // Since the divisior size is small (n <= 1), we implement inline normal/long division
+    assert(val); // Checks for invalid operation ( x / 0 )
+    __BIGINT_ENSURE_CAPACITY__(&quot, x->n+1); quot->n = x->n;
+    uint64_t remainder = 0;
+    for (size_t i = x->n; i-- > 0;) {
+       __DIV_HELPER_UI64__(remainder, 0, val, &quot->limbs[i], &remainder);
+    }
+    *rem = remainder;
+    __BIGINT_NORMALIZE__(quot);
 }
 /* --------------- MAGNITUDED CORE NUMBER-THEORETIC ---------------- */
-uint64_t ___GCD_UI64___() {}
-void __BIGINT_MAGNITUDED_GCD_UI64__() {}
-void __BIGINT_MAGNITUDED_GCD__() {}
-void __BIGINT_MAGNITUDED_LCM_UI64__() {}
-void __BIGINT_MAGNITUDED_LCM__() {}
-void __BIGINT_MAGNITUDED_EUCMOD_UI64__() {}
-void __BIGINT_MAGNITUDED_EUCMOD__() {}
-void __BIGINT_MAGNITUDED_PRIMATEST__() {}
+uint64_t ___GCD_UI64___(uint64_t a, uint64_t b) {}
+void __BIGINT_MAGNITUDED_GCD_UI64__(uint64_t *res, const bigInt *a, uint64_t val) {}
+void __BIGINT_MAGNITUDED_LCM_UI64__(bigInt *res, const bigInt *a, uint64_t val) {}
+void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt *a, const bigInt *b) {}
+void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt *a, const bigInt *b) {}
+void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt *a, uint64_t modulus) {}
+void __BIGINT_MAGNITUDED_EUCMOD__(bigInt *res, const bigInt *a, const bigInt *modulus) {}
+void __BIGINT_MAGNITUDED_PRIMATEST__(const bigInt *x) {}
 /* ----------------- MAGNITUDED MODULAR-ARITHMETIC ------------------ */
-void __BIGINT_MAGNITUDED_MODADD_UI64__() {}
-void __BIGINT_MAGNITUDED_MODSUB_UI64__() {}
-void __BIGINT_MAGNITUDED_MODMUL_UI64__() {}
-void __BIGINT_MAGNITUDED_MODDIV_UI64__() {}
-void __BIGINT_MAGNITUDED_MODEXP_UI64__() {}
-void __BIGINT_MAGNITUDED_MODADD__() {}
-void __BIGINT_MAGNITUDED_MODSUB__() {}
-void __BIGINT_MAGNITUDED_MODMUL__() {}
-void __BIGINT_MAGNITUDED_MODDIV__() {}
-void __BIGINT_MAGNITUDED_MODEXP__() {}
-void __BIGINT_MAGNITUDED_MODSQR__() {}
-void __BIGINT_MAGNITUDED_MODINV__() {}
+void __BIGINT_MAGNITUDED_MODADD__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+void __BIGINT_MAGNITUDED_MODSUB__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+void __BIGINT_MAGNITUDED_MODMUL__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+void __BIGINT_MAGNITUDED_MODDIV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+void __BIGINT_MAGNITUDED_MODEXP__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+void __BIGINT_MAGNITUDED_MODSQR__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
 
 
 
 
 
-//todo ========================================== SIGNED ARITHMETIC ========================================== */
-/* ------------------- MUTATIVE SMALL ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_ADD_UI64__(bigInt *x, const uint64_t val) {}
-uint8_t __BIGINT_MUT_SUB_UI64__(bigInt *x, const uint64_t val) {}
+//* ============================================ SIGNED ARITHMETIC ========================================== */
+/* ------------------- MUTATIVE ARITHMETIC -------------------- */
 uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val) {}
 uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, const uint64_t val) {}
 uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, const uint64_t val) {}
-uint8_t __BIGINT_MUT_ADD_I64__(bigInt *x, const int64_t val) {}
-uint8_t __BIGINT_MUT_SUB_I64__(bigInt *x, const int64_t val) {}
 uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, const int64_t val) {}
 uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {}
 uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {}
-/* ------------------- MUTATIVE BIG ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_ADD_LD__(bigInt *x, const long double val) {}
-uint8_t __BIGINT_MUT_SUB_LD__(bigInt *x, const long double val) {}
-uint8_t __BIGINT_MUT_MUL_LD__(bigInt *x, const long double val) {}
-uint8_t __BIGINT_MUT_DIV_LD__(bigInt *x, const long double val) {}
-uint8_t __BIGINT_MUT_MOD_LD__(bigInt *x, const long double val) {}
 uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {}
-/* ------------------ FUNCTIONAL SMALL ARITHMETIC ------------------- */
-bigInt __BIGINT_ADD_UI64__(const bigInt *x, const uint64_t val) {}
-bigInt __BIGINT_SUB_UI64__(const bigInt *x, const uint64_t val) {}
+/* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
 bigInt __BIGINT_MUL_UI64__(const bigInt *x, const uint64_t val) {}
 bigInt __BIGINT_DIV_UI64__(const bigInt *x, const uint64_t val) {}
 bigInt __BIGINT_MOD_UI64__(const bigInt *x, const uint64_t val) {}
-bigInt __BIGINT_ADD_I64__(const bigInt *x, const int64_t val) {}
-bigInt __BIGINT_SUB_I64__(const bigInt *x, const int64_t val) {}
 bigInt __BIGINT_MUL_I64__(const bigInt *x, const int64_t val) {}
 bigInt __BIGINT_DIV_I64__(const bigInt *x, const int64_t val) {}
 bigInt __BIGINT_MOD_I64__(const bigInt *x, const int64_t val) {}
-/* ------------------- FUNCTIONAL BIG ARITHMETIC -------------------- */
-bigInt __BIGINT_ADD_LD__(const bigInt *x, const long double val) {}
-bigInt __BIGINT_SUB_LD__(const bigInt *x, const long double val) {}
-bigInt __BIGINT_MUL_LD__(const bigInt *x, const long double val) {}
-bigInt __BIGINT_DIV_LD__(const bigInt *x, const long double val) {}
-bigInt __BIGINT_MOD_LD__(const bigInt *x, const long double val) {}
 bigInt __BIGINT_ADD__(const bigInt *x, const bigInt *y) {}
 bigInt __BIGINT_SUB__(const bigInt *x, const bigInt *y) {}
 bigInt __BIGINT_MUL__(const bigInt *x, const bigInt *y) {}
@@ -388,33 +315,93 @@ bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y) {}
 
 
 
-//todo ====================================== SIGNED NUMBER THEORETIC ======================================== */
+//* ======================================== SIGNED NUMBER THEORETIC ========================================= */
 /* -------------- Pure Number Theoretic -------------- */
 uint64_t __BIGINT_GCD_UI64__() {}
 int64_t __BIGINT_GCD_I64__() {}
-long double __BIGINT_GCD_LD__() {}
 bigInt __BIGINT_GCD__() {}
 bigInt __BIGINT_LCM_UI64__() {}
 bigInt __BIGINT_LCM_I64__() {}
-bigInt __BIGINT_LCM_LD__() {}
 bigInt __BIGINT_LCM__() {}
 uint8_t __BIGINT_IS_PRIME__() {}
-/* ------------- Core Modular Arithmetic ------------- */
+/* ---------------- Modular Reduction ---------------- */
 uint8_t __BIGINT_MUT_MODULO_UI64__() {}
 uint8_t __BIGINT_MUT_MODULO_I64__() {}
-uint8_t __BIGINT_MUT_MODULO_LD__() {}
 uint8_t __BIGINT_MUT_MODULO__() {}
 uint64_t __BIGINT_MODULO_UI64__() {}
 int64_t __BIGINT_MODULO_I64__() {}
-long double __BIGINT_MODULO_LD__() {}
 bigInt __BIGINT_MODULO__() {}
-/* ---------------- Modular SMALL Arithmetic --------------- */
+/* ---------------- SMALL Modular Arithmetic --------------- */
+uint8_t __BIGINT_MUT_MODADD_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODSUB_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODADD__(bigInt *x, const bigInt y, const bigInt modulus) {}
+uint8_t __BIGINT_MUT_MODSUB__(bigInt *x, const bigInt y, const bigInt modulus) {}
+uint64_t __BIGINT_MODADD_UI64__(const bigInt x, const bigInt y, uint64_t modulus) {}
+uint64_t __BIGINT_MODSUB_UI64__(const bigInt x, const bigInt y, uint64_t modulus) {}
+bigInt __BIGINT_MODADD__(const bigInt x, const bigInt y, const bigInt modulus) {}
+bigInt __BIGINT_MODSUB__(const bigInt x, const bigInt y, const bigInt modulus) {}
+/* ---------------- LARGE Modular Arithmetic --------------- */
+uint8_t __BIGINT_MUT_MODMUL_UI64_UI64__(bigInt *x, uint64_t y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODDIV_UI64_UI64__(bigInt *x, uint64_t y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODMUL_BI_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODDIV_BI_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODMUL_UI64_BI__(bigInt *x, uint64_t y, const bigInt modulus) {}
+uint8_t __BIGINT_MUT_MODDIV_UI64_BI__(bigInt *x, uint64_t y, const bigInt modulus) {}
+uint8_t __BIGINT_MUT_MODMUL__(bigInt *x, const bigInt y, const bigInt modulus) {}
+uint8_t __BIGINT_MUT_MODDIV__(bigInt *x, const bigInt y, const bigInt modulus) {}
+uint64_t __BIGINT_MODMUL_UI64_UI64__(const bigInt x, uint64_t y, uint64_t modulus) {}
+uint64_t __BIGINT_MODDIV_UI64_UI64__(const bigInt x, uint64_t y, uint64_t modulus) {}
+uint64_t __BIGINT_MODMUL_BI_UI64__(const bigInt x, const bigInt y, uint64_t modulus) {}
+uint64_t __BIGINT_MODDIV_BI_UI64__(const bigInt x, const bigInt y, uint64_t modulus) {}
+bigInt __BIGINT_MODMUL_UI64_BI__(const bigInt x, uint64_t y, const bigInt modulus) {}
+bigInt __BIGINT_MODDIV_UI64_BI__(const bigInt x, uint64_t y, const bigInt modulus) {}
+bigInt __BIGINT_MODMUL__(const bigInt x, const bigInt y, const bigInt modulus) {}
+bigInt __BIGINT_MODDIV__(const bigInt x, const bigInt y, const bigInt modulus) {}
+/* ---------------------- Modular Algebraic ------------------ */
+uint8_t __BIGINT_MUT_MODEXP_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODSQR_UI64__(bigInt *x, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODINV_UI64__(bigInt *x, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODEXP__(bigInt *x, const bigInt y, const bigInt modulus) {}
+uint8_t __BIGINT_MUT_MODSQR__(bigInt *x, const bigInt modulus) {}
+uint8_t __BIGINT_MUT_MODINV__(bigInt *x, const bigInt modulus) {}
+uint64_t __BIGINT_MODEXP_UI64__(const bigInt x, const bigInt y, uint64_t modulus) {}
+uint64_t __BIGINT_MODSQR_UI64__(const bigInt x, uint64_t modulus) {}
+uint64_t __BIGINT_MODINV_UI64__(const bigInt x, uint64_t modulus) {}
+bigInt __BIGINT_MODEXP__(const bigInt x, const bigInt y, const bigInt modulus) {}
+bigInt __BIGINT_MODSQR__(const bigInt x, const bigInt modulus) {}
+bigInt __BIGINT_MODINV__(const bigInt x, const bigInt modulus) {}
 
 
-//todo =============================================== COPIES ================================================ */
+
+
+//* ================================================= COPIES ================================================= */
 /* -------------  Mutative SMALL Copies ------------- */
-uint8_t __BIGINT_MUT_COPY_UI64__(bigInt *dst__, uint64_t source__) {}
-uint8_t __BIGINT_MUT_COPY_DEEP_UI64__(bigInt *dst__, uint64_t source__) {}
+uint8_t __BIGINT_MUT_COPY_UI64__(bigInt *dst__, uint64_t source__) {
+    if (dst__->limbs == NULL) return 1;
+    __BIGINT_CANONICALIZE__(dst__);
+    if (dst__->n == 0 && !source__) return 0;
+    if (dst__->n == 1 && dst__->limbs[0] == source__) return 0;
+    dst__->limbs[0] = source__;
+    dst__->n        = source__ ? 1 : 0;
+    dst__->sign     = 1;
+    return 0;
+}
+uint8_t __BIGINT_MUT_COPY_DEEP_UI64__(bigInt *dst__, uint64_t source__) {
+    if (dst__->limbs == NULL) return 1;
+    __BIGINT_CANONICALIZE__(dst__);
+    if (dst__->n == 0 && !source__) return 0;
+    if (dst__->n == 1 && dst__->limbs[0] == source__) return 0;
+    if (dst__->cap > 1) {
+        uint64_t *__BUFFER_P = realloc(dst__->limbs, sizeof(uint64_t));
+        if (__BUFFER_P == NULL) return 1;
+        dst__->limbs = __BUFFER_P;
+        dst__->cap     = 1;
+    }
+    dst__->limbs[0] = source__;
+    dst__->n        = source__ ? 1 : 0;
+    dst__->sign     = 1;
+    return 0;
+}
 uint8_t __BIGINT_MUT_COPY_I64__(bigInt *dst__, int64_t source__) {}
 uint8_t __BIGINT_MUT_COPY_DEEP_I64__(bigInt *dst__, int64_t source__) {}
 /* -------------  Mutative LARGE Copies ------------- */
@@ -446,15 +433,27 @@ bigInt __BIGINT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__) {}
 
 //todo ========================================= GENERAL UTILITIES =========================================== */
 inline void __BIGINT_CANONICALIZE__(bigInt *x) {
-
+    if (x->cap < 1) {
+        // Just reset to ensure value safety and certainty
+        x->n = 0;
+        x->sign = 1;
+        x->cap = 1;
+    }
+    if (x->n > x->cap) x->n = x->cap;
+    if (x->sign != 1 || x->sign != -1) {
+        // Just reset to ensure value safety and certainty
+        x->n = 0;
+        x->sign = 1;
+    }
 }
 void __BIGINT_NORMALIZE__(bigInt *x) {
     while (x->n > 0 && x->limbs[x->n - 1] == 0) --x->n; // Delete trailing/leading zeros
     if (x->n == 0) x->sign = 1; // Guarantees 0, not -0
 }
-uint8_t __BIGINT_RESERVE__(bigInt *x, size_t k) {
+uint8_t __BIGINT_RESERVE__(bigInt *x, size_t k) { //* Minimum Capacity
+    if (!__BIGINT_INTERNAL_PVALID__(x)) return 1; //* Minimum Capacity
     if (x->cap >= k) return 0;
-    size_t new_cap = (x->cap == 0) ? 1 : x->cap;
+    size_t new_cap = x->cap;
     while (new_cap < k) new_cap *= 2; /* Capacity doubles instead of incrementation, 
                                          ---> Ensure less reallocation ---> Enhanced performance */
     uint64_t *__BUFFER_P = realloc(x->limbs, new_cap * sizeof(uint64_t));
@@ -463,7 +462,15 @@ uint8_t __BIGINT_RESERVE__(bigInt *x, size_t k) {
     x->cap   = new_cap;
     return 0;
 }
-uint8_t __BIGINT_SHRINK__(bigInt *x, size_t k) {}
+uint8_t __BIGINT_SHRINK__(bigInt *x, size_t k) { //* Maximum Capacity
+    if (!__BIGINT_INTERNAL_PVALID__(x) || !k) return 1;
+    if (x->cap <= k) return 0;
+    uint64_t *__BUFFER_P = realloc(x->limbs, k * sizeof(uint64_t));
+    if (__BUFFER_P == NULL) return 1;
+    x->limbs = __BUFFER_P;
+    x->cap   = k;
+    return 0;
+}
 uint8_t __BIGINT_RESET__(bigInt *x) {
     if (!__BIGINT_INTERNAL_PVALID__(x)) return 1;
     if (x->n >= 1) x->limbs[0] = 0;
