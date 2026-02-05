@@ -5,7 +5,6 @@
 
 #include <stdint.h>
 #include <limits.h>
-#include "util.h"
 #include "../system/compiler.h"
 #include "../system/numeric_config.h"
 

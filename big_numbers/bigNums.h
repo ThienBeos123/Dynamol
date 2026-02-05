@@ -1,3 +1,6 @@
+#ifndef __DNML_BIGNUMS_H
+#define __DNML_BIGNUMS_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,4 +29,6 @@ typedef struct {
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

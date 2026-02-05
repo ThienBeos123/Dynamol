@@ -227,6 +227,7 @@ bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y);
 
 /* -------------------- GENERAL UTILITIES --------------------- */
 void __BIGINT_NORMALIZE__(bigInt *__bigInteger); // Normalize (no trailing 0s + guanratees 0 no -0)
+uint8_t __BIGINT_RESIZE__(bigInt *__bigIntger, size_t __NEW_CAP__);
 uint8_t __BIGINT_RESERVE__(bigInt *__bigInteger, size_t __MIN_CAP__);
 uint8_t __BIGINT_RESET__(bigInt *__bigInteger);
 

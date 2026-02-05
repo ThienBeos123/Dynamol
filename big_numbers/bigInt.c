@@ -24,6 +24,7 @@
 
 //* ======================================== CONSTRUCTORS & DESTRUCTOR ======================================= */
 uint8_t __BIGINT_EMPTY_INIT__(bigInt *x) {
+    if (x->limbs != NULL) return 1; // The bigInt is already initialized
     uint64_t *P_BUFFER__ = malloc(sizeof(uint64_t));
     if (P_BUFFER__ == NULL) return 1;
     x->limbs = P_BUFFER__;
@@ -32,7 +33,7 @@ uint8_t __BIGINT_EMPTY_INIT__(bigInt *x) {
     x->sign  = 1;
 }
 uint8_t __BIGINT_FREE__(bigInt *x) {
-    if (x->limbs == NULL) return 1;
+    if (x->limbs == NULL) return 1; // It is already freed
     free(x->limbs);
     x->limbs = NULL;              
     x->n     = 0;
@@ -41,31 +42,48 @@ uint8_t __BIGINT_FREE__(bigInt *x) {
     return 0;
 }
 uint8_t __BIGINT_LIMBS_INIT__(bigInt *x, size_t n) {
-    if (n == 0) x->limbs == NULL;
-    else { x->limbs = calloc(n, sizeof(uint64_t)); }
-    if (x->limbs == NULL) return 1;
+    if (n == 0 || x->limbs != NULL) return 1; // Intializing 0 cap OR already initialized
+    uint64_t *__BUFFER_P = calloc(n, sizeof(uint64_t));
+    if (__BUFFER_P == NULL) return 1;
+    x->limbs = __BUFFER_P;    
     x->cap   = n; // A capacity of n (n spaces in the heap)
     x->n     = 0; // Currently using no limb
     x->sign  = 1; return 0;
 }
-uint8_t __BIGINT_STANDARD_INIT__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_STANDARD_INIT__(bigInt *x, const bigInt y) {
+    if (x->limbs != NULL) return 1; // Already Initialized
+    if (!__BIGINT_STATE_VALIDATE__(y)) return 1;
+    size_t alloc_size = (y.n) ? y.n : 1;
+    uint64_t *__BUFFER_P = malloc(alloc_size * sizeof(uint64_t));
+    if (__BUFFER_P == NULL) return 1;
+    x->limbs    = __BUFFER_P;
+    if (y.n) memcpy(x->limbs, y.limbs, y.n * sizeof(uint64_t));
+    x->n        = y.n;
+    x->cap      = alloc_size;
+    x->sign     = (y.n) ? y.sign : 1;
+    return 0;
+}
 uint8_t __BIGINT_UI64_INIT__(bigInt *x, uint64_t in) {
-    if (!in) { __BIGINT_EMPTY_INIT__(x); return 0; }
-    x->limbs = malloc(sizeof(uint64_t)); // Initialized a block with 1, 64 bit element in the heap
-    if (!x->limbs) return 1;             // with uninitialized values ---> MALLOC()
-    x->limbs[0] = in; // ---> Initialized the value of that block as the input
-    x->n        = 1;
+    if (x->limbs != NULL) return 1; // ALREADY INITIALIZED
+    uint64_t *__BUFFER_P = malloc(sizeof(uint64_t));
+    if (__BUFFER_P = NULL) return 1;
+    x->limbs    = __BUFFER_P;
+    x->limbs[0] = in;
+    x->n        = (in) ? 1 : 0;
     x->cap      = 1;
-    x->sign     = 1; return 0;
+    x->sign     = 1; 
+    return 0;
 }
 uint8_t __BIGINT_I64_INIT__(bigInt *x, int64_t in) {
-    if (!in) { __BIGINT_EMPTY_INIT__(x); return 0; }
-    x->limbs = malloc(sizeof(uint64_t)); // Initialized a block with 1, 64 bit element in the heap
-    if (!x->limbs) return 1;             // with uninitialized values ---> MALLOC()
-    x->limbs[0] = (in < 0) ? -in : in; // ---> Initialized the value of that block as the input
-    x->n        = 1;
+    if (x->limbs != NULL) return 1; // ALREADY INITIALIZED
+    uint64_t *__BUFFER_P = malloc(sizeof(uint64_t));
+    if (__BUFFER_P == NULL) return 1;
+    x->limbs    = __BUFFER_P;
+    x->limbs[0] = (uint64_t)(llabs(in));
+    x->n        = (in) ? 1 : 0;
     x->cap      = 1;
-    x->sign     = (in < 0) ? -1 : 1; return 0;
+    x->sign     = (in < 0) ? -1 : 1; 
+    return 0;
 }
 uint8_t __BIGINT_LD_INIT__(bigInt *x, long double in) {}
 
@@ -90,21 +108,69 @@ uint8_t __BIGINT_GET_LD_SAFE__(long double x, bigInt *receiver) {}
 
 //* =============================================== CONVERSIONS ============================================== */
 /* --------- BigInt --> Primitive Types --------- */
-uint64_t __BIGINT_TO_UI64__(const bigInt x) {}
-int64_t __BIGINT_TO_I64__(const bigInt x) {}
+uint64_t __BIGINT_TO_UI64__(const bigInt x) {
+    if (!__BIGINT_STATE_VALIDATE__(x)) { errno = EINVAL; return -1; }
+    uint64_t res = (x.n) ? x.limbs[0] : 0;
+    return res;
+}
+int64_t __BIGINT_TO_I64__(const bigInt x) {
+    if (!__BIGINT_STATE_VALIDATE__(x)) { errno = EINVAL; return INT_MIN; }
+    int64_t res;
+    uint64_t raw_u64 = (x.n) ? x.limbs[0] : 0;
+    uint64_t abs_llong_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
+    if (raw_u64 > abs_llong_min && x.sign == -1) res = (int64_t)(raw_u64 & I64_MIN_BIT_MASK);
+    else if (raw_u64 > INT64_MAX && x.sign == 1) res = (int64_t)(raw_u64 & I64_MAX_BIT_MASK);
+    else res = ((int64_t)raw_u64) * x.sign;
+    return res;
+}
 long double __BIGINT_TO_LD_(const bigInt x) {}
-uint64_t __BIGINT_TO_UI64_SAFE__(const bigInt x) {}
-int64_t __BIGINT_TO_I64_SAFE__(const bigInt x) {}
+uint64_t __BIGINT_TO_UI64_SAFE__(const bigInt x) {
+    if (!__BIGINT_VALIDATE__(x)) { errno = EINVAL; return -1; }
+    if (x.sign == -1 || x.n > 1) { errno = ERANGE; return -1; }
+    uint64_t res = (x.n) ? x.limbs[0] : 0;
+    return res;
+}
+int64_t __BIGINT_TO_I64_SAFE__(const bigInt x) {
+    if (!__BIGINT_VALIDATE__(x)) { errno = EINVAL; return INT_MIN; }
+    if (x.n > 1) { errno = ERANGE; return INT_MIN; }
+    uint64_t raw_u64 = (x.n) ? x.limbs[0] : 0;
+    uint64_t abs_llong_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
+    if (raw_u64 > abs_llong_min && x.sign == -1) { errno = ERANGE; return INT_MIN; }
+    if (raw_u64 > INT64_MAX && x.sign == 1) { errno = ERANGE; return INT_MIN; }
+    int64_t res = ((int64_t)raw_u64) * x.sign;
+    return res;
+}
 long double __BIGINT_TO_LD_SAFE_(const bigInt x) {}
 /* --------- Primitive Types --> BigInt --------- */
-bigInt __BIGINT_FROM_UI64__(uint64_t x) {}
-bigInt __BIGINT_FROM_I64__(int64_t x) {}
+bigInt __BIGINT_FROM_UI64__(uint64_t x) {
+    bigInt res; __BIGINT_EMPTY_INIT__(&res);
+    if (x) {
+        res.limbs[0] = x;
+        res.n        = 1;
+    }
+    return res;
+}
+bigInt __BIGINT_FROM_I64__(int64_t x) {
+    bigInt res; __BIGINT_EMPTY_INIT__(&res);
+    if (x) {
+        res.limbs[0] = (uint64_t)(llabs(x));
+        res.n        = 1;
+        res.sign     = (x < 0) ? -1 : 1;
+    }
+    return res;
+}
 bigInt __BIGINT_FROM_LD_(long double x) {}
 bigInt __BIGINT_FROM_LD_SAFE__(long double x) {}
 
 
 
 //* =============================================== COMPARISONS ============================================== */
+/*
+*
+*
+
+todo 1) Refactor Magnitude Comparisons
+*/
 int8_t __BIGINT_COMPARE_MAGNITUDE_UI64__(const bigInt *x, const uint64_t val) {
     if (x->n > 1) return 1;
     if (x->sign == -1) return -1;
@@ -202,11 +268,45 @@ uint8_t __BIGINT_MORE_OR_EQUALL_UI64__(const bigInt x, const uint64_t val) {
     return (x.limbs[0] >= val);
 }
 /* ------------------- BigInt ------------------ */
-uint8_t __BIGINT_EQUAL__(const bigInt a, const bigInt b) {}
-uint8_t __BIGINT_LESS__(const bigInt a, const bigInt b) {}
-uint8_t __BIGINT_MORE__(const bigInt a, const bigInt b) {}
-uint8_t __BIGINT_LESS_OR_EQUAL__(const bigInt a, const bigInt b) {}
-uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b) {}
+uint8_t __BIGINT_EQUAL__(const bigInt a, const bigInt b) {
+    if (!__BIGINT_VALIDATE__(a) || !__BIGINT_VALIDATE__(b)) { errno = EINVAL; return -1; }
+    if (!a.n) return (!b.n) ? 1 : 0;
+    if (a.sign != b.sign) return 0;
+    if (a.n    != b.n)    return 0;
+    return memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) == 0;
+}
+uint8_t __BIGINT_LESS__(const bigInt a, const bigInt b) {
+    if (!__BIGINT_VALIDATE__(a) || !__BIGINT_VALIDATE__(b)) { errno = EINVAL; return -1; }
+    if (a.sign != b.sign) return (a.sign < b.sign);
+    if (a.n    != b.n)    return (a.sign == 1) ? (a.n < b.n) : (a.n > b.n);
+    return (a.sign == 1) ? 
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) < 0 :
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) > 0;
+}
+uint8_t __BIGINT_MORE__(const bigInt a, const bigInt b) {
+    if (!__BIGINT_VALIDATE__(a) || !__BIGINT_VALIDATE__(b)) { errno = EINVAL; return -1; }
+    if (a.sign != b.sign) return (a.sign > b.sign);
+    if (a.n    != b.n)    return (a.sign == 1) ? (a.n > b.n) : (a.n < b.n);
+    return (a.sign == 1) ? 
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) > 0 :
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) < 0;
+}
+uint8_t __BIGINT_LESS_OR_EQUAL__(const bigInt a, const bigInt b) {
+    if (!__BIGINT_VALIDATE__(a) || !__BIGINT_VALIDATE__(b)) { errno = EINVAL; return -1; }
+    if (a.sign != b.sign) return (a.sign < b.sign);
+    if (a.n    != b.n)    return (a.sign == 1) ? (a.n < b.n) : (a.n > b.n);
+    return (a.sign == 1) ? 
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) <= 0 :
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) >= 0;
+}
+uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b) {
+    if (!__BIGINT_VALIDATE__(a) || !__BIGINT_VALIDATE__(b)) { errno = EINVAL; return -1; }
+    if (a.sign != b.sign) return (a.sign > b.sign);
+    if (a.n    != b.n)    return (a.sign == 1) ? (a.n > b.n) : (a.n < b.n);
+    return (a.sign == 1) ? 
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) >= 0 :
+                memcmp(a.limbs, b.limbs, a.n * sizeof(uint64_t)) <= 0;
+}
 
 
 
@@ -317,20 +417,20 @@ bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y) {}
 
 //* ======================================== SIGNED NUMBER THEORETIC ========================================= */
 /* -------------- Pure Number Theoretic -------------- */
-uint64_t __BIGINT_GCD_UI64__() {}
-int64_t __BIGINT_GCD_I64__() {}
-bigInt __BIGINT_GCD__() {}
-bigInt __BIGINT_LCM_UI64__() {}
-bigInt __BIGINT_LCM_I64__() {}
-bigInt __BIGINT_LCM__() {}
-uint8_t __BIGINT_IS_PRIME__() {}
+uint64_t __BIGINT_GCD_UI64__(const bigInt x, uint64_t val) {}
+int64_t __BIGINT_GCD_I64__(const bigInt x, int64_t val) {}
+bigInt __BIGINT_GCD__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_LCM_UI64__(const bigInt x, uint64_t val) {}
+bigInt __BIGINT_LCM_I64__(const bigInt x, int64_t val) {}
+bigInt __BIGINT_LCM__(const bigInt x, const bigInt y) {}
+uint8_t __BIGINT_IS_PRIME__(const bigInt x) {}
 /* ---------------- Modular Reduction ---------------- */
-uint8_t __BIGINT_MUT_MODULO_UI64__() {}
-uint8_t __BIGINT_MUT_MODULO_I64__() {}
-uint8_t __BIGINT_MUT_MODULO__() {}
-uint64_t __BIGINT_MODULO_UI64__() {}
-int64_t __BIGINT_MODULO_I64__() {}
-bigInt __BIGINT_MODULO__() {}
+uint8_t __BIGINT_MUT_MODULO_UI64__(bigInt *x, uint64_t modulus) {}
+uint8_t __BIGINT_MUT_MODULO_I64__(bigInt *x, int64_t modulus) {}
+uint8_t __BIGINT_MUT_MODULO__(bigInt *x, const bigInt modulus) {}
+uint64_t __BIGINT_MODULO_UI64__(const bigInt x, uint64_t modulus) {}
+int64_t __BIGINT_MODULO_I64__(const bigInt x, int64_t modulus) {}
+bigInt __BIGINT_MODULO__(const bigInt x, const bigInt modulus) {}
 /* ---------------- SMALL Modular Arithmetic --------------- */
 uint8_t __BIGINT_MUT_MODADD_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
 uint8_t __BIGINT_MUT_MODSUB_UI64__(bigInt *x, const bigInt y, uint64_t modulus) {}
@@ -377,7 +477,7 @@ bigInt __BIGINT_MODINV__(const bigInt x, const bigInt modulus) {}
 //* ================================================= COPIES ================================================= */
 /* -------------  Mutative SMALL Copies ------------- */
 uint8_t __BIGINT_MUT_COPY_UI64__(bigInt *dst__, uint64_t source__) {
-    if (dst__->limbs == NULL) return 1;
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
     __BIGINT_CANONICALIZE__(dst__);
     if (dst__->n == 0 && !source__) return 0;
     if (dst__->n == 1 && dst__->limbs[0] == source__) return 0;
@@ -389,44 +489,213 @@ uint8_t __BIGINT_MUT_COPY_UI64__(bigInt *dst__, uint64_t source__) {
 uint8_t __BIGINT_MUT_COPY_DEEP_UI64__(bigInt *dst__, uint64_t source__) {
     if (dst__->limbs == NULL) return 1;
     __BIGINT_CANONICALIZE__(dst__);
-    if (dst__->n == 0 && !source__) return 0;
-    if (dst__->n == 1 && dst__->limbs[0] == source__) return 0;
+    // Always reallocate and resize if dst__->cap is more than 1
     if (dst__->cap > 1) {
         uint64_t *__BUFFER_P = realloc(dst__->limbs, sizeof(uint64_t));
         if (__BUFFER_P == NULL) return 1;
         dst__->limbs = __BUFFER_P;
         dst__->cap     = 1;
     }
+    if (dst__->n == 0 && !source__) return 0;
+    if (dst__->n == 1 && dst__->limbs[0] == source__) return 0;
     dst__->limbs[0] = source__;
     dst__->n        = source__ ? 1 : 0;
     dst__->sign     = 1;
     return 0;
 }
-uint8_t __BIGINT_MUT_COPY_I64__(bigInt *dst__, int64_t source__) {}
-uint8_t __BIGINT_MUT_COPY_DEEP_I64__(bigInt *dst__, int64_t source__) {}
+uint8_t __BIGINT_MUT_COPY_I64__(bigInt *dst__, int64_t source__) {
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
+    __BIGINT_CANONICALIZE__(dst__);
+    if (dst__->n == 0 && !source__) return 0;
+    if (dst__->n == 1 && dst__->limbs[0] == llabs(source__)) {
+        dst__->sign = (source__ < 0) ? -1 : 1;
+        return 0;
+    }
+    dst__->limbs[0] = (uint64_t)(llabs(source__));
+    dst__->n        = source__ ? 1 : 0;
+    dst__->sign     = (source__< 0 ? -1 : 1);
+    return 0;
+}
+uint8_t __BIGINT_MUT_COPY_DEEP_I64__(bigInt *dst__, int64_t source__) {
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
+    __BIGINT_CANONICALIZE__(dst__);
+    // Always reallocate and resize if dst__->cap is more than 1
+    if (dst__->cap > 1) {
+        uint64_t *__BUFFER_P = realloc(dst__->limbs, sizeof(uint64_t));
+        if (__BUFFER_P == NULL) return 1;
+        dst__->limbs = __BUFFER_P;
+        dst__->cap     = 1;
+    }
+    if (dst__->n == 0 && !source__) return 0;
+    if (dst__->n == 1 && dst__->limbs[0] == llabs(source__)) {
+        dst__->sign = (source__ < 0) ? -1 : 1;
+        return 0;
+    }
+    dst__->limbs[0] = (uint64_t)(llabs(source__));
+    dst__->n        = source__ ? 1 : 0;
+    dst__->sign     = (source__< 0 ? -1 : 1);
+    return 0;
+}
 /* -------------  Mutative LARGE Copies ------------- */
 uint8_t __BIGINT_MUT_COPY_LD__(bigInt *dst__, long double source__) {}
 uint8_t __BIGINT_MUT_COPY_DEEP_LD__(bigInt *dst__, long double source__) {}
 uint8_t __BIGINT_MUT_COPY_OVER_LD__(bigInt *dst__, long double source__) {}
 uint8_t __BIGINT_MUT_COPY_TRUNCOVER_LD__(bigInt *dst__, long double source__) {}
-uint8_t __BIGINT_MUT_COPY__(bigInt *dst__, bigInt source__) {}
-uint8_t __BIGINT_MUT_COPY_DEEP__(bigInt *dst__, bigInt source__) {}
-uint8_t __BIGINT_MUT_COPY_OVER__(bigInt *dst__, bigInt source__) {}
-uint8_t __BIGINT_MUT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__) {}
+uint8_t __BIGINT_MUT_COPY__(bigInt *dst__, bigInt source__) {
+    if (!__BIGINT_STATE_VALIDATE__(source__)) return 1;
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
+    __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
+    /* Fast Paths */
+    // Since they're equal, and due to Contract 3
+    //  ------> They're not subjected to resizing if these cases are true
+    if (dst__->n == 0 && source__.n == 0) return 0;
+    if (dst__->n == source__.n && !memcmp(dst__->limbs, source__.limbs, source__.n)) {
+        dst__->sign = source__.sign;
+        return 0;
+    }
+    /* Standard Route */
+    if (dst__->cap < source__.n) {
+        uint8_t res = __BIGINT_RESERVE__(dst__, source__.n);
+        if (res == 1) return 1; // If reservation contains error, return error code
+    }
+    memcpy(dst__->limbs, source__.limbs, source__.n);
+    dst__->n    = source__.n;
+    dst__->sign = source__.sign;
+    return 0;
+}
+uint8_t __BIGINT_MUT_COPY_DEEP__(bigInt *dst__, bigInt source__) {
+    if (!__BIGINT_STATE_VALIDATE__(source__)) return 1;
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
+    __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
+    /* Reallocation and resize */
+    if (dst__->cap != source__.n) {
+        size_t size_to_change = source__.n;
+        if (source__.n == 0) size_to_change = 1;
+        uint8_t res = __BIGINT_RESIZE__(dst__, size_to_change);
+        if (res) return 1;
+    }
+    /* Fast Paths */
+    // The equal fast path (dst__ != 0 && source__ != 0) is not here since
+    // Reallocation and Resizing may tamper with the size metadata,
+    //  -----> Tampering with the validity of memcmp()
+    if (dst__->n == 0 && source__.n == 0) return 0;
+
+    /* Standard Path */
+    memcpy(dst__->limbs, source__.limbs, source__.n * sizeof(uint64_t));
+    dst__->n    = source__.n;
+    dst__->sign = source__.sign;
+    return 0;
+}
+uint8_t __BIGINT_MUT_COPY_OVER__(bigInt *dst__, bigInt source__) {
+    if (!__BIGINT_STATE_VALIDATE__(source__)) return 1;
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
+    __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
+    /* Fast Paths */
+    // Since they're equal, and due to Contract 3
+    //  ------> They're not subjected to errors if these cases are true
+    if (dst__->n == 0 && source__.n == 0) return 0;
+    if (dst__->n == source__.n && !memcmp(dst__->limbs, source__.limbs, source__.n * sizeof(uint64_t))) {
+        dst__->sign = source__.sign;
+        return 0;
+    }
+    /* Standard Route */
+    if (dst__->cap < source__.n) return 1;
+    memcpy(dst__->limbs, source__.limbs, source__.n * sizeof(uint64_t));
+    dst__->n    = source__.n;
+    dst__->sign = source__.sign;
+    return 0;
+}
+uint8_t __BIGINT_MUT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__) {
+    if (!__BIGINT_STATE_VALIDATE__(source__)) return 1;
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
+    __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
+    /* Fast Paths */
+    // Since they're equal, and due to Contract 3
+    //  ------> They're not subjected to truncation if these cases are true
+    if (dst__->n == 0 && source__.n == 0) return 0;
+    if (dst__->n == source__.n && !memcmp(dst__->limbs, source__.limbs, source__.n * sizeof(uint64_t))) {
+        dst__->sign = source__.sign;
+        return 0;
+    }
+    /* Standard Route */
+    size_t operation_range = source__.n;
+    if (dst__->cap < source__.n) operation_range = dst__->cap; // Truncation (reducing operation range)
+    memcpy(dst__->limbs, source__.limbs, operation_range * sizeof(uint64_t));
+    dst__->n    = operation_range;
+    dst__->sign = source__.sign;
+    return 0;
+}
 /* -------------  Functional SMALL Copies ------------- */
-bigInt __BIGINT_COPY_UI64__(bigInt *dst__, uint64_t source__) {}
-bigInt __BIGINT_COPY_DEEP_UI64__(bigInt *dst__, uint64_t source__) {}
-bigInt __BIGINT_COPY_I64__(bigInt *dst__, int64_t source__) {}
-bigInt __BIGINT_COPY_DEEP_I64__(bigInt *dst__, int64_t source__) {}
+bigInt __BIGINT_COPY_UI64__(uint64_t source__) {
+    bigInt dst__; __BIGINT_EMPTY_INIT__(&dst__);
+    if (source__) {
+        dst__.limbs[0] = source__;
+        dst__.n        = 1;
+    }
+    return dst__;
+}
+bigInt __BIGINT_COPY_I64__(int64_t source__) {
+    bigInt dst__; __BIGINT_EMPTY_INIT__(&dst__);
+    if (source__) {
+        dst__.limbs[0] = (uint64_t)(llabs(source__));
+        dst__.n        = 1;
+        dst__.sign     = (source__ < 0) ? -1 : 1;
+    }
+    return dst__;
+}
 /* -------------  Functional LARGE Copies ------------- */
-bigInt __BIGINT_COPY_LD__(bigInt *dst__, long double source__) {}
-bigInt __BIGINT_COPY_DEEP_LD__(bigInt *dst__, long double source__) {}
-bigInt __BIGINT_COPY_OVER_LD__(bigInt *dst__, long double source__) {}
-bigInt __BIGINT_COPY_TRUNCOVER_LD__(bigInt *dst__, long double source__) {}
-bigInt __BIGINT_COPY__(bigInt *dst__, bigInt source__) {}
-bigInt __BIGINT_COPY_DEEP__(bigInt *dst__, bigInt source__) {}
-bigInt __BIGINT_COPY_OVER__(bigInt *dst__, bigInt source__) {}
-bigInt __BIGINT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__) {}
+bigInt __BIGINT_COPY_LD__(long double source__) {}
+bigInt __BIGINT_COPY_OVER_LD__(long double source__, size_t output_cap) {}
+bigInt __BIGINT_COPY_TRUNCOVER_LD__(long double source__, size_t output_cap) {}
+bigInt __BIGINT_COPY__(const bigInt source__) {
+    if (!__BIGINT_VALIDATE__(source__)) return __BIGINT_ERROR_VALUE__();
+    bigInt dst__;
+    if (source__.n == 0) {
+        __BIGINT_EMPTY_INIT__(&dst__);
+        return dst__;
+    }
+    __BIGINT_LIMBS_INIT__(&dst__, source__.n);
+    memcpy(dst__.limbs, source__.limbs, source__.n * sizeof(uint64_t));
+    dst__.n     = source__.n;
+    dst__.sign  = source__.sign;
+    return dst__;
+}
+bigInt __BIGINT_COPY_DEEP__(const bigInt source__) {
+    if (!__BIGINT_STATE_VALIDATE__(source__)) return __BIGINT_ERROR_VALUE__();
+    bigInt dst__;
+    if (source__.n == 0) {
+        __BIGINT_EMPTY_INIT__(&dst__);
+    }
+    else {
+        __BIGINT_LIMBS_INIT__(&dst__, source__.n);
+        memcpy(dst__.limbs, source__.limbs, source__.n * sizeof(uint64_t));
+        dst__.n = source__.n;
+    }
+    dst__.sign = source__.sign;
+    return dst__;
+}
+bigInt __BIGINT_COPY_OVER__(const bigInt source__, size_t output_cap) {
+    if (!__BIGINT_VALIDATE__(source__)) return __BIGINT_ERROR_VALUE__();
+    if (output_cap < source__.n) return __BIGINT_ERROR_VALUE__();
+    bigInt dst__; __BIGINT_LIMBS_INIT__(&dst__, output_cap);
+    memcpy(dst__.limbs, source__.limbs, source__.n * sizeof(uint64_t));
+    dst__.n     = source__.n;
+    dst__.sign  = source__.sign;
+    return dst__;
+}
+bigInt __BIGINT_COPY_TRUNCOVER__(const bigInt source__, size_t output_cap) {
+    if (!__BIGINT_VALIDATE__(source__)) return __BIGINT_ERROR_VALUE__();
+    bigInt dst__;
+    if (output_cap == 0) __BIGINT_EMPTY_INIT__(&dst__);
+    else {
+        __BIGINT_LIMBS_INIT__(&dst__, output_cap);
+        size_t operation_range = (output_cap < source__.n) ? output_cap : source__.n;
+        memcpy(dst__.limbs, source__.limbs, operation_range * sizeof(uint64_t));
+        dst__.n     = operation_range;
+        dst__.sign  = source__.sign;
+    }
+    return dst__;
+}
 
 
 
@@ -450,8 +719,17 @@ void __BIGINT_NORMALIZE__(bigInt *x) {
     while (x->n > 0 && x->limbs[x->n - 1] == 0) --x->n; // Delete trailing/leading zeros
     if (x->n == 0) x->sign = 1; // Guarantees 0, not -0
 }
+uint8_t __BIGINT_RESIZE__(bigInt *x, size_t k) { //* Exact Capacity resize
+    if (!__BIGINT_INTERNAL_SVALID__(x) || !k) return 1;
+    uint64_t *__BUFFER_P = realloc(x->limbs, k * sizeof(uint64_t));
+    if (__BUFFER_P == NULL) return 1;
+    x->limbs = __BUFFER_P;
+    x->cap   = k;
+    if (x->n < x->cap) x->n = x->cap;
+    return 0;
+}
 uint8_t __BIGINT_RESERVE__(bigInt *x, size_t k) { //* Minimum Capacity
-    if (!__BIGINT_INTERNAL_PVALID__(x)) return 1; //* Minimum Capacity
+    if (!__BIGINT_INTERNAL_SVALID__(x)) return 1;
     if (x->cap >= k) return 0;
     size_t new_cap = x->cap;
     while (new_cap < k) new_cap *= 2; /* Capacity doubles instead of incrementation, 
@@ -469,6 +747,7 @@ uint8_t __BIGINT_SHRINK__(bigInt *x, size_t k) { //* Maximum Capacity
     if (__BUFFER_P == NULL) return 1;
     x->limbs = __BUFFER_P;
     x->cap   = k;
+    if (x->n < x->cap) x->n = x->cap;
     return 0;
 }
 uint8_t __BIGINT_RESET__(bigInt *x) {
@@ -478,7 +757,11 @@ uint8_t __BIGINT_RESET__(bigInt *x) {
     x->sign = 1;
     return 0;
 }
-inline uint8_t __BIGINT_STATE_VALIDTAE__(bigInt x) {
+inline uint8_t __BIGINT_MUTATIVE_SUBJECT_VALIDATE__(bigInt *x) {
+    if (x->limbs == NULL) return 0;
+    return 1;
+}
+inline uint8_t __BIGINT_STATE_VALIDATE__(bigInt x) {
     if (x.limbs == NULL) return 0;
     if (x.cap < 1) return 0;
     if (x.n > x.cap) return 0;
@@ -496,7 +779,6 @@ inline uint8_t __BIGINT_VALIDATE__(bigInt x) {
     if (x.n == 0 && x.sign != 1) return 0;
     return 1;
 }
-
 
 
 

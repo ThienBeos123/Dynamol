@@ -1,12 +1,4 @@
-#include <stdint.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <inttypes.h>
-#include <math.h>
-
-#include "../big_numbers/bigNums.h"
 #include "util.h"
-#include "../system/compiler.h"
 
 /* Constructors and Destructors */
 inline void __BIGINT_INTERNAL_EMPINIT__(bigInt *x) {
@@ -45,12 +37,24 @@ inline void __BIGINT_INTERNAL_FREE__(bigInt *x) {
 }
 
 /* Safety Utilities */
-inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x) {
+inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x) { /* BigInt Pointer Validity */
     if (x->limbs == NULL) return 0;
     if (x->cap < 1) return 0;
-    if (x->n > x->limbs) return 0;
+    if (x->n > x->cap) return 0;
     if (x->sign != 1 && x->sign != -1) return 0;
     return 1;
+}
+inline uint8_t __BIGINT_INTERNAL_SVALID__(const bigInt *x) { /* BigInt Storage Validity */
+    if (x->limbs == NULL) return 0;
+    if (x->cap < 1) return 0;
+}
+bigInt __BIGINT_ERROR_VALUE__(void) {
+    return (bigInt){
+        .limbs = NULL,
+        .cap   = 0,
+        .n     = 1,
+        .sign  = 0
+    };
 }
 
 /* General Utilities */
@@ -79,7 +83,7 @@ void __BIGINT_INTERNAL_MUL_UI64__(bigInt *x, uint64_t val) {
     uint64_t carry = 0;
     for (size_t i = 0; i < x->n; ++i) {
         uint64_t low, high;
-        __MUL_UI64__(x->limbs[i], val, &low, &high);
+        low = __MUL_UI64__(x->limbs[i], val, &high);
         uint64_t sum = x->limbs[i] + low + carry;
         carry = high + (sum < low) + (sum < carry);
         x->limbs[i] = sum;

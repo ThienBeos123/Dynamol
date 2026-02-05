@@ -1,11 +1,13 @@
-#ifndef bigint_config_h
-#define bigint_config_h
+#ifndef ___DNML_NUM_CONFIG_H___
+#define ___DNML_NUM_CONFIG_H___
 
 #include <stdint.h>
 #include <limits.h>
 #define BIGINT_LIMBS_BITS 64
 typedef uint64_t bigint_limb;
 #define BITS_IN_UINT64_T ((sizeof(uint64_t)) * CHAR_BIT)
+#define I64_MAX_BIT_MASK 0x7FFFFFFFFFFFFFFFULL
+#define I64_MIN_BIT_MASK 0x8000000000000000ULL
 
 
 /* Multiplication */

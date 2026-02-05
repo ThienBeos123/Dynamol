@@ -1,5 +1,5 @@
-#ifndef __compiler_h
-#define __compiler_h
+#ifndef ___DNML_COMPILER_H___
+#define ___DNML_COMPILER_H___
 
 #include "arch.h"
 

@@ -1,5 +1,5 @@
-#ifndef arch_h
-#define arch_h
+#ifndef ___DNML_ARCH_H___
+#define ___DNML_ARCH_H___
 
 /* Detecting x86/x64 Architecture */
 #if defined(__x86_64__) || defined(_M_X64)
