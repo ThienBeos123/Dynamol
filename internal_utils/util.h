@@ -21,7 +21,7 @@ extern "C" {
 inline void __BIGINT_INTERNAL_EMPINIT__(bigInt *x);
 inline void __BIGINT_INTERNAL_LINIT__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_ENSCAP__(bigInt *x, size_t k);
-inline void __BIGINT_INTERNAL_REALLOC__(bigInt *x, size_t k);
+inline uint8_t __BIGINT_INTERNAL_REALLOC__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_FREE__(bigInt *x);
 inline uint8_t __BIGINT_INTERNAL_SVALID__(const bigInt *x);
 inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x);
@@ -40,3 +40,4 @@ void __BIGINT_INTERNAL_SUB__(bigInt *x, const bigInt *y);
 #endif
 
 #endif
+

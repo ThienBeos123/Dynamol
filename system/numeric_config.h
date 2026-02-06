@@ -17,9 +17,11 @@ typedef uint64_t bigint_limb;
 #define BIGINT_SSA                  1024
 
 /* Division + Euclidean Modulo */
-#define BIGINT_KNUTH                64
-#define BIGINT_BARETT               512
-#define BIGINT_NEWTON               512
+#define BIGINT_SHORT                1   // n < 1        DIV + MOD
+#define BIGINT_KNUTH                64  // n < 64       DIV + MOD
+#define BIGINT_BURNIKEL             512 // n < 512      DIV
+#define BIGINT_BARETT               512 // n < 512            MOD
+#define BIGINT_NEWTON               512 // n >= 512     DIV + MOD
 
 /* GCD - Greatest Common Divisor */
 #define BIGINT_STEIN                512
@@ -45,3 +47,4 @@ typedef uint64_t bigint_limb;
 #define __bicrypto_offset__     0
 
 #endif
+

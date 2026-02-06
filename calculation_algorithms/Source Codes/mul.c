@@ -10,7 +10,7 @@ void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b) {
         uint64_t carry = 0;
         for (size_t j = 0; j < b->n; ++j) {
             uint64_t low, high;
-            __MUL_UI64__(a->limbs[i], b->limbs[j], &low, &high);
+            low = __MUL_UI64__(a->limbs[i], b->limbs[j], &high);
             // Stored and calculated kinda in a staircase pattern seen in the sums of Schoolbook
             uint64_t sum =      res->limbs[i + j] /* Potential data from last iteration */ 
                             +   low /* Lower half (64 bit) */ 
@@ -30,7 +30,9 @@ void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b) {
 void __BIGINT_KARATSUBA__(bigInt *res, const bigInt *a, const bigInt *b) {}
 void __BIGINT_TOOM_3__(bigInt *res, const bigInt *a, const bigInt *b) {}
 void __BIGINT_SSA__(bigInt *res, const bigInt *a, const bigInt *b) {}
-
 void __BIGINT_MUL_DISPATCH__(bigInt *res, const bigInt *a, const bigInt *b) {
-
+    if (a->n < BIGINT_SCHOOLBOOK && b->n < BIGINT_SCHOOLBOOK) __BIGINT_SCHOOLBOOK__(res, a, b);
+    else if (a->n < BIGINT_KARATSUBA && b->n < BIGINT_KARATSUBA) __BIGINT_KARATSUBA__(res, a, b);
+    else if (a->n < BIGINT_TOOM && b->n < BIGINT_TOOM) __BIGINT_TOOM_3__(res, a, b);
+    else __BIGINT_SSA__(res, a, b);
 }

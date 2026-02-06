@@ -15,7 +15,8 @@ extern "C" {
 *   +) limbs    (*uint64_t)     : Pointer to each limb that holds part of the bigInt number
 *   +) n        (size_t)        : Number of currently used limbs (used to determine the bigInt value and in arithmetic)
 *   +) cap      (size_t)        : Essentially the bigInt object/number's maximum capacity 
-*
+*/
+
 /* Terms Explanation:
 *   +) Mutative Model: Changes an existing bigInt object/variable value in place (Eg: x += 10; )
 *   +) Functional Model: -) Creates a new variable with the value of the expression (Eg: int x = 5 + 10; ) 
@@ -35,42 +36,66 @@ uint8_t __BIGINT_LD_INIT__(bigInt *__bigInteger, long double __float );
 #define bigInt_init(x, ...) \
     _Generic((__VA_ARGS__) /* __VA_ARGS__: Takes a variety of types */,     \
         /* Signed, INTEGER Initialization */                                \
-        char:                       __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        int:                        __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        long:                       __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        long long:                  __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        int8_t:                     __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        int16_t:                    __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        int32_t:                    __BIGINT_SIGNED_PRIMITIVE_INIT__,       \
-        int64_t:                    __BIGINT_SIGNED_PRIMITIVE_INIT__,       \ 
+        char:                       __BIGINT_I64_INIT__,                    \
+        int:                        __BIGINT_I64_INIT__,                    \
+        long:                       __BIGINT_I64_INIT__,                    \
+        long long:                  __BIGINT_I64_INIT__,                    \
+        int8_t:                     __BIGINT_I64_INIT__,                    \
+        int16_t:                    __BIGINT_I64_INIT__,                    \
+        int32_t:                    __BIGINT_I64_INIT__,                    \
+        int64_t:                    __BIGINT_I64_INIT__,                    \
                                                                             \
         /* Unsigned, INTEGER Initialization */                              \
-        unsigned char:              __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        unsigned int:               __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        unsigned long:              __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        unsigned long long:         __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        uint8_t:                    __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        uint16_t:                   __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        uint32_t:                   __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
-        uint64_t:                   __BIGINT_UNSIGNED_PRIMITVE_INIT__,      \
+        unsigned char:              __BIGINT_UI64_INIT__,                   \
+        unsigned int:               __BIGINT_UI64_INIT__,                   \
+        unsigned long:              __BIGINT_UI64_INIT__,                   \
+        unsigned long long:         __BIGINT_UI64_INIT__,                   \
+        uint8_t:                    __BIGINT_UI64_INIT__,                   \
+        uint16_t:                   __BIGINT_UI64_INIT__,                   \
+        uint32_t:                   __BIGINT_UI64_INIT__,                   \
+        uint64_t:                   __BIGINT_UI64_INIT__,                   \
                                                                             \
         /* Float Initialization */                                          \
-        float:                      __BIGINT_FLOAT_INIT__,                  \
-        double:                     __BIGINT_FLOAT_INIT__,                  \
-        long double:                __BIGINT_FLOAT_INIT__,                  \
+        float:                      __BIGINT_LD_INIT__,                     \
+        double:                     __BIGINT_LD_INIT__,                     \
+        long double:                __BIGINT_LD_INIT__,                     \
                                                                             \
-        /* String Initialization */                                         \
-        char *:                     __BIGINT_STANDARD_INIT__,               \
-        const char *:               __BIGINT_STANDARD_INIT__,               \
+        /* BigInt Initialization */                                         \
+        bigInt                     __BIGINT_STANDARD_INIT__,                \
+        size_t                     __BIGINT_LIMBS_INIT__,                   \
                                                                             \
         /* Empty Initialization */                                          \
         default:                    __BIGINT_EMPTY_INIT__                   \
     )(x, ##__VA_ARGS__) /* ##__VA_ARGS__: __VA_ARGS__ + accepts no input */
 
 
-/* ------------------------ CONVERSIONS ------------------------ */
+//* ------------------------ ASSIGNMENTS ------------------------ */
+/* --------- BigInt --> Primitive Types --------- */
+uint8_t __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver);
+uint8_t __BIGINT_SET_I64__(const bigInt x, int64_t *receiver);
+uint8_t __BIGINT_SET_LD__(const bigInt x, long double *receiver);
+uint8_t __BIGINT_SET_UI64_SAFE__(const bigInt x, uint64_t *receiver);
+uint8_t __BIGINT_SET_I64_SAFE__(const bigInt x, int64_t *receiver);
+uint8_t __BIGINT_SET_LD_SAFE__(const bigInt x, long double *receiver);
+/* --------- Primitive Types --> BigInt --------- */
+uint8_t __BIGINT_GET_UI64__(uint64_t x, bigInt *receiver);
+uint8_t __BIGINT_GET_I64__(int64_t x, bigInt *receiver);
+uint8_t __BIGINT_GET_LD__(long double x, bigInt *receiver);
+uint8_t __BIGINT_GET_LD_SAFE__(long double x, bigInt *receiver);
 
 
+//* ------------------------ CONVERSIONS ------------------------ */
+/* --------- BigInt --> Primitive Types --------- */
+uint64_t __BIGINT_TO_UI64__(const bigInt x);
+int64_t __BIGINT_TO_I64__(const bigInt x);
+long double __BIGINT_TO_LD_(const bigInt x);
+int64_t __BIGINT_TO_I64_SAFE__(const bigInt x);
+long double __BIGINT_TO_LD_SAFE_(const bigInt x);
+/* --------- Primitive Types --> BigInt --------- */
+bigInt __BIGINT_FROM_UI64__(uint64_t x);
+bigInt __BIGINT_FROM_I64__(int64_t x);
+bigInt __BIGINT_FROM_LD_(long double x);
+bigInt __BIGINT_FROM_LD_SAFE__(long double x);
 
 
 /* -------------------- BITWISE OPERATIONS --------------------- */
@@ -93,12 +118,6 @@ uint8_t __BIGINT_LESS_UI64__(const bigInt x, const uint64_t val);
 uint8_t __BIGINT_MORE_UI64__(const bigInt x, const uint64_t val);
 uint8_t __BIGINT_LESS_OR_EQUAL_UI64__(const bigInt x, const uint64_t val);
 uint8_t __BIGINT_MORE_OR_EQUALL_UI64__(const bigInt x, const uint64_t val);
-/* ------------ Floating Point - LD ------------ */
-uint8_t __BIGINT_EQUAL_LD__(const bigInt x, const long double val);
-uint8_t __BIGINT_LESS_LD__(const bigInt x, const long double val);
-uint8_t __BIGINT_MORE_LD__(const bigInt x, const long double val);
-uint8_t __BIGINT_LESS_OR_EQUAL_LD__(const bigInt x, const long double val);
-uint8_t __BIGINT_MORE_OR_EQUALL_LD__(const bigInt x, const long double val);
 /* ------------------- BigInt ------------------ */
 uint8_t __BIGINT_EQUAL__(const bigInt a, const bigInt b);
 uint8_t __BIGINT_LESS__(const bigInt a, const bigInt b);
@@ -106,7 +125,9 @@ uint8_t __BIGINT_MORE__(const bigInt a, const bigInt b);
 uint8_t __BIGINT_LESS_OR_EQUAL__(const bigInt a, const bigInt b);
 uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b);
 
-/* ------------------ MAGNITUDE ARITHMETIC -------------------- */
+
+
+//* ------------------ MAGNITUDE MATHEMATICA -------------------- */
 /* - IMPORTANT NOTE / CLARIFICATION
 *       +) This arithmetic layer exclusively handles pure,
 *          magnituded arithmetic (|a| with |b|)
@@ -128,6 +149,7 @@ uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b);
 *               THESE FUNCTION (IF EVER USED ON THE SURFACE) ARE TO BE USED WITH 
 *               THE UTMOST CAUTION TO PREVENT FATAL ERRORS OR MEMORY LEAKS 
 */
+/* ------- Magnitude Arithmetic ------- */
 void __BIGINT_MAGNITUDED_ADD_UI64__(bigInt *__outputted_bigInteger, const bigInt *__x__, const uint64_t __I64VAL);
 void __BIGINT_MAGNITUDED_SUB_UI64__(bigInt *__outputted_bigInteger, const bigInt *__x__, const uint64_t __I64VAL);
 void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *__outputted_bigInteger, const bigInt *__x__, const uint64_t __I64VAL);
@@ -142,8 +164,27 @@ void __BIGINT_MAGNITUDED_DIVMOD__
     (bigInt *__outputted_bigInteger_quotient, 
     bigInt *__outputted_bigInteger_remainder, 
     const bigInt *__a__, const bigInt *__b__);
+/* ------- Magnituded Core Number-Theoretic ------- */
+uint64_t ___GCD_UI64___(uint64_t a, uint64_t b);
+void __BIGINT_MAGNITUDED_GCD_UI64__(uint64_t *res, const bigInt *a, uint64_t val);
+void __BIGINT_MAGNITUDED_LCM_UI64__(bigInt *res, const bigInt *a, uint64_t val);
+void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt *a, const bigInt *b);
+void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt *a, const bigInt *b);
+void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt *a, uint64_t modulus);
+void __BIGINT_MAGNITUDED_EUCMOD__(bigInt *res, const bigInt *a, const bigInt *modulus);
+void __BIGINT_MAGNITUDED_PRIMATEST__(const bigInt *x);
+/* ------- Magnituded Modular Arithmetic ------- */
+void __BIGINT_MAGNITUDED_MODADD__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+void __BIGINT_MAGNITUDED_MODSUB__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+void __BIGINT_MAGNITUDED_MODMUL__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+void __BIGINT_MAGNITUDED_MODDIV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+void __BIGINT_MAGNITUDED_MODEXP__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+void __BIGINT_MAGNITUDED_MODSQR__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
 
-/* -------------------- SIGNED ARITHMETIC --------------------- */
+
+
+//* -------------------- SIGNED ARITHMETIC --------------------- */
 /*  - These arithmetic functions handles:
 *       +) Special/Edge cases
 *       +) Fast Paths
@@ -155,86 +196,132 @@ void __BIGINT_MAGNITUDED_DIVMOD__
 *       +) MUTATIVE ARITHMETIC      ---> In-place mutation of a variable                (Eg: x += 1     )
 *       +) FUNCTIONAL ARITHMETIC    ---> Return a new copy of a value to be asigned     (Eg: x  = 1 + 2;)
 */
-/* ------------------- MUTATIVE SMALL ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_ADD_UI64__(bigInt *x, const uint64_t val);
-uint8_t __BIGINT_MUT_SUB_UI64__(bigInt *x, const uint64_t val);
+/* ------------------- Mutative Arithmetic -------------------- */
 uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val);
 uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, const uint64_t val);
 uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, const uint64_t val);
-uint8_t __BIGINT_MUT_ADD_I64__(bigInt *x, const int64_t val);
-uint8_t __BIGINT_MUT_SUB_I64__(bigInt *x, const int64_t val);
 uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, const int64_t val);
 uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val);
 uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val);
-/* ------------------- MUTATIVE BIG ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_ADD_LD__(bigInt *x, const long double val);
-uint8_t __BIGINT_MUT_SUB_LD__(bigInt *x, const long double val);
-uint8_t __BIGINT_MUT_MUL_LD__(bigInt *x, const long double val);
-uint8_t __BIGINT_MUT_DIV_LD__(bigInt *x, const long double val);
-uint8_t __BIGINT_MUT_MOD_LD__(bigInt *x, const long double val);
 uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y);
 uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y);
 uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y);
 uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y);
 uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y);
-/* ------------------ FUNCTIONAL SMALL ARITHMETIC ------------------- */
-bigInt __BIGINT_ADD_UI64__(const bigInt *x, const uint64_t val);
-bigInt __BIGINT_SUB_UI64__(const bigInt *x, const uint64_t val);
+/* ------------------ Functional Arithmetic ------------------- */
 bigInt __BIGINT_MUL_UI64__(const bigInt *x, const uint64_t val);
 bigInt __BIGINT_DIV_UI64__(const bigInt *x, const uint64_t val);
 bigInt __BIGINT_MOD_UI64__(const bigInt *x, const uint64_t val);
-bigInt __BIGINT_ADD_I64__(const bigInt *x, const int64_t val);
-bigInt __BIGINT_SUB_I64__(const bigInt *x, const int64_t val);
 bigInt __BIGINT_MUL_I64__(const bigInt *x, const int64_t val);
 bigInt __BIGINT_DIV_I64__(const bigInt *x, const int64_t val);
 bigInt __BIGINT_MOD_I64__(const bigInt *x, const int64_t val);
-/* ------------------- FUNCTIONAL BIG ARITHMETIC -------------------- */
-bigInt __BIGINT_ADD_LD__(const bigInt *x, const long double val);
-bigInt __BIGINT_SUB_LD__(const bigInt *x, const long double val);
-bigInt __BIGINT_MUL_LD__(const bigInt *x, const long double val);
-bigInt __BIGINT_DIV_LD__(const bigInt *x, const long double val);
-bigInt __BIGINT_MOD_LD__(const bigInt *x, const long double val);
 bigInt __BIGINT_ADD__(const bigInt *x, const bigInt *y);
 bigInt __BIGINT_SUB__(const bigInt *x, const bigInt *y);
 bigInt __BIGINT_MUL__(const bigInt *x, const bigInt *y);
 bigInt __BIGINT_DIV__(const bigInt *x, const bigInt *y);
 bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y);
 
-// /* ------------------------- COPIES --------------------------- */
-// /* MUTATIVE API MODEL */
-// /* Used case example (Primitive Analogy) 
-// *   +) int a = 123456789;
-// *   +) int b = 5;
-// *   +) a = b;  ------> Mutates a into b's value -----> Mutation */
-// uint8_t __BIGINT_MUT_COPY__(const bigInt *source__, bigInt *copycat__); // Copies exactly (used limbs, capacity, value, ...)
-// uint8_t __BIGINT_MUT_COPY_OVER__(const bigInt *source__, bigInt *copycat__); // Overwrite the current available capacity, only copies the value if enough capacity
-// uint8_t __BIGINT_MUT_COPY_TRUNCOVER__(const bigInt *source__, bigInt *copycat__); // Overwrite the current available capacity, truncates if not enough capacity
-// /* FUNCTIONAL API MODEL */
-// /* Used case example (Primitive Analogy) 
-// *   +) int a = 123456789;
-// *   +) int c = a; ------> Declaring new variable with value a 
-// *                 ------> Return a value to be copied into  ------> Functional */
-// bigInt __BIGINT_COPY__(const bigInt *source__);
-// bigInt __BIGINT_COPY_OVER__(const bigInt *source__);
-// bigInt __BIGINT_COPY_TRUNCOVER__(const bigInt *source__);
 
-// #define bigInt_mut_copy             __BIGINT_MUT_COPY__
-// #define bigInt_mut_copy_over        __BIGINT_MUT_COPY_OVER__
-// #define bigInt_mut_copy_truncover   __BIGINT_MUT_COPY_TRUNCOVER__
-// #define bigInt_copy                 __BIGINT_COPY__
-// #define bigInt_copy_over            __BIGINT_COPY_OVER__
-// #define bigInt_copy_truncover       __BIGINT_COPY_TRUNCOVER__
+//* -------------------- SIGNED NUMBER-THEORETIC --------------------- */
+/* -------------- Pure Number Theoretic -------------- */
+uint64_t __BIGINT_GCD_UI64__(const bigInt x, uint64_t val);
+int64_t __BIGINT_GCD_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_GCD__(const bigInt x, const bigInt y);
+bigInt __BIGINT_LCM_UI64__(const bigInt x, uint64_t val);
+bigInt __BIGINT_LCM_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_LCM__(const bigInt x, const bigInt y);
+uint8_t __BIGINT_IS_PRIME__(const bigInt x);
+/* ---------------- Modular Reduction ---------------- */
+uint8_t __BIGINT_MUT_MODULO_UI64__(bigInt *x, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODULO_I64__(bigInt *x, int64_t modulus);
+uint8_t __BIGINT_MUT_MODULO__(bigInt *x, const bigInt modulus);
+uint64_t __BIGINT_MODULO_UI64__(const bigInt x, uint64_t modulus);
+int64_t __BIGINT_MODULO_I64__(const bigInt x, int64_t modulus);
+bigInt __BIGINT_MODULO__(const bigInt x, const bigInt modulus);
+/* ---------------- SMALL Modular Arithmetic --------------- */
+uint8_t __BIGINT_MUT_MODADD_UI64__(bigInt *x, const bigInt y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODSUB_UI64__(bigInt *x, const bigInt y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODADD__(bigInt *x, const bigInt y, const bigInt modulus);
+uint8_t __BIGINT_MUT_MODSUB__(bigInt *x, const bigInt y, const bigInt modulus);
+uint64_t __BIGINT_MODADD_UI64__(const bigInt x, const bigInt y, uint64_t modulus);
+uint64_t __BIGINT_MODSUB_UI64__(const bigInt x, const bigInt y, uint64_t modulus);
+bigInt __BIGINT_MODADD__(const bigInt x, const bigInt y, const bigInt modulus);
+bigInt __BIGINT_MODSUB__(const bigInt x, const bigInt y, const bigInt modulus);
+/* ---------------- LARGE Modular Arithmetic --------------- */
+uint8_t __BIGINT_MUT_MODMUL_UI64_UI64__(bigInt *x, uint64_t y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODDIV_UI64_UI64__(bigInt *x, uint64_t y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODMUL_BI_UI64__(bigInt *x, const bigInt y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODDIV_BI_UI64__(bigInt *x, const bigInt y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODMUL_UI64_BI__(bigInt *x, uint64_t y, const bigInt modulus);
+uint8_t __BIGINT_MUT_MODDIV_UI64_BI__(bigInt *x, uint64_t y, const bigInt modulus);
+uint8_t __BIGINT_MUT_MODMUL__(bigInt *x, const bigInt y, const bigInt modulus);
+uint8_t __BIGINT_MUT_MODDIV__(bigInt *x, const bigInt y, const bigInt modulus);
+uint64_t __BIGINT_MODMUL_UI64_UI64__(const bigInt x, uint64_t y, uint64_t modulus);
+uint64_t __BIGINT_MODDIV_UI64_UI64__(const bigInt x, uint64_t y, uint64_t modulus);
+uint64_t __BIGINT_MODMUL_BI_UI64__(const bigInt x, const bigInt y, uint64_t modulus);
+uint64_t __BIGINT_MODDIV_BI_UI64__(const bigInt x, const bigInt y, uint64_t modulus);
+bigInt __BIGINT_MODMUL_UI64_BI__(const bigInt x, uint64_t y, const bigInt modulus);
+bigInt __BIGINT_MODDIV_UI64_BI__(const bigInt x, uint64_t y, const bigInt modulus);
+bigInt __BIGINT_MODMUL__(const bigInt x, const bigInt y, const bigInt modulus);
+bigInt __BIGINT_MODDIV__(const bigInt x, const bigInt y, const bigInt modulus);
+/* ---------------------- Modular Algebraic ------------------ */
+uint8_t __BIGINT_MUT_MODEXP_UI64__(bigInt *x, const bigInt y, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODSQR_UI64__(bigInt *x, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODINV_UI64__(bigInt *x, uint64_t modulus);
+uint8_t __BIGINT_MUT_MODEXP__(bigInt *x, const bigInt y, const bigInt modulus);
+uint8_t __BIGINT_MUT_MODSQR__(bigInt *x, const bigInt modulus);
+uint8_t __BIGINT_MUT_MODINV__(bigInt *x, const bigInt modulus);
+uint64_t __BIGINT_MODEXP_UI64__(const bigInt x, const bigInt y, uint64_t modulus);
+uint64_t __BIGINT_MODSQR_UI64__(const bigInt x, uint64_t modulus);
+uint64_t __BIGINT_MODINV_UI64__(const bigInt x, uint64_t modulus);
+bigInt __BIGINT_MODEXP__(const bigInt x, const bigInt y, const bigInt modulus);
+bigInt __BIGINT_MODSQR__(const bigInt x, const bigInt modulus);
+bigInt __BIGINT_MODINV__(const bigInt x, const bigInt modulus);
+
+//* ------------------------- COPIES --------------------------- */
+/* -------------  Mutative SMALL Copies ------------- */
+uint8_t __BIGINT_MUT_COPY_UI64__(bigInt *dst__, uint64_t source__);
+uint8_t __BIGINT_MUT_COPY_DEEP_UI64__(bigInt *dst__, uint64_t source__);
+uint8_t __BIGINT_MUT_COPY_I64__(bigInt *dst__, int64_t source__);
+uint8_t __BIGINT_MUT_COPY_DEEP_I64__(bigInt *dst__, int64_t source__);
+/* -------------  Mutative LARGE Copies ------------- */
+uint8_t __BIGINT_MUT_COPY_LD__(bigInt *dst__, long double source__);
+uint8_t __BIGINT_MUT_COPY_DEEP_LD__(bigInt *dst__, long double source__);
+uint8_t __BIGINT_MUT_COPY_OVER_LD__(bigInt *dst__, long double source__);
+uint8_t __BIGINT_MUT_COPY_TRUNCOVER_LD__(bigInt *dst__, long double source__);
+uint8_t __BIGINT_MUT_COPY__(bigInt *dst__, bigInt source__);
+uint8_t __BIGINT_MUT_COPY_DEEP__(bigInt *dst__, bigInt source__);
+uint8_t __BIGINT_MUT_COPY_OVER__(bigInt *dst__, bigInt source__);
+uint8_t __BIGINT_MUT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__);
+/* -------------  Functional SMALL Copies ------------- */
+bigInt __BIGINT_COPY_UI64__(uint64_t source__);
+bigInt __BIGINT_COPY_I64__(int64_t source__);
+/* -------------  Functional LARGE Copies ------------- */
+bigInt __BIGINT_COPY_LD__(long double source__);
+bigInt __BIGINT_COPY_OVER_LD__(long double source__, size_t output_cap);
+bigInt __BIGINT_COPY_TRUNCOVER_LD__(long double source__, size_t output_cap);
+bigInt __BIGINT_COPY__(const bigInt source__);
+bigInt __BIGINT_COPY_DEEP__(const bigInt source__);
+bigInt __BIGINT_COPY_OVER__(const bigInt source__, size_t output_cap);
+bigInt __BIGINT_COPY_TRUNCOVER__(const bigInt source__, size_t output_cap);
 
 /* -------------------- GENERAL UTILITIES --------------------- */
-void __BIGINT_NORMALIZE__(bigInt *__bigInteger); // Normalize (no trailing 0s + guanratees 0 no -0)
-uint8_t __BIGINT_RESIZE__(bigInt *__bigIntger, size_t __NEW_CAP__);
-uint8_t __BIGINT_RESERVE__(bigInt *__bigInteger, size_t __MIN_CAP__);
-uint8_t __BIGINT_RESET__(bigInt *__bigInteger);
+inline void __BIGINT_CANONICALIZE__(bigInt *x);
+void __BIGINT_NORMALIZE__(bigInt *x);
+uint8_t __BIGINT_RESIZE__(bigInt *x, size_t k);
+uint8_t __BIGINT_RESERVE__(bigInt *x, size_t k);
+uint8_t __BIGINT_SHRINK__(bigInt *x, size_t k);
+uint8_t __BIGINT_RESET__(bigInt *x);
+static inline uint8_t __BIGINT_MUTATIVE_SUBJECT_VALIDATE__(bigInt *x);
+static inline uint8_t __BIGINT_STATE_VALIDATE__(bigInt x);
+inline uint8_t __BIGINT_VALIDATE__(bigInt x);
 
+#define bigInt_canonicalize     __BIGINT_CANONICALIZE__
 #define bigInt_normalize        __BIGINT_NORMALIZE__
-#define bigInt_ensureCapacity   __BIGINT_ENSURE_CAPACITY__
+#define bigInt_reserve          __BIGINT_RESERVE__
 #define bigInt_reset            __BIGINT_RESET__
 
 #ifdef __cplusplus
 }
 #endif
+

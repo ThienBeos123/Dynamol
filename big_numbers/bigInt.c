@@ -11,7 +11,8 @@
 *   +) limbs    (*uint64_t)     : Pointer to each limb that holds part of the bigInt number
 *   +) n        (size_t)        : Number of currently used limbs (used to determine the bigInt value and in arithmetic)
 *   +) cap      (size_t)        : Essentially the bigInt object/number's maximum capacity 
-*
+* /
+
 /* Terms Explanation:
 *   +) Mutative Model: Changes an existing bigInt object/variable value in place (Eg: x += 10; )
 *   +) Functional Model: -) Creates a new variable with the value of the expression (Eg: int x = 5 + 10; ) 
@@ -31,6 +32,7 @@ uint8_t __BIGINT_EMPTY_INIT__(bigInt *x) {
     x->cap   = 1;
     x->n     = 0;
     x->sign  = 1;
+    return 0;
 }
 uint8_t __BIGINT_FREE__(bigInt *x) {
     if (x->limbs == NULL) return 1; // It is already freed
@@ -66,7 +68,7 @@ uint8_t __BIGINT_STANDARD_INIT__(bigInt *x, const bigInt y) {
 uint8_t __BIGINT_UI64_INIT__(bigInt *x, uint64_t in) {
     if (x->limbs != NULL) return 1; // ALREADY INITIALIZED
     uint64_t *__BUFFER_P = malloc(sizeof(uint64_t));
-    if (__BUFFER_P = NULL) return 1;
+    if (__BUFFER_P == NULL) return 1;
     x->limbs    = __BUFFER_P;
     x->limbs[0] = in;
     x->n        = (in) ? 1 : 0;
@@ -163,6 +165,9 @@ bigInt __BIGINT_FROM_LD_(long double x) {}
 bigInt __BIGINT_FROM_LD_SAFE__(long double x) {}
 
 
+//* =========================================== BITWISE OPERATIONS =========================================== */
+
+
 
 //* =============================================== COMPARISONS ============================================== */
 /*
@@ -193,7 +198,7 @@ uint8_t __BIGINT_EQUAL_I64__(const bigInt x, const int64_t val) {
     int8_t val_sign = (val < 0) ? -1 : 1;
     if (val_sign != x.sign) return 0;
     if (x.n      > 1)       return 0;
-    return x.limbs[0] == llabs(val);
+    return x.limbs[0] == (uint64_t)(llabs(val));
 }
 uint8_t __BIGINT_LESS_I64__(const bigInt x, const int64_t val) { 
     if (!__BIGINT_VALIDATE__(x)) { errno = EINVAL; return -1; }
@@ -201,8 +206,8 @@ uint8_t __BIGINT_LESS_I64__(const bigInt x, const int64_t val) {
     int8_t val_sign = (val < 0) ? -1 : 1;
     if (val_sign != x.sign) return (x.sign < val_sign);
     if (x.n      > 1)       return (x.sign == -1);
-    if (x.limbs[0] > llabs(val)) return (x.sign == -1);
-    return (x.limbs[0] < llabs(val)) && (x.sign == 1);
+    if (x.limbs[0] > (uint64_t)llabs(val)) return (x.sign == -1);
+    return (x.limbs[0] < (uint64_t)llabs(val)) && (x.sign == 1);
 }
 uint8_t __BIGINT_MORE_I64__(const bigInt x, const int64_t val) {
     if (!__BIGINT_VALIDATE__(x)) { errno = EINVAL; return -1; }
@@ -210,8 +215,8 @@ uint8_t __BIGINT_MORE_I64__(const bigInt x, const int64_t val) {
     int8_t val_sign = (val < 0) ? -1 : 1;
     if (val_sign != x.sign) return (x.sign > val_sign);
     if (x.n      > 1)       return (x.sign == 1);
-    if (x.limbs[0] < llabs(val)) return (x.sign == -1);
-    return (x.limbs[0] > llabs(val)) && (x.sign == 1);
+    if (x.limbs[0] < (uint64_t)llabs(val)) return (x.sign == -1);
+    return (x.limbs[0] > (uint64_t)llabs(val)) && (x.sign == 1);
 }
 uint8_t __BIGINT_LESS_OR_EQUAL_I64__(const bigInt x, const int64_t val) {
     if (!__BIGINT_VALIDATE__(x)) { errno = EINVAL; return -1; }
@@ -219,7 +224,8 @@ uint8_t __BIGINT_LESS_OR_EQUAL_I64__(const bigInt x, const int64_t val) {
     int8_t val_sign = (val < 0) ? -1 : 1;
     if (x.sign != val_sign) return (x.sign < val_sign);
     if (x.n    > 1)         return (x.sign == -1);
-    if (x.limbs[0] > llabs(val)) return (x.sign == -1); // Case eg: 189 > 171  |  -189 < -171
+    // Case eg: 189 > 171  |  -189 < -171
+    if (x.limbs[0] > (uint64_t)llabs(val)) return (x.sign == -1);
     return (x.sign == 1); // Case eg: 178 < 181  |   -178 > -181
 }
 uint8_t __BIGINT_MORE_OR_EQUALL_I64__(const bigInt x, const int64_t val) {
@@ -228,7 +234,8 @@ uint8_t __BIGINT_MORE_OR_EQUALL_I64__(const bigInt x, const int64_t val) {
     int8_t val_sign = (val < 0) ? -1 : 1;
     if (x.sign != val_sign) return (x.sign > val_sign);
     if (x.n    > 1)         return (x.sign == 1);
-    if (x.limbs[0] > llabs(val)) return (x.sign == 1); // Case eg: 189 > 171  |  -189 < -171
+    // Case eg: 189 > 171  |  -189 < -171
+    if (x.limbs[0] > (uint64_t)llabs(val)) return (x.sign == 1);
     return (x.sign == -1); // Case eg: 178 < 181  |   -178 > -181
 }
 /* ---------- Unsigned Integer - UI64 ---------- */
@@ -316,8 +323,11 @@ uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b) {
 /* -------------------- MAGNITUDED ARITHMETIC --------------------- */
 void __BIGINT_MAGNITUDED_ADD__(bigInt *res, const bigInt *a, const bigInt *b) {
     size_t max = (a->n > b->n) ? a->n : b->n;
-    __BIGINT_ENSURE_CAPACITY__(res, max + 1); /* Set the minimum capacity of res to be 1 bigger
-                                                 than the largest capacity between a & b ----> res->cap = max + 1 */
+    // Set the minimum capacity of res to be 1 bigger
+    // than the largest capacity between a & b ----> res->cap = max + 1
+    uint8_t reserve_res = __BIGINT_RESERVE__(res, max + 1);
+    assert(reserve_res);
+    // if (reserve_res) abort();
     uint64_t carry = 0;
     for (size_t i = 0; i < max; ++i) {
         uint64_t x = (i < a->n) ? a->limbs[i] : 0; // Assigning limb at position i of a to x
@@ -328,7 +338,9 @@ void __BIGINT_MAGNITUDED_ADD__(bigInt *res, const bigInt *a, const bigInt *b) {
     res->n = max + (carry != 0);
 }
 void __BIGINT_MAGNITUDED_SUB__(bigInt *res, const bigInt *a, const bigInt *b) {
-    __BIGINT_ENSURE_CAPACITY__(res, a->n);
+    uint8_t reserve_res = __BIGINT_RESERVE__(res, a->n);
+    assert(reserve_res);
+    // if (reserve_res) abort();
     uint64_t borrow = 0;
     for (size_t i = 0; i < a->n; ++i) {
         uint64_t y = (i < b->n) ? b->limbs[i] : 0;
@@ -336,11 +348,17 @@ void __BIGINT_MAGNITUDED_SUB__(bigInt *res, const bigInt *a, const bigInt *b) {
     }
     res->n = a->n;
 }
-void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {}
-void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, const bigInt *b) {}
+void __BIGINT_MAGNITUDED_MUL__(bigInt *res, const bigInt *a, const bigInt *b) {
+    __BIGINT_MUL_DISPATCH__(res, a, b);
+}
+void __BIGINT_MAGNITUDED_DIVMOD__(bigInt *quot, bigInt *rem, const bigInt *a, const bigInt *b) {
+    __BIGINT_DIVMOD_DISPATCH__(a, b, quot, rem);
+}
 void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *res, const bigInt *x, const uint64_t val) {
     // Since the divisor size is small (n <= 1), we implement inline schoolbook multiplication
-    __BIGINT_ENSURE_CAPACITY__(res, x->n + 1);
+    uint8_t reserve_res = __BIGINT_RESERVE__(res, x->n + 1);
+    assert(reserve_res);
+    // if (reserve_res) abort();
     uint64_t carry = 0;
     for (size_t i = 0; i < x->n; ++i) {
         uint64_t low, high;
@@ -355,7 +373,9 @@ void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *res, const bigInt *x, const uint64_t
 void __BIGINT_MAGNITUDED_DIVMOD_UI64__(bigInt *quot, uint64_t *rem, const bigInt *x, const uint64_t val) {
     // Since the divisior size is small (n <= 1), we implement inline normal/long division
     assert(val); // Checks for invalid operation ( x / 0 )
-    __BIGINT_ENSURE_CAPACITY__(&quot, x->n+1); quot->n = x->n;
+    uint8_t reserve_res = __BIGINT_RESERVE__(&quot, x->n+1); quot->n = x->n;
+    assert(reserve_res);
+    // if (reserve_res) abort();
     uint64_t remainder = 0;
     for (size_t i = x->n; i-- > 0;) {
        __DIV_HELPER_UI64__(remainder, 0, val, &quot->limbs[i], &remainder);
@@ -507,7 +527,7 @@ uint8_t __BIGINT_MUT_COPY_I64__(bigInt *dst__, int64_t source__) {
     if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__)) return 1;
     __BIGINT_CANONICALIZE__(dst__);
     if (dst__->n == 0 && !source__) return 0;
-    if (dst__->n == 1 && dst__->limbs[0] == llabs(source__)) {
+    if (dst__->n == 1 && dst__->limbs[0] == (uint64_t)llabs(source__)) {
         dst__->sign = (source__ < 0) ? -1 : 1;
         return 0;
     }
@@ -527,7 +547,7 @@ uint8_t __BIGINT_MUT_COPY_DEEP_I64__(bigInt *dst__, int64_t source__) {
         dst__->cap     = 1;
     }
     if (dst__->n == 0 && !source__) return 0;
-    if (dst__->n == 1 && dst__->limbs[0] == llabs(source__)) {
+    if (dst__->n == 1 && dst__->limbs[0] == (uint64_t)llabs(source__)) {
         dst__->sign = (source__ < 0) ? -1 : 1;
         return 0;
     }
@@ -757,11 +777,11 @@ uint8_t __BIGINT_RESET__(bigInt *x) {
     x->sign = 1;
     return 0;
 }
-inline uint8_t __BIGINT_MUTATIVE_SUBJECT_VALIDATE__(bigInt *x) {
+static inline uint8_t __BIGINT_MUTATIVE_SUBJECT_VALIDATE__(bigInt *x) {
     if (x->limbs == NULL) return 0;
     return 1;
 }
-inline uint8_t __BIGINT_STATE_VALIDATE__(bigInt x) {
+static inline uint8_t __BIGINT_STATE_VALIDATE__(bigInt x) {
     if (x.limbs == NULL) return 0;
     if (x.cap < 1) return 0;
     if (x.n > x.cap) return 0;

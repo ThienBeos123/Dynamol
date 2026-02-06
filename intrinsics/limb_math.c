@@ -9,21 +9,23 @@
 *      estimate the quotient on two seperate low and high bits.
 */
 #if HAVE_UINT128
-static inline void __DIV_HELPER_UI64__(uint64_t high, uint64_t low, uint64_t div, 
+void __DIV_HELPER_UI64__(uint64_t high, uint64_t low, uint64_t div, 
                                        uint64_t *qhat, uint64_t *rhat) {
     unsigned __int128 __INTERMEDIATE__ = ((unsigned __int128)high << BITS_IN_UINT64_T) | low;
     qhat = (uint64_t)(__INTERMEDIATE__ / div);
     rhat = (uint64_t)(__INTERMEDIATE__ % div);
 }
 #else
-static inline void __DIV_HELPER_UI64__(uint64_t high, uint64_t low, uint64_t div, 
+void __DIV_HELPER_UI64__(uint64_t high, uint64_t low, uint64_t div, 
                                        uint64_t *qhat, uint64_t *rhat) {
     uint32_t a;
 }
 #endif
 
 /* ----------------------------------------    --   TESTING LAB    --   ----------------------------------------- */
+/* Commented out to avoid duplicate main when linking with bigInt.c
 int main(int argc, char *argv[], char *envp[]) {
 
     return 0;
 }
+*/

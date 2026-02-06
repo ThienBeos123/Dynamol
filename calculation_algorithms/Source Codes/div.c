@@ -1,6 +1,7 @@
 #include "../Headers/div.h"
 
 /* SIMPLE ALGORITHMS */
+void __BIGINT_SHORT_DIVISION__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
 void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {
     uint8_t shift = __COUNT_LZ__(b->limbs[b->n - 1]);
     bigInt a_copy, b_copy;
@@ -88,7 +89,7 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
         uint64_t borrow = 0;
         for (size_t i = 0; i < n; ++i) {
             uint64_t low, high;
-            __MUL_UI64__(qhat, b_copy.limbs[i], low, high); /* Multi-limb multiplication */
+            low = __MUL_UI64__(qhat, b_copy.limbs[i], &high); /* Multi-limb multiplication */
             uint64_t x = a_copy.limbs[j + 1];
             uint64_t t = x - low - borrow;
             borrow = (t > x) + high; // Propagate borrow (current_borrow + high) to the next limb
@@ -141,5 +142,7 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
 }
 void __BIGINT_NEWTON_RECIPROCAL__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
 void __BIGINT_DIVMOD_DISPATCH__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {
-    
+    if (b->n < BIGINT_SHORT) __BIGINT_SHORT_DIVISION__(a, b, quot, rem);
+    if (b->n < BIGINT_KNUTH) __BIGINT_KNUTH_D__(a, b, quot, rem);
+    else __BIGINT_NEWTON_RECIPROCAL__(a, b, quot, rem);
 }

@@ -22,10 +22,6 @@ typedef struct __424947666C6F6174__ {
     // ------> Doable, but extremely heavy for computers
 } bigFloat;
 
-typedef struct {
-    
-} bigRational;
-
 
 #ifdef __cplusplus
 }
