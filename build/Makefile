@@ -153,6 +153,54 @@ big_numbers/bigInt.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.s
 .PHONY : big_numbers/bigInt.c.s
 
+calculation_algorithms/Source_Codes/div.o: calculation_algorithms/Source_Codes/div.c.o
+.PHONY : calculation_algorithms/Source_Codes/div.o
+
+# target to build an object file
+calculation_algorithms/Source_Codes/div.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o
+.PHONY : calculation_algorithms/Source_Codes/div.c.o
+
+calculation_algorithms/Source_Codes/div.i: calculation_algorithms/Source_Codes/div.c.i
+.PHONY : calculation_algorithms/Source_Codes/div.i
+
+# target to preprocess a source file
+calculation_algorithms/Source_Codes/div.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.i
+.PHONY : calculation_algorithms/Source_Codes/div.c.i
+
+calculation_algorithms/Source_Codes/div.s: calculation_algorithms/Source_Codes/div.c.s
+.PHONY : calculation_algorithms/Source_Codes/div.s
+
+# target to generate assembly for a file
+calculation_algorithms/Source_Codes/div.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.s
+.PHONY : calculation_algorithms/Source_Codes/div.c.s
+
+calculation_algorithms/Source_Codes/mul.o: calculation_algorithms/Source_Codes/mul.c.o
+.PHONY : calculation_algorithms/Source_Codes/mul.o
+
+# target to build an object file
+calculation_algorithms/Source_Codes/mul.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o
+.PHONY : calculation_algorithms/Source_Codes/mul.c.o
+
+calculation_algorithms/Source_Codes/mul.i: calculation_algorithms/Source_Codes/mul.c.i
+.PHONY : calculation_algorithms/Source_Codes/mul.i
+
+# target to preprocess a source file
+calculation_algorithms/Source_Codes/mul.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.i
+.PHONY : calculation_algorithms/Source_Codes/mul.c.i
+
+calculation_algorithms/Source_Codes/mul.s: calculation_algorithms/Source_Codes/mul.c.s
+.PHONY : calculation_algorithms/Source_Codes/mul.s
+
+# target to generate assembly for a file
+calculation_algorithms/Source_Codes/mul.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.s
+.PHONY : calculation_algorithms/Source_Codes/mul.c.s
+
 internal_utils/bigNum_utils.o: internal_utils/bigNum_utils.c.o
 .PHONY : internal_utils/bigNum_utils.o
 
@@ -213,6 +261,12 @@ help:
 	@echo "... big_numbers/bigInt.o"
 	@echo "... big_numbers/bigInt.i"
 	@echo "... big_numbers/bigInt.s"
+	@echo "... calculation_algorithms/Source_Codes/div.o"
+	@echo "... calculation_algorithms/Source_Codes/div.i"
+	@echo "... calculation_algorithms/Source_Codes/div.s"
+	@echo "... calculation_algorithms/Source_Codes/mul.o"
+	@echo "... calculation_algorithms/Source_Codes/mul.i"
+	@echo "... calculation_algorithms/Source_Codes/mul.s"
 	@echo "... internal_utils/bigNum_utils.o"
 	@echo "... internal_utils/bigNum_utils.i"
 	@echo "... internal_utils/bigNum_utils.s"
