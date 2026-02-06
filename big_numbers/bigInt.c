@@ -407,7 +407,26 @@ void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b,
 
 //* ============================================ SIGNED ARITHMETIC ========================================== */
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val) {}
+uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val) {
+    assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(x));
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(x)) return 1;
+
+    if (x->n == 0) return 0;
+    if (val == 1) return 0;
+    if (!val) { 
+        uint8_t op_res = __BIGINT_RESET__(x);
+        if (unlikely(op_res)) return 1;
+        else return 0;
+    }
+    if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_UI64__(x, val);
+    else {
+        bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
+        __BIGINT_MAGNITUDED_ADD__(&__TEMP_PROD__, x, val);
+        __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
+        __BIGINT_FREE__(&__TEMP_PROD__);
+    }
+    return 0;
+}
 uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, const uint64_t val) {}
 uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, const uint64_t val) {}
 uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, const int64_t val) {}
@@ -419,19 +438,62 @@ uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {}
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
-bigInt __BIGINT_MUL_UI64__(const bigInt *x, const uint64_t val) {
-    
+bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
+
+    bigInt res;
+    if (!x.n || !val) __BIGINT_EMPTY_INIT__(&res);
+    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_UI64_INIT__(&res, val);
+    else if (val == 1) __BIGINT_STANDARD_INIT__(&res, x);
+    else { // Standard Case
+        __BIGINT_EMPTY_INIT__(&res);
+        __BIGINT_MAGNITUDED_MUL_UI64__(&res, &x, val);
+    }
+    res.sign = x.sign;
+    return res;
 }
-bigInt __BIGINT_DIV_UI64__(const bigInt *x, const uint64_t val) {}
-bigInt __BIGINT_MOD_UI64__(const bigInt *x, const uint64_t val) {}
-bigInt __BIGINT_MUL_I64__(const bigInt *x, const int64_t val) {}
-bigInt __BIGINT_DIV_I64__(const bigInt *x, const int64_t val) {}
-bigInt __BIGINT_MOD_I64__(const bigInt *x, const int64_t val) {}
-bigInt __BIGINT_ADD__(const bigInt *x, const bigInt *y) {}
-bigInt __BIGINT_SUB__(const bigInt *x, const bigInt *y) {}
-bigInt __BIGINT_MUL__(const bigInt *x, const bigInt *y) {}
-bigInt __BIGINT_DIV__(const bigInt *x, const bigInt *y) {}
-bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y) {}
+bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val) {}
+bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {}
+bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
+
+    bigInt res;
+    if (!x.n || !val) __BIGINT_EMPTY_INIT__(&res);
+    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_I64_INIT__(&res, val);
+    else if (llabs(val) == 1) __BIGINT_STANDARD_INIT__(&res, x);
+    else {
+        uint64_t mag_val = (val == INT64_MIN) ? 
+            (uint64_t)(llabs(val + 1)) + 1 : 
+            (uint64_t)(llabs(val));
+        __BIGINT_EMPTY_INIT__(&res);
+        __BIGINT_MAGNITUDED_MUL_UI64__(&res, &x, mag_val);
+    }
+    res.sign = x.sign * ((val < 0) ? -1 : 1);
+    return res;
+}
+bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val) {}
+bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {}
+bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
+
+    bigInt res;
+    if (!x.n || !y.n) __BIGINT_EMPTY_INIT__(&res);
+    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_STANDARD_INIT__(&res, y);
+    else if (y.n == 1 && y.limbs[0] == 1) __BIGINT_STANDARD_INIT__(&res, x);
+    else {
+        __BIGINT_EMPTY_INIT__(&res);
+        __BIGINT_MAGNITUDED_MUL__(&res, &x, &y);
+    }
+    res.sign = x.sign * y.sign;
+    return res;
+}
+bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_MOD__(const bigInt x, const bigInt y) {}
 
 
 
