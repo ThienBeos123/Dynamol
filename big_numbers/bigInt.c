@@ -419,7 +419,9 @@ uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y) {}
 uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {}
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
-bigInt __BIGINT_MUL_UI64__(const bigInt *x, const uint64_t val) {}
+bigInt __BIGINT_MUL_UI64__(const bigInt *x, const uint64_t val) {
+    
+}
 bigInt __BIGINT_DIV_UI64__(const bigInt *x, const uint64_t val) {}
 bigInt __BIGINT_MOD_UI64__(const bigInt *x, const uint64_t val) {}
 bigInt __BIGINT_MUL_I64__(const bigInt *x, const int64_t val) {}

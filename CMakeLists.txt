@@ -22,6 +22,8 @@ add_executable(bigInt_casual_comp
     big_numbers/bigInt.c
     internal_utils/bigNum_utils.c
     intrinsics/limb_math.c
+    "calculation_algorithms/Source Codes/mul.c"
+    "calculation_algorithms/Source Codes/div.c"
 )
 
 target_compile_options(bigInt_casual_comp PRIVATE -Wno-unused-function)

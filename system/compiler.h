@@ -33,6 +33,31 @@
     #define restrict __restrict__
 #endif
 
+/* Count Leading Zeros - CLZ */
+#if __compiler_msvc
+    #define HAVE_CLZ 1
+    #define clz_intrinsics _lzcnt_u64
+#elif (__compiler_clang || __compiler_gcc)
+    #define HAVE_CLZ 1
+    #define clz_intrinsics __builtin_clzll
+#else
+    #define HAVE_CLZ 0
+    #define clz_intrinsics
+#endif
+
+
+/* Count Trailing Zeros - CTZ */
+#if __compiler_msvc
+    #define HAVE_CTZ 1
+    #define ctz_intrinsics _tzcnt_u64
+#elif (__compiler_clang || __compiler_gcc)
+    #define HAVE_CTZ 1
+    #define ctz_intrinsics __builtin_ctzll
+#else
+    #define HAVE_CTZ 0
+    #define ctz_intrinsics
+#endif
+
 
 /* Branch Prediction */
 #if (__compiler_clang || __compiler_gcc)

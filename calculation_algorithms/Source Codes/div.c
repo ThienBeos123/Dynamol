@@ -3,7 +3,7 @@
 /* SIMPLE ALGORITHMS */
 void __BIGINT_SHORT_DIVISION__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
 void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {
-    uint8_t shift = __COUNT_LZ__(b->limbs[b->n - 1]);
+    uint8_t shift = __CLZ_UI64__(b->limbs[b->n - 1]);
     bigInt a_copy, b_copy;
     size_t m = a->n, n = b->n;
     __BIGINT_INTERNAL_EMPINIT__(&a_copy);           __BIGINT_INTERNAL_EMPINIT__(&b_copy);
