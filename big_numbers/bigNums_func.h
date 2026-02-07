@@ -209,10 +209,10 @@ uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y);
 /* ------------------ Functional Arithmetic ------------------- */
 bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val);
 bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val);
-uint64_t __BIGINT_MOD_UI64__(const bigInt x, uint64_t val);
+bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val);
 bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val);
 bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val);
-int64_t __BIGINT_MOD_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val);
 bigInt __BIGINT_ADD__(const bigInt x, const bigInt y);
 bigInt __BIGINT_SUB__(const bigInt x, const bigInt y);
 bigInt __BIGINT_MUL__(const bigInt x, const bigInt y);

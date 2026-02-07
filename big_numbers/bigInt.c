@@ -492,7 +492,27 @@ uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {}
+uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
+    assert(__BIGINT_PVALIDATE__(x) && val);
+    if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
+
+    if (x->n == 0);
+    else if (val == 1) __BIGINT_RESET__(x);
+    else {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE_UI64__(x, val);
+        if (comp_res < 0);
+        else if (!comp_res) __BIGINT_RESET__(x);
+        else {
+            bigInt temp_quot; uint64_t temp_rem;
+            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return 1;
+            __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, val);
+            x->limbs[0] = temp_rem;
+            x->n        = (temp_rem) ? 1 : 0;
+            x->sign     = (temp_rem) ? x->sign : 1;
+            __BIGINT_FREE__(&temp_quot);
+        }
+    }
+}
 uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_PVALIDATE__(x));
     if (!__BIGINT_PVALIDATE__(x)) return 1;
@@ -533,7 +553,28 @@ uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {}
+uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
+    assert(__BIGINT_PVALIDATE__(x) && val);
+    if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
+
+    if (x->n == 0);
+    else if (val == 1 || val == -1) __BIGINT_RESET__(x);
+    else {
+        uint64_t mag_val = __MAG_I64__(val);
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE_UI64__(x, mag_val);
+        if (comp_res < 0);
+        else if (!comp_res) __BIGINT_RESET__(x);
+        else {
+            bigInt temp_quot; uint64_t temp_rem;
+            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return 1;
+            __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, mag_val);
+            x->limbs[0] = temp_rem;
+            x->n        = (temp_rem) ? 1 : 0;
+            x->sign     = (temp_rem) ? x->sign : 1;
+            __BIGINT_FREE__(&temp_quot);
+        }
+    }
+}
 uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {}
 uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {}
 uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
@@ -576,7 +617,30 @@ uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {
+    assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_PVALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return 1;
+    if (!y.n) return 1;
+
+    if (x->n == 0);
+    else if (y.n == 1 && y.limbs[0] == 1) __BIGINT_RESET__(x);
+    else {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(x, &y);
+        if (comp_res < 0);
+        else if (!comp_res) __BIGINT_RESET__(x);
+        else {
+            bigInt temp_quot, temp_rem;
+            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return 1;
+            if (__BIGINT_EMPTY_INIT__(&temp_rem)) return 1;
+            __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &temp_rem, x, &y);
+            temp_rem.sign = x->sign;
+            __BIGINT_MUT_COPY__(x, temp_rem);
+            __BIGINT_FREE__(&temp_rem);
+            __BIGINT_FREE__(&temp_quot);
+        }
+    }
+    return 0;
+}
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
 bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {
     assert(__BIGINT_VALIDATE__(x));
@@ -609,7 +673,29 @@ bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val) {
     }
     return quot;
 }
-uint64_t __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {}
+bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {
+    assert(__BIGINT_VALIDATE__(x) && val);
+    if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
+
+    bigInt rem;
+    if (x.n == 0 || val == 1) { if (__BIGINT_EMPTY_INIT__(&rem)) return __BIGINT_ERROR_VALUE__(); }
+    else {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE_UI64__(&x, val);
+        if (comp_res < 0) { if (__BIGINT_STANDARD_INIT__(&rem, x)) return __BIGINT_ERROR_VALUE__(); }
+        else if (!comp_res) { if (__BIGINT_EMPTY_INIT__(&rem)) return __BIGINT_ERROR_VALUE__(); }
+        else {
+            if (__BIGINT_EMPTY_INIT__(&rem)) return __BIGINT_ERROR_VALUE__();
+            bigInt temp_quot; uint64_t temp_rem;
+            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return __BIGINT_ERROR_VALUE__();
+            __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, &x, val);
+            rem.limbs[0] = temp_rem;
+            rem.n        = (temp_rem) ? 1 : 0;
+            rem.sign     = (temp_rem) ? x.sign : 1;
+            __BIGINT_FREE__(&temp_quot);
+        }
+    }
+    return rem;
+}
 bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val) {
     assert(__BIGINT_VALIDATE__(x));
     if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
@@ -647,7 +733,30 @@ bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val) {
     }
     return quot;
 }
-int64_t __BIGINT_MOD_I64__(const bigInt x, int64_t val) {}
+bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {
+    assert(__BIGINT_VALIDATE__(x) && val);
+    if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
+
+    bigInt rem;
+    if (x.n == 0 || val == 1 || val == -1) __BIGINT_EMPTY_INIT__(&rem);
+    else {
+        uint64_t mag_val = __MAG_I64__(val);
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE_UI64__(&x, mag_val);
+        if (comp_res < 0) __BIGINT_STANDARD_INIT__(&rem, x);
+        else if (!comp_res) __BIGINT_EMPTY_INIT__(&rem);
+        else {
+            __BIGINT_EMPTY_INIT__(&rem);
+            bigInt temp_quot; uint64_t temp_rem;
+            __BIGINT_EMPTY_INIT__(&temp_quot);
+            __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, &x, mag_val);
+            rem.limbs[0] = temp_rem;
+            rem.n        = (temp_rem) ? 1 : 0;
+            rem.sign     = x.sign;
+            __BIGINT_FREE__(&temp_quot);
+        }
+    }
+    return rem;
+}
 bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {}
 bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {}
 bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
@@ -688,7 +797,28 @@ bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {
     }
     return quot;
 }
-bigInt __BIGINT_MOD__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_MOD__(const bigInt x, const bigInt y) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
+
+    bigInt rem;
+    if (x.n == 0) __BIGINT_EMPTY_INIT__(&rem);
+    else if (y.n == 1 && y.limbs[0] == 1) __BIGINT_EMPTY_INIT__(&rem);
+    else {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(&x, &y);
+        if (comp_res < 0) __BIGINT_STANDARD_INIT__(&rem, x);
+        else if (!comp_res) __BIGINT_EMPTY_INIT__(&rem);
+        else {
+            __BIGINT_EMPTY_INIT__(&rem);
+            bigInt temp_quot; __BIGINT_EMPTY_INIT__(&temp_quot);
+            __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &rem, &x, &y);
+            rem.sign = x.sign;
+            __BIGINT_NORMALIZE__(&rem);
+            __BIGINT_FREE__(&temp_quot);
+        }
+    }
+    return rem;
+}
 
 
 
