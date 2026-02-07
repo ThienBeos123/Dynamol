@@ -150,8 +150,6 @@ uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b);
 *               THE UTMOST CAUTION TO PREVENT FATAL ERRORS OR MEMORY LEAKS 
 */
 /* ------- Magnitude Arithmetic ------- */
-void __BIGINT_MAGNITUDED_ADD_UI64__(bigInt *__outputted_bigInteger, const bigInt *__x__, const uint64_t __I64VAL);
-void __BIGINT_MAGNITUDED_SUB_UI64__(bigInt *__outputted_bigInteger, const bigInt *__x__, const uint64_t __I64VAL);
 void __BIGINT_MAGNITUDED_MUL_UI64__(bigInt *__outputted_bigInteger, const bigInt *__x__, const uint64_t __I64VAL);
 void __BIGINT_MAGNITUDED_DIVMOD_UI64__
     (bigInt *__outputted_bigInteger_quotient, 
@@ -197,29 +195,29 @@ void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b,
 *       +) FUNCTIONAL ARITHMETIC    ---> Return a new copy of a value to be asigned     (Eg: x  = 1 + 2;)
 */
 /* ------------------- Mutative Arithmetic -------------------- */
-uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val);
-uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, const uint64_t val);
-uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, const uint64_t val);
-uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, const int64_t val);
+uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val);
+uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val);
+uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val);
+uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val);
 uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val);
 uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val);
-uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y);
-uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y);
-uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y);
-uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y);
-uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y);
+uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y);
 /* ------------------ Functional Arithmetic ------------------- */
-bigInt __BIGINT_MUL_UI64__(const bigInt *x, const uint64_t val);
-bigInt __BIGINT_DIV_UI64__(const bigInt *x, const uint64_t val);
-bigInt __BIGINT_MOD_UI64__(const bigInt *x, const uint64_t val);
-bigInt __BIGINT_MUL_I64__(const bigInt *x, const int64_t val);
-bigInt __BIGINT_DIV_I64__(const bigInt *x, const int64_t val);
-bigInt __BIGINT_MOD_I64__(const bigInt *x, const int64_t val);
-bigInt __BIGINT_ADD__(const bigInt *x, const bigInt *y);
-bigInt __BIGINT_SUB__(const bigInt *x, const bigInt *y);
-bigInt __BIGINT_MUL__(const bigInt *x, const bigInt *y);
-bigInt __BIGINT_DIV__(const bigInt *x, const bigInt *y);
-bigInt __BIGINT_MOD__(const bigInt *x, const bigInt *y);
+bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val);
+bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val);
+bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val);
+bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_ADD__(const bigInt x, const bigInt y);
+bigInt __BIGINT_SUB__(const bigInt x, const bigInt y);
+bigInt __BIGINT_MUL__(const bigInt x, const bigInt y);
+bigInt __BIGINT_DIV__(const bigInt x, const bigInt y);
+bigInt __BIGINT_MOD__(const bigInt x, const bigInt y);
 
 
 //* -------------------- SIGNED NUMBER-THEORETIC --------------------- */

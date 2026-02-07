@@ -94,15 +94,64 @@ uint8_t __BIGINT_LD_INIT__(bigInt *x, long double in) {}
 
 //* =============================================== ASSIGNMENTS ============================================== */
 /* --------- BigInt --> Primitive Types --------- */
-uint8_t __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver) {}
-uint8_t __BIGINT_SET_I64__(const bigInt x, int64_t *receiver) {}
+uint8_t __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver) {
+    assert(__BIGINT_STATE_VALIDATE__(x));
+    if (!__BIGINT_STATE_VALIDATE__(x)) return 1;
+    *receiver = (x.n) ? x.limbs[0] : 0;
+    return 0;
+}
+uint8_t __BIGINT_SET_I64__(const bigInt x, int64_t *receiver) {
+    assert(__BIGINT_STATE_VALIDATE__(x));
+    if (!__BIGINT_STATE_VALIDATE__(x)) return 1;
+    uint64_t raw_u64 = (x.n) ? x.limbs[0] : 0;
+    uint64_t abs_int64_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
+    if (raw_u64 > abs_int64_min && x.sign == -1) *receiver = (int64_t)(raw_u64 & I64_MIN_BIT_MASK) * x.sign;
+    else if (raw_u64 > INT64_MAX && x.sign == 1) *receiver = (int64_t)(raw_u64 & I64_MAX_BIT_MASK) * x.sign;
+    else *receiver = ((int64_t)raw_u64) * x.sign;
+    return 0;
+}
 uint8_t __BIGINT_SET_LD__(const bigInt x, long double *receiver) {}
-uint8_t __BIGINT_SET_UI64_SAFE__(const bigInt x, uint64_t *receiver) {}
-uint8_t __BIGINT_SET_I64_SAFE__(const bigInt x, int64_t *receiver) {}
+uint8_t __BIGINT_SET_UI64_SAFE__(const bigInt x, uint64_t *receiver) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!__BIGINT_VALIDATE__(x)) return 1;
+    if (x.sign == -1 || x.n > 1) return 1;
+    *receiver = (x.n) ? x.limbs[0] : 0;
+    return 0;
+}
+uint8_t __BIGINT_SET_I64_SAFE__(const bigInt x, int64_t *receiver) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!__BIGINT_VALIDATE__(x)) return 1;
+    if (x.n > 1) return 1;
+    uint64_t raw_u64 = (x.n) ? x.limbs[0] : 0;
+    uint64_t abs_int64_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
+    if (raw_u64 > abs_int64_min && x.sign == -1) return 1;
+    if (raw_u64 > INT64_MAX && x.sign == 1) return 1;
+    *receiver = ((int64_t)raw_u64) * x.sign;
+    return 0;
+}
 uint8_t __BIGINT_SET_LD_SAFE__(const bigInt x, long double *receiver) {}
 /* --------- Primitive Types --> BigInt --------- */
-uint8_t __BIGINT_GET_UI64__(uint64_t x, bigInt *receiver) {}
-uint8_t __BIGINT_GET_I64__(int64_t x, bigInt *receiver) {}
+uint8_t __BIGINT_GET_UI64__(uint64_t val, bigInt *receiver) {
+    assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(receiver));
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(receiver)) return 1;
+
+    receiver->limbs[0] = val;
+    receiver->n        = (val) ? 1 : 0;
+    receiver->sign     = 1;
+    return 0;
+}
+uint8_t __BIGINT_GET_I64__(int64_t val, bigInt *receiver) {
+    assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(receiver));
+    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(receiver)) return 1;
+
+    uint64_t abs_val = (val == INT64_MIN) ? 
+        (uint64_t)(llabs(val + 1)) + 1 :
+        (uint64_t)(llabs(val));
+    receiver->limbs[0] = abs_val;
+    receiver->n        = (val) ? 1 : 0;
+    receiver->sign     = (val < 0) ? -1 : 1;
+    return 0;
+}
 uint8_t __BIGINT_GET_LD__(long double x, bigInt *receiver) {}
 uint8_t __BIGINT_GET_LD_SAFE__(long double x, bigInt *receiver) {}
 
@@ -119,9 +168,9 @@ int64_t __BIGINT_TO_I64__(const bigInt x) {
     if (!__BIGINT_STATE_VALIDATE__(x)) { errno = EINVAL; return INT_MIN; }
     int64_t res;
     uint64_t raw_u64 = (x.n) ? x.limbs[0] : 0;
-    uint64_t abs_llong_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
-    if (raw_u64 > abs_llong_min && x.sign == -1) res = (int64_t)(raw_u64 & I64_MIN_BIT_MASK);
-    else if (raw_u64 > INT64_MAX && x.sign == 1) res = (int64_t)(raw_u64 & I64_MAX_BIT_MASK);
+    uint64_t abs_int64_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
+    if (raw_u64 > abs_int64_min && x.sign == -1) res = (int64_t)(raw_u64 & I64_MIN_BIT_MASK) * x.sign;
+    else if (raw_u64 > INT64_MAX && x.sign == 1) res = (int64_t)(raw_u64 & I64_MAX_BIT_MASK) * x.sign;
     else res = ((int64_t)raw_u64) * x.sign;
     return res;
 }
@@ -136,8 +185,8 @@ int64_t __BIGINT_TO_I64_SAFE__(const bigInt x) {
     if (!__BIGINT_VALIDATE__(x)) { errno = EINVAL; return INT_MIN; }
     if (x.n > 1) { errno = ERANGE; return INT_MIN; }
     uint64_t raw_u64 = (x.n) ? x.limbs[0] : 0;
-    uint64_t abs_llong_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
-    if (raw_u64 > abs_llong_min && x.sign == -1) { errno = ERANGE; return INT_MIN; }
+    uint64_t abs_int64_min = (uint64_t)(llabs(INT64_MIN + 1)) + 1;
+    if (raw_u64 > abs_int64_min && x.sign == -1) { errno = ERANGE; return INT_MIN; }
     if (raw_u64 > INT64_MAX && x.sign == 1) { errno = ERANGE; return INT_MIN; }
     int64_t res = ((int64_t)raw_u64) * x.sign;
     return res;
@@ -407,7 +456,7 @@ void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b,
 
 //* ============================================ SIGNED ARITHMETIC ========================================== */
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val) {
+uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(x));
     if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(x)) return 1;
 
@@ -421,22 +470,22 @@ uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, const uint64_t val) {
     if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_UI64__(x, val);
     else {
         bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
-        __BIGINT_MAGNITUDED_ADD__(&__TEMP_PROD__, x, val);
+        __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, val);
         __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
         __BIGINT_FREE__(&__TEMP_PROD__);
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, const uint64_t val) {}
-uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, const uint64_t val) {}
-uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, const int64_t val) {}
+uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {}
+uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {}
+uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {}
 uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {}
 uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {}
-uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y) {}
-uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {}
-uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {}
-uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y) {}
-uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {}
+uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {}
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
 bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {
     assert(__BIGINT_VALIDATE__(x));
