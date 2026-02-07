@@ -454,27 +454,24 @@ void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b,
 
 //* ============================================ SIGNED ARITHMETIC ========================================== */
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
-uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
+uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {              //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x));
     if (!__BIGINT_PVALIDATE__(x)) return 1;
 
     if (x->n == 0) return 0;
     if (val == 1);
-    else if (!val) { 
-        uint8_t op_res = __BIGINT_RESET__(x);
-        if (unlikely(op_res)) return 1;
-        else return 0;
-    }
+    else if (!val) __BIGINT_RESET__(x);
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_UI64__(x, val);
     else {
-        bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
+        bigInt __TEMP_PROD__; 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&__TEMP_PROD__))) return 1; // No memory has been allocated YET
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, val);
-        __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
+        if (unlikely(__BIGINT_MUT_COPY__(x, __TEMP_PROD__))) { __BIGINT_FREE__(&__TEMP_PROD__); return 1; }
         __BIGINT_FREE__(&__TEMP_PROD__);
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
+uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {              //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x));
     if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
 
@@ -483,16 +480,16 @@ uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
     else {
         bigInt temp_quot; uint64_t temp_rem;
-        __BIGINT_EMPTY_INIT__(&temp_quot);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) return 1; // No memory has been allocated YET
         __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, val);
         temp_quot.sign = x->sign;
         __BIGINT_NORMALIZE__(&temp_quot);
-        __BIGINT_MUT_COPY__(x, temp_quot);
+        if (unlikely(__BIGINT_MUT_COPY__(x, temp_quot))) { __BIGINT_FREE__(&temp_quot); return 1; }
         __BIGINT_FREE__(&temp_quot);
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
+uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {              //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x) && val);
     if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
 
@@ -504,7 +501,7 @@ uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
         else if (!comp_res) __BIGINT_RESET__(x);
         else {
             bigInt temp_quot; uint64_t temp_rem;
-            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return 1;
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) return 1; // No memory has been allocated YET
             __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, val);
             x->limbs[0] = temp_rem;
             x->n        = (temp_rem) ? 1 : 0;
@@ -512,29 +509,27 @@ uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
             __BIGINT_FREE__(&temp_quot);
         }
     }
+    return 0;
 }
-uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
+uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {        //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x));
     if (!__BIGINT_PVALIDATE__(x)) return 1;
 
     if (x->n == 0) return 0;
-    if (!val) {
-        uint8_t op_res = __BIGINT_RESET__(x);
-        if (unlikely(op_res)) return 1;
-    }
+    if (!val) __BIGINT_RESET__(x);
     else if (val == 1 || val == -1);
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_I64__(x, val);
     else {
-        uint64_t mag_val = __MAG_I64__(val);
-        bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
+        bigInt __TEMP_PROD__; uint64_t mag_val = __MAG_I64__(val);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&__TEMP_PROD__))) return 1; // No memory has been allocated YET
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, mag_val);
-        __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
+        if (unlikely(__BIGINT_MUT_COPY__(x, __TEMP_PROD__))) { __BIGINT_FREE__(&__TEMP_PROD__); return 1; }
         __BIGINT_FREE__(&__TEMP_PROD__);
     }
     x->sign *= (val < 0) ? -1 : 1;
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
+uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {        //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x));
     if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
 
@@ -544,16 +539,16 @@ uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
     else {
         uint64_t mag_val = __MAG_I64__(val);
         bigInt temp_quot; uint64_t temp_rem;
-        __BIGINT_EMPTY_INIT__(&temp_quot);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) return 1; // No memory has been allocated YET
         __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, mag_val);
         temp_quot.sign = x->sign * ((val < 0) ? -1 : 1);
         __BIGINT_NORMALIZE__(&temp_quot);
-        __BIGINT_MUT_COPY__(x, temp_quot);
+        if (unlikely(__BIGINT_MUT_COPY__(x, temp_quot))) { __BIGINT_FREE__(&temp_quot); return 1; }
         __BIGINT_FREE__(&temp_quot);
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
+uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {        //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x) && val);
     if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
 
@@ -566,7 +561,7 @@ uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
         else if (!comp_res) __BIGINT_RESET__(x);
         else {
             bigInt temp_quot; uint64_t temp_rem;
-            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return 1;
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) return 1; // No memory has been allocated YET
             __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, mag_val);
             x->limbs[0] = temp_rem;
             x->n        = (temp_rem) ? 1 : 0;
@@ -577,28 +572,24 @@ uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
 }
 uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {}
 uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {}
-uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
+uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {                 //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y)) return 1;
 
     if (x->n == 0) return 0;
-    if (!y.n) {
-        uint8_t op_res = __BIGINT_RESET__(x);
-        if (unlikely(op_res)) return 1;
-        return 0;
-    }
-    if (y.n == 1 && y.limbs[0] == 1);
-    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY__(x, y);
+    if (!y.n) __BIGINT_RESET__(x);
+    else if (x->n == 1 && x->limbs[0] == 1) { if (unlikely(__BIGINT_MUT_COPY__(x, y))) return 1; }
     else {
-        bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
+        bigInt __TEMP_PROD__; 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&__TEMP_PROD__))) return 1; // No memory has been allocated YET
         __BIGINT_MAGNITUDED_MUL__(&__TEMP_PROD__, x, &y);
-        __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
+        if (unlikely(__BIGINT_MUT_COPY__(x, __TEMP_PROD__))) { __BIGINT_FREE__(&__TEMP_PROD__); return 1; }
         __BIGINT_FREE__(&__TEMP_PROD__);
     }
     x->sign *= y.sign;
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
+uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {                 //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_PVALIDATE__(x) || __BIGINT_VALIDATE__(y)) return 1;
     if (!y.n) return 1;
@@ -608,16 +599,21 @@ uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
     else {
         bigInt temp_quot, temp_rem;
-        __BIGINT_EMPTY_INIT__(&temp_quot); __BIGINT_EMPTY_INIT__(&temp_rem);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) return 1; // No memory has been allocated YET
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_rem))) return 1; // No memory has been allocated YET
         __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &temp_rem, x, &y);
         temp_quot.sign = x->sign * y.sign;
         __BIGINT_NORMALIZE__(&temp_quot);
-        __BIGINT_MUT_COPY__(x, temp_quot);
+        if (unlikely(__BIGINT_MUT_COPY__(x, temp_quot))) {
+            __BIGINT_FREE__(&temp_quot); 
+            __BIGINT_FREE__(&temp_rem);
+            return 1;
+        }
         __BIGINT_FREE__(&temp_quot); __BIGINT_FREE__(&temp_rem);
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {
+uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {                 //? REFACTORED
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_PVALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return 1;
     if (!y.n) return 1;
@@ -630,11 +626,15 @@ uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {
         else if (!comp_res) __BIGINT_RESET__(x);
         else {
             bigInt temp_quot, temp_rem;
-            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return 1;
-            if (__BIGINT_EMPTY_INIT__(&temp_rem)) return 1;
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) return 1; // No memory has been allocated YET
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_rem))) return 1; // No memory has been allocated YET
             __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &temp_rem, x, &y);
             temp_rem.sign = x->sign;
-            __BIGINT_MUT_COPY__(x, temp_rem);
+            if (unlikely(__BIGINT_MUT_COPY__(x, temp_rem))) {
+                __BIGINT_FREE__(&temp_quot);
+                __BIGINT_FREE__(&temp_rem);
+                return 1;
+            };
             __BIGINT_FREE__(&temp_rem);
             __BIGINT_FREE__(&temp_quot);
         }
@@ -642,16 +642,28 @@ uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {
     return 0;
 }
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
-bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {
+bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {              //? REFACTORED
     assert(__BIGINT_VALIDATE__(x));
     if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
 
     bigInt res;
-    if (!x.n || !val) __BIGINT_EMPTY_INIT__(&res);
-    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_UI64_INIT__(&res, val);
-    else if (val == 1) __BIGINT_STANDARD_INIT__(&res, x);
+    if (!x.n || !val) { 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&res))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
+    else if (x.n == 1 && x.limbs[0] == 1) { 
+        if (unlikely(__BIGINT_UI64_INIT__(&res, val))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
+    else if (val == 1) {
+        if (unlikely(__BIGINT_STANDARD_INIT__(&res, x))) {
+            return __BIGINT_ERROR_VALUE__();
+        }
+    }
     else { // Standard Case
-        __BIGINT_EMPTY_INIT__(&res);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&res))) return __BIGINT_ERROR_VALUE__();
         __BIGINT_MAGNITUDED_MUL_UI64__(&res, &x, val);
     }
     res.sign = x.sign;
