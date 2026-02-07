@@ -1,4 +1,4 @@
-#include "../Headers/mul.h"
+#include "../header/mul.h"
 
 /* SIMPLE - INTERMEDIATE ALGORITHMS */
 void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b) {

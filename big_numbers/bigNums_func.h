@@ -313,6 +313,7 @@ uint8_t __BIGINT_RESET__(bigInt *x);
 static inline uint8_t __BIGINT_MUTATIVE_SUBJECT_VALIDATE__(bigInt *x);
 static inline uint8_t __BIGINT_STATE_VALIDATE__(bigInt x);
 inline uint8_t __BIGINT_VALIDATE__(bigInt x);
+inline uint8_t __BIGINT_PVALIDATE__(bigInt *x);
 
 #define bigInt_canonicalize     __BIGINT_CANONICALIZE__
 #define bigInt_normalize        __BIGINT_NORMALIZE__

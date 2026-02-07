@@ -100,10 +100,24 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/bigNum_utils.c" -o CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.s
 
+CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: CMakeFiles/bigInt_casual_comp.dir/flags.make
+CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/misc_utils.c
+CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: CMakeFiles/bigInt_casual_comp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o -MF CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o.d -o CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o -c "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/misc_utils.c"
+
+CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/misc_utils.c" > CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.i
+
+CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/misc_utils.c" -o CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.s
+
 CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: CMakeFiles/bigInt_casual_comp.dir/flags.make
 CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.c
 CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: CMakeFiles/bigInt_casual_comp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o -MF CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o.d -o CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o -c "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/intrinsics/limb_math.c"
 
 CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.i: cmake_force
@@ -114,53 +128,55 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/intrinsics/limb_math.c" -o CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.s
 
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o: CMakeFiles/bigInt_casual_comp.dir/flags.make
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/Source\ Codes/mul.c
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o: CMakeFiles/bigInt_casual_comp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o -MF CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o.d -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o -c "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/Source Codes/mul.c"
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: CMakeFiles/bigInt_casual_comp.dir/flags.make
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/mul.c
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: CMakeFiles/bigInt_casual_comp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o -MF CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o.d -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o -c "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/mul.c"
 
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/Source Codes/mul.c" > CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.i
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/mul.c" > CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.i
 
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/Source Codes/mul.c" -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.s
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/mul.c" -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.s
 
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o: CMakeFiles/bigInt_casual_comp.dir/flags.make
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/Source\ Codes/div.c
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o: CMakeFiles/bigInt_casual_comp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o -MF CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o.d -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o -c "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/Source Codes/div.c"
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: CMakeFiles/bigInt_casual_comp.dir/flags.make
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/div.c
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: CMakeFiles/bigInt_casual_comp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o -MF CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o.d -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o -c "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/div.c"
 
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/Source Codes/div.c" > CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.i
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/div.c" > CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.i
 
-CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/Source Codes/div.c" -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.s
+CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/div.c" -o CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.s
 
 # Object files for target bigInt_casual_comp
 bigInt_casual_comp_OBJECTS = \
 "CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o" \
 "CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o" \
+"CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o" \
 "CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o" \
-"CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o" \
-"CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o"
+"CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o" \
+"CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o"
 
 # External object files for target bigInt_casual_comp
 bigInt_casual_comp_EXTERNAL_OBJECTS =
 
 bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o
 bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o
+bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o
 bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o
-bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/mul.c.o
-bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/Source_Codes/div.c.o
+bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o
+bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o
 bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/build.make
 bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Linking C executable bigInt_casual_comp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Linking C executable bigInt_casual_comp"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bigInt_casual_comp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

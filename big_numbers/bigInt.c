@@ -508,7 +508,7 @@ uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
     if (x->n == 0) return 0;
     if (!y.n) {
         uint8_t op_res = __BIGINT_RESET__(x);
-        if (uinlikely(op_res)) return 1;
+        if (unlikely(op_res)) return 1;
         return 0;
     }
     if (y.n == 1 && y.limbs[0] == 1);

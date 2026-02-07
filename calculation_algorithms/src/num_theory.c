@@ -1,4 +1,4 @@
-#include "../Headers/num_theory.h"
+#include "../header/num_theory.h"
 #include "../../big_numbers/bigNums.h"
 
 /* GCD - GREATEST COMMON DENOMINATOR */

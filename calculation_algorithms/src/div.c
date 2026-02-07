@@ -1,4 +1,4 @@
-#include "../Headers/div.h"
+#include "../header/div.h"
 
 /* SIMPLE ALGORITHMS */
 void __BIGINT_SHORT_DIVISION__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}

@@ -1,4 +1,4 @@
-#include "../Headers/pow_root.h"
+#include "../header/pow_root.h"
 #include "../../big_numbers/bigNums.h"
 
 /* SIMPLE - INTERMEDIATE ALGORITHMS */
