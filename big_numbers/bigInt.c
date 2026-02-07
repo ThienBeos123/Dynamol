@@ -474,7 +474,24 @@ uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
     }
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {}
+uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
+    assert(__BIGINT_PVALIDATE__(x));
+    if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
+
+    if (x->n == 0);
+    else if (val == 1);
+    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
+    else {
+        bigInt temp_quot; uint64_t temp_rem;
+        __BIGINT_EMPTY_INIT__(&temp_quot);
+        __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, val);
+        temp_quot.sign = x->sign;
+        __BIGINT_NORMALIZE__(&temp_quot);
+        __BIGINT_MUT_COPY__(x, temp_quot);
+        __BIGINT_FREE__(&temp_quot);
+    }
+    return 0;
+}
 uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {}
 uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_PVALIDATE__(x));
@@ -497,7 +514,25 @@ uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     x->sign *= (val < 0) ? -1 : 1;
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {}
+uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
+    assert(__BIGINT_PVALIDATE__(x));
+    if (!__BIGINT_PVALIDATE__(x) || !val) return 1;
+
+    if (x->n == 0);
+    else if (val == 1 || val == -1) x->sign *= val;
+    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
+    else {
+        uint64_t mag_val = __MAG_I64__(val);
+        bigInt temp_quot; uint64_t temp_rem;
+        __BIGINT_EMPTY_INIT__(&temp_quot);
+        __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, x, mag_val);
+        temp_quot.sign = x->sign * ((val < 0) ? -1 : 1);
+        __BIGINT_NORMALIZE__(&temp_quot);
+        __BIGINT_MUT_COPY__(x, temp_quot);
+        __BIGINT_FREE__(&temp_quot);
+    }
+    return 0;
+}
 uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {}
 uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {}
 uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {}
@@ -522,7 +557,25 @@ uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
     x->sign *= y.sign;
     return 0;
 }
-uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
+    assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_PVALIDATE__(x) || __BIGINT_VALIDATE__(y)) return 1;
+    if (!y.n) return 1;
+
+    if (x->n == 0);
+    else if (y.n == 1 && y.limbs[0] == 1) x->sign *= y.sign;
+    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
+    else {
+        bigInt temp_quot, temp_rem;
+        __BIGINT_EMPTY_INIT__(&temp_quot); __BIGINT_EMPTY_INIT__(&temp_rem);
+        __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &temp_rem, x, &y);
+        temp_quot.sign = x->sign * y.sign;
+        __BIGINT_NORMALIZE__(&temp_quot);
+        __BIGINT_MUT_COPY__(x, temp_quot);
+        __BIGINT_FREE__(&temp_quot); __BIGINT_FREE__(&temp_rem);
+    }
+    return 0;
+}
 uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {}
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
 bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {
