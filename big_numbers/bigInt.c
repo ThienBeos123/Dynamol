@@ -144,9 +144,7 @@ uint8_t __BIGINT_GET_I64__(int64_t val, bigInt *receiver) {
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(receiver));
     if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(receiver)) return 1;
 
-    uint64_t abs_val = (val == INT64_MIN) ? 
-        (uint64_t)(llabs(val + 1)) + 1 :
-        (uint64_t)(llabs(val));
+    uint64_t abs_val = __MAG_I64__(val);
     receiver->limbs[0] = abs_val;
     receiver->n        = (val) ? 1 : 0;
     receiver->sign     = (val < 0) ? -1 : 1;
@@ -490,9 +488,7 @@ uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     else if (val == 1 || val == -1);
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_I64__(x, val);
     else {
-        uint64_t mag_val = (val == INT64_MIN) ? 
-            (uint64_t)(llabs(val + 1)) + 1 :
-            (uint64_t)(llabs(val));
+        uint64_t mag_val = __MAG_I64__(val);
         bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, mag_val);
         __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
@@ -544,8 +540,23 @@ bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {
     res.sign = x.sign;
     return res;
 }
-bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val) {}
-bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {}
+bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val) {
+    assert(__BIGINT_VALIDATE__(x) && val);
+    if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
+
+    bigInt quot;
+    if (x.n == 0) __BIGINT_EMPTY_INIT__(&quot);
+    else if (val == 1) __BIGINT_STANDARD_INIT__(&quot, x);
+    else if (x.n == 1 && x.limbs[0]) __BIGINT_EMPTY_INIT__(&quot);
+    else {
+        __BIGINT_EMPTY_INIT__(&quot); uint64_t temp_rem;
+        __BIGINT_MAGNITUDED_DIVMOD_UI64__(&quot, &temp_rem, &x, val);
+        quot.sign = x.sign;
+        __BIGINT_NORMALIZE__(&quot);
+    }
+    return quot;
+}
+uint64_t __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {}
 bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val) {
     assert(__BIGINT_VALIDATE__(x));
     if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
@@ -555,17 +566,35 @@ bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val) {
     else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_I64_INIT__(&res, val);
     else if (llabs(val) == 1) __BIGINT_STANDARD_INIT__(&res, x);
     else {
-        uint64_t mag_val = (val == INT64_MIN) ? 
-            (uint64_t)(llabs(val + 1)) + 1 : 
-            (uint64_t)(llabs(val));
+        uint64_t mag_val = __MAG_I64__(val);
         __BIGINT_EMPTY_INIT__(&res);
         __BIGINT_MAGNITUDED_MUL_UI64__(&res, &x, mag_val);
     }
     res.sign = x.sign * ((val < 0) ? -1 : 1);
     return res;
 }
-bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val) {}
-bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {}
+bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val) {
+    assert(__BIGINT_VALIDATE__(x) && val);
+    if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
+
+    bigInt quot;
+    if (x.n == 0) __BIGINT_EMPTY_INIT__(&quot);
+    else if (val == 1 || val == -1) {
+        __BIGINT_STANDARD_INIT__(&quot, x);
+        quot.sign *= val;
+    }
+    // Idiomatic C-style Integer Division
+    else if (x.n == 1 && x.limbs[0]) __BIGINT_EMPTY_INIT__(&quot);
+    else {
+        uint64_t mag_val = __MAG_I64__(val);
+        __BIGINT_EMPTY_INIT__(&quot); uint64_t temp_rem;
+        __BIGINT_MAGNITUDED_DIVMOD_UI64__(&quot, &temp_rem, &x, mag_val);
+        quot.sign = x.sign * ((val < 0) ? -1 : 1);
+        __BIGINT_NORMALIZE__(&quot);
+    }
+    return quot;
+}
+int64_t __BIGINT_MOD_I64__(const bigInt x, int64_t val) {}
 bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {}
 bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {}
 bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
@@ -583,7 +612,29 @@ bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
     res.sign = x.sign * y.sign;
     return res;
 }
-bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(y.n);
+    if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
+    if (!y.n) return __BIGINT_ERROR_VALUE__();
+
+    bigInt quot;
+    if (x.n == 0) __BIGINT_EMPTY_INIT__(&quot);
+    else if (y.n == 1 && y.limbs[0] == 1) {
+        __BIGINT_STANDARD_INIT__(&quot, x);
+        quot.sign *= y.sign;
+    }
+    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_EMPTY_INIT__(&quot);
+    else {
+        __BIGINT_EMPTY_INIT__(&quot);
+        bigInt temp_rem; __BIGINT_EMPTY_INIT__(&temp_rem);
+        __BIGINT_MAGNITUDED_DIVMOD__(&quot, &temp_rem, &x, &y);
+        quot.sign = x.sign * y.sign;
+        __BIGINT_NORMALIZE__(&quot);
+        __BIGINT_FREE__(&temp_rem);
+    }
+    return quot;
+}
 bigInt __BIGINT_MOD__(const bigInt x, const bigInt y) {}
 
 

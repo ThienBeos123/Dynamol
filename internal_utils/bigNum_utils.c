@@ -65,8 +65,7 @@ void __BIGINT_INTERNAL_ZSET__(bigInt *x) {
     x->n    = 0;
     x->sign = 1;
 }
-size_t __BIGINT_COUNTDB__() {}
-uint8_t __COUNT_DIGIT_BASE__() {}
+size_t __BIGINT_COUNTDB__(const bigInt x) {}
 
 /* Internal Arithmetic */
 void __BIGINT_INTERNAL_ADD_UI64__(bigInt *x, uint64_t val) {
