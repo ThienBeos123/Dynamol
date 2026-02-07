@@ -457,17 +457,17 @@ void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b,
 //* ============================================ SIGNED ARITHMETIC ========================================== */
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
 uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
-    assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(x));
-    if (!__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(x)) return 1;
+    assert(__BIGINT_PVALIDATE__(x));
+    if (!__BIGINT_PVALIDATE__(x)) return 1;
 
     if (x->n == 0) return 0;
-    if (val == 1) return 0;
-    if (!val) { 
+    if (val == 1);
+    else if (!val) { 
         uint8_t op_res = __BIGINT_RESET__(x);
         if (unlikely(op_res)) return 1;
         else return 0;
     }
-    if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_UI64__(x, val);
+    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_UI64__(x, val);
     else {
         bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, val);
@@ -478,12 +478,54 @@ uint8_t __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
 }
 uint8_t __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {}
 uint8_t __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {}
-uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {}
+uint8_t __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
+    assert(__BIGINT_PVALIDATE__(x));
+    if (!__BIGINT_PVALIDATE__(x)) return 1;
+
+    if (x->n == 0) return 0;
+    if (!val) {
+        uint8_t op_res = __BIGINT_RESET__(x);
+        if (unlikely(op_res)) return 1;
+    }
+    else if (val == 1 || val == -1);
+    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_I64__(x, val);
+    else {
+        uint64_t mag_val = (val == INT64_MIN) ? 
+            (uint64_t)(llabs(val + 1)) + 1 :
+            (uint64_t)(llabs(val));
+        bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
+        __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, mag_val);
+        __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
+        __BIGINT_FREE__(&__TEMP_PROD__);
+    }
+    x->sign *= (val < 0) ? -1 : 1;
+    return 0;
+}
 uint8_t __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {}
 uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {}
 uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {}
 uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {}
-uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
+    assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y)) return 1;
+
+    if (x->n == 0) return 0;
+    if (!y.n) {
+        uint8_t op_res = __BIGINT_RESET__(x);
+        if (uinlikely(op_res)) return 1;
+        return 0;
+    }
+    if (y.n == 1 && y.limbs[0] == 1);
+    else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY__(x, y);
+    else {
+        bigInt __TEMP_PROD__; __BIGINT_EMPTY_INIT__(&__TEMP_PROD__);
+        __BIGINT_MAGNITUDED_MUL__(&__TEMP_PROD__, x, &y);
+        __BIGINT_MUT_COPY__(x, __TEMP_PROD__);
+        __BIGINT_FREE__(&__TEMP_PROD__);
+    }
+    x->sign *= y.sign;
+    return 0;
+}
 uint8_t __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {}
 uint8_t __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {}
 /* ------------------ FUNCTIONAL ARITHMETIC ------------------- */
@@ -912,7 +954,17 @@ inline uint8_t __BIGINT_VALIDATE__(bigInt x) {
     if (x.n == 0 && x.sign != 1) return 0;
     return 1;
 }
-
+inline uint8_t __BIGINT_PVALIDATE__(bigInt *x) {
+    /* State Validation */
+    if (x->limbs == NULL) return 0;
+    if (x->cap < 1) return 0;
+    if (x->n > x->cap) return 0;
+    if (x->sign != 1 && x->sign != -1) return 0;
+    /* Arithmetic Validation */
+    if (x->limbs[x->n - 1] == 0) return 0;
+    if (x->n == 0 && x->sign != 1) return 0;
+    return 1;
+}
 
 
 
