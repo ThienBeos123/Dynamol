@@ -8,6 +8,10 @@
 #include "../system/numeric_config.h"
 
 
+#define min(x, y) ( ((x) < (y)) ? (x) : (y) )
+#define max(x, y) ( ((x) > (y)) ? (x) : (y) )
+
+
 /* 128 bit Integer */
 #if defined(__SIZEOF_INT128__)
     #define __HAS_int128__  1

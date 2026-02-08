@@ -32,9 +32,9 @@ uint8_t __BIGINT_UI64_INIT__(bigInt *__bigInteger, uint64_t __unsigned_int); // 
 uint8_t __BIGINT_I64_INIT__(bigInt *__bigInteger, int64_t __signed_int); // Initialize from primitive int (-2^63 <= x <= 2^63 - 1 )
 uint8_t __BIGINT_LD_INIT__(bigInt *__bigInteger, long double __float );
 
-#define bigInt_free             __BIGINT_FREE__
-#define bigInt_init(x, ...) \
-    _Generic((__VA_ARGS__) /* __VA_ARGS__: Takes a variety of types */,     \
+#define bigInt_free __BIGINT_FREE__
+#define bigInt_init(initializing, initializer) \
+    _Generic((initializer)                                                  \
         /* Signed, INTEGER Initialization */                                \
         char:                       __BIGINT_I64_INIT__,                    \
         int:                        __BIGINT_I64_INIT__,                    \
@@ -66,10 +66,11 @@ uint8_t __BIGINT_LD_INIT__(bigInt *__bigInteger, long double __float );
                                                                             \
         /* Empty Initialization */                                          \
         default:                    __BIGINT_EMPTY_INIT__                   \
-    )(x, ##__VA_ARGS__) /* ##__VA_ARGS__: __VA_ARGS__ + accepts no input */
+)(initializing, initializer);
 
 
 //* ------------------------ ASSIGNMENTS ------------------------ */
+uint8_t __BIGINT_SET_BIGINT__(const bigInt x, bigInt *receiver);
 /* --------- BigInt --> Primitive Types --------- */
 uint8_t __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver);
 uint8_t __BIGINT_SET_I64__(const bigInt x, int64_t *receiver);
@@ -82,6 +83,37 @@ uint8_t __BIGINT_GET_UI64__(uint64_t x, bigInt *receiver);
 uint8_t __BIGINT_GET_I64__(int64_t x, bigInt *receiver);
 uint8_t __BIGINT_GET_LD__(long double x, bigInt *receiver);
 uint8_t __BIGINT_GET_LD_SAFE__(long double x, bigInt *receiver);
+
+#define bigInt_set(receiver, giver) \
+    _Generic((receiver)                                         \
+        /* Signed, INTEGER Variants */                          \
+        char*:                       __BIGINT_SET_I64__,        \
+        int*:                        __BIGINT_SET_I64__,        \
+        long*:                       __BIGINT_SET_I64__,        \
+        long long*:                  __BIGINT_SET_I64__,        \
+        int8_t*:                     __BIGINT_SET_I64__,        \
+        int16_t*:                    __BIGINT_SET_I64__,        \
+        int32_t*:                    __BIGINT_SET_I64__,        \
+        int64_t*:                    __BIGINT_SET_I64__,        \
+                                                                \
+        /* Unsigned, INTEGER Variants */                        \
+        unsigned char*:              __BIGINT_SET_UI64__,       \
+        unsigned int*:               __BIGINT_SET_UI64__,       \
+        unsigned long*:              __BIGINT_SET_UI64__,       \
+        unsigned long long*:         __BIGINT_SET_UI64__,       \
+        uint8_t*:                    __BIGINT_SET_UI64__,       \
+        uint16_t*:                   __BIGINT_SET_UI64__,       \
+        uint32_t*:                   __BIGINT_SET_UI64__,       \
+        uint64_t*:                   __BIGINT_SET_UI64__,       \
+                                                                \
+        /* Floating Point Variants */                           \
+        float*:                      __BIGINT_SET_LD__,         \
+        double*:                     __BIGINT_SET_LD__,         \
+        long double*:                __BIGINT_SET_LD__,         \
+                                                                \
+        /* Normal/BigInt Variant */                             \
+        bigInt*                     __BIGINT_SET_BIGINT__       \
+)(receiver, giver) /* Don't accept no input */
 
 
 //* ------------------------ CONVERSIONS ------------------------ */
@@ -98,12 +130,62 @@ bigInt __BIGINT_FROM_LD_(long double x);
 bigInt __BIGINT_FROM_LD_SAFE__(long double x);
 
 
-/* -------------------- BITWISE OPERATIONS --------------------- */
+
+//* -------------------- BITWISE OPERATIONS --------------------- */
+bigInt __BIGINT_NOT__(const bigInt x);
+bigInt __BIGINT_RSHIFT__(const bigInt x, size_t k);
+bigInt __BIGINT_LSHIFT__(const bigInt x, size_t k);
+uint8_t __BIGINT_MUT_RSHIFT__(bigInt *x, size_t k);
+uint8_t __BIGINT_MUT_LSHIFT__(bigInt *x, size_t k);
+/* ------------- Mutative Bitwise Operations ------------- */
+uint8_t __BIGINT_MUT_AND_UI64__  (bigInt *x, uint64_t y);
+uint8_t __BIGINT_MUT_NAND_UI64__ (bigInt *x, uint64_t y);
+uint8_t __BIGINT_MUT_OR_UI64__   (bigInt *x, uint64_t y);
+uint8_t __BIGINT_MUT_NOR_UI64__  (bigInt *x, uint64_t y);
+uint8_t __BIGINT_MUT_XOR_UI64__  (bigInt *x, uint64_t y);
+uint8_t __BIGINT_MUT_XNOR_UI64__ (bigInt *x, uint64_t y);
+uint8_t __BIGINT_MUT_AND__  (bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_NAND__ (bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_OR__   (bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_NOR__  (bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_XOR__  (bigInt *x, const bigInt y);
+uint8_t __BIGINT_MUT_XNOR__ (bigInt *x, const bigInt y);
+/* ------------- Functional, Fixed-width ------------- */
+bigInt __BIGINT_AND_UI64__  (const bigInt x, uint64_t val);
+bigInt __BIGINT_NAND_UI64__ (const bigInt x, uint64_t val);
+bigInt __BIGINT_OR_UI64__   (const bigInt x, uint64_t val);
+bigInt __BIGINT_NOR_UI64__  (const bigInt x, uint64_t val);
+bigInt __BIGINT_XOR_UI64__  (const bigInt x, uint64_t val);
+bigInt __BIGINT_XNOR_UI64__ (const bigInt x, uint64_t val);
+bigInt __BIGINT_AND__   (const bigInt x, const bigInt y);
+bigInt __BIGINT_NAND__  (const bigInt x, const bigInt y);
+bigInt __BIGINT_OR__    (const bigInt x, const bigInt y);
+bigInt __BIGINT_NOR__   (const bigInt x, const bigInt y);
+bigInt __BIGINT_XOR__   (const bigInt x, const bigInt y);
+bigInt __BIGINT_XNOR__  (const bigInt x, const bigInt y);
+/* ------------- Functional, Explicit-width ------------- */
+bigInt __BIGINT_EX_AND_UI64__  (const bigInt x, uint64_t val, size_t width);
+bigInt __BIGINT_EX_NAND_UI64__ (const bigInt x, uint64_t val, size_t width);
+bigInt __BIGINT_EX_OR_UI64__   (const bigInt x, uint64_t val, size_t width);
+bigInt __BIGINT_EX_NOR_UI64__  (const bigInt x, uint64_t val, size_t width);
+bigInt __BIGINT_EX_XOR_UI64__  (const bigInt x, uint64_t val, size_t width);
+bigInt __BIGINT_EX_XNOR_UI64__ (const bigInt x, uint64_t val, size_t width);
+bigInt __BIGINT_EX_AND_I64__  (const bigInt x, int64_t val, size_t width);
+bigInt __BIGINT_EX_NAND_I64__ (const bigInt x, int64_t val, size_t width);
+bigInt __BIGINT_EX_OR_I64__   (const bigInt x, int64_t val, size_t width);
+bigInt __BIGINT_EX_NOR_I64__  (const bigInt x, int64_t val, size_t width);
+bigInt __BIGINT_EX_XOR_I64__  (const bigInt x, int64_t val, size_t width);
+bigInt __BIGINT_EX_XNOR_I64__ (const bigInt x, int64_t val, size_t width);
+bigInt __BIGINT_EX_AND__   (const bigInt x, const bigInt y, size_t width);
+bigInt __BIGINT_EX_NAND__  (const bigInt x, const bigInt y, size_t width);
+bigInt __BIGINT_EX_OR__    (const bigInt x, const bigInt y, size_t width);
+bigInt __BIGINT_EX_NOR__   (const bigInt x, const bigInt y, size_t width);
+bigInt __BIGINT_EX_XOR__   (const bigInt x, const bigInt y, size_t width);
+bigInt __BIGINT_EX_XNOR__  (const bigInt x, const bigInt y, size_t width);
 
 
 
-
-/* ------------------------ COMPARISONS ------------------------ */
+//* ------------------------ COMPARISONS ------------------------ */
 int8_t __BIGINT_COMPARE_MAGNITUDE_UI64__(const bigInt *x, const uint64_t val);
 int8_t __BIGINT_COMPARE_MAGNITUDE__(const bigInt *a, const bigInt *b);
 /* --------------- Integer - I64 --------------- */
@@ -317,7 +399,9 @@ inline uint8_t __BIGINT_PVALIDATE__(bigInt *x);
 
 #define bigInt_canonicalize     __BIGINT_CANONICALIZE__
 #define bigInt_normalize        __BIGINT_NORMALIZE__
+#define bigInt_resize           __BIGINT_RESIZE__
 #define bigInt_reserve          __BIGINT_RESERVE__
+#define bigInt_shrink           __BIGINT_SHRINK__
 #define bigInt_reset            __BIGINT_RESET__
 
 #ifdef __cplusplus

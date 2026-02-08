@@ -29,21 +29,11 @@ add_executable(bigInt_casual_comp
 
 target_compile_options(bigInt_casual_comp PRIVATE -Wno-unused-function)
 
-# =====================================================
-# BigInt_IO Executable (for future use)
-# =====================================================
-# Uncomment this when you're ready to test bigInt_io.c
+# # =====================================================
+# # BigInt_IO Executable (for future use)
+# # =====================================================
 # add_executable(bigInt_io_test
 #     big_numbers/bigInt_io.c
-#     internal_utils/bigNum_utils.c
-#     intrinsics/limb_math.c
-# )
-
-# =====================================================
-# Other BigNumber Types (for future use)
-# =====================================================
-# add_executable(bigInt128_test
-#     big_numbers/someInt128File.c
 #     internal_utils/bigNum_utils.c
 #     intrinsics/limb_math.c
 # )
