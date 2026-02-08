@@ -669,36 +669,43 @@ bigInt __BIGINT_MUL_UI64__(const bigInt x, uint64_t val) {              //? REFA
     res.sign = x.sign;
     return res;
 }
-bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val) {
+bigInt __BIGINT_DIV_UI64__(const bigInt x, uint64_t val) {              //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && val);
     if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
 
     bigInt quot;
-    if (x.n == 0) __BIGINT_EMPTY_INIT__(&quot);
-    else if (val == 1) __BIGINT_STANDARD_INIT__(&quot, x);
-    else if (x.n == 1 && x.limbs[0]) __BIGINT_EMPTY_INIT__(&quot);
+    if (x.n == 0) { if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__(); }
+    else if (val == 1) { if (unlikely(__BIGINT_STANDARD_INIT__(&quot, x))) return __BIGINT_ERROR_VALUE__(); }
+    else if (x.n == 1 && x.limbs[0]) { 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__(); 
+    }
     else {
-        __BIGINT_EMPTY_INIT__(&quot); uint64_t temp_rem;
+        uint64_t temp_rem;
+        if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__();
         __BIGINT_MAGNITUDED_DIVMOD_UI64__(&quot, &temp_rem, &x, val);
         quot.sign = x.sign;
         __BIGINT_NORMALIZE__(&quot);
     }
     return quot;
 }
-bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {
+bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {              //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && val);
     if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
 
     bigInt rem;
-    if (x.n == 0 || val == 1) { if (__BIGINT_EMPTY_INIT__(&rem)) return __BIGINT_ERROR_VALUE__(); }
+    if (x.n == 0 || val == 1) { if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__(); }
     else {
         int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE_UI64__(&x, val);
-        if (comp_res < 0) { if (__BIGINT_STANDARD_INIT__(&rem, x)) return __BIGINT_ERROR_VALUE__(); }
-        else if (!comp_res) { if (__BIGINT_EMPTY_INIT__(&rem)) return __BIGINT_ERROR_VALUE__(); }
+        if (comp_res < 0) { if (unlikely(__BIGINT_STANDARD_INIT__(&rem, x))) return __BIGINT_ERROR_VALUE__(); }
+        else if (!comp_res) { if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__(); }
         else {
-            if (__BIGINT_EMPTY_INIT__(&rem)) return __BIGINT_ERROR_VALUE__();
+            if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__();
             bigInt temp_quot; uint64_t temp_rem;
-            if (__BIGINT_EMPTY_INIT__(&temp_quot)) return __BIGINT_ERROR_VALUE__();
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) {
+                __BIGINT_FREE__(&rem);
+                return __BIGINT_ERROR_VALUE__();
+                // rem's memory is already allocated, temp_quot's hasn't
+            }
             __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, &x, val);
             rem.limbs[0] = temp_rem;
             rem.n        = (temp_rem) ? 1 : 0;
@@ -708,58 +715,84 @@ bigInt __BIGINT_MOD_UI64__(const bigInt x, uint64_t val) {
     }
     return rem;
 }
-bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val) {
+bigInt __BIGINT_MUL_I64__(const bigInt x, int64_t val) {        //? REFACTORED
     assert(__BIGINT_VALIDATE__(x));
     if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
 
     bigInt res;
-    if (!x.n || !val) __BIGINT_EMPTY_INIT__(&res);
-    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_I64_INIT__(&res, val);
-    else if (llabs(val) == 1) __BIGINT_STANDARD_INIT__(&res, x);
+    if (!x.n || !val) { 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&res))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
+    else if (x.n == 1 && x.limbs[0] == 1) { 
+        if (unlikely(__BIGINT_I64_INIT__(&res, val))) {
+            return __BIGINT_ERROR_VALUE__();
+        } 
+    }
+    else if (val == 1 || val == -1) { 
+        if (unlikely(__BIGINT_STANDARD_INIT__(&res, x))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
     else {
         uint64_t mag_val = __MAG_I64__(val);
-        __BIGINT_EMPTY_INIT__(&res);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&res))) return __BIGINT_ERROR_VALUE__();
         __BIGINT_MAGNITUDED_MUL_UI64__(&res, &x, mag_val);
     }
     res.sign = x.sign * ((val < 0) ? -1 : 1);
     return res;
 }
-bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val) {
+bigInt __BIGINT_DIV_I64__(const bigInt x, int64_t val) {        //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && val);
     if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
 
     bigInt quot;
-    if (x.n == 0) __BIGINT_EMPTY_INIT__(&quot);
+    if (x.n == 0) { if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__(); }
     else if (val == 1 || val == -1) {
-        __BIGINT_STANDARD_INIT__(&quot, x);
+        if (unlikely(__BIGINT_STANDARD_INIT__(&quot, x))) {
+            return __BIGINT_ERROR_VALUE__();
+        }
         quot.sign *= val;
     }
     // Idiomatic C-style Integer Division
-    else if (x.n == 1 && x.limbs[0]) __BIGINT_EMPTY_INIT__(&quot);
+    else if (x.n == 1 && x.limbs[0]) { 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
     else {
-        uint64_t mag_val = __MAG_I64__(val);
-        __BIGINT_EMPTY_INIT__(&quot); uint64_t temp_rem;
+        uint64_t temp_rem, mag_val = __MAG_I64__(val);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__();
         __BIGINT_MAGNITUDED_DIVMOD_UI64__(&quot, &temp_rem, &x, mag_val);
         quot.sign = x.sign * ((val < 0) ? -1 : 1);
         __BIGINT_NORMALIZE__(&quot);
     }
     return quot;
 }
-bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {
+bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {        //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && val);
     if (!__BIGINT_VALIDATE__(x) || !val) return __BIGINT_ERROR_VALUE__();
 
     bigInt rem;
-    if (x.n == 0 || val == 1 || val == -1) __BIGINT_EMPTY_INIT__(&rem);
+    if (x.n == 0 || val == 1 || val == -1) {
+        if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) {
+            return __BIGINT_ERROR_VALUE__();
+        }
+    }
     else {
         uint64_t mag_val = __MAG_I64__(val);
         int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE_UI64__(&x, mag_val);
-        if (comp_res < 0) __BIGINT_STANDARD_INIT__(&rem, x);
-        else if (!comp_res) __BIGINT_EMPTY_INIT__(&rem);
+        if (comp_res < 0) { if (unlikely(__BIGINT_STANDARD_INIT__(&rem, x))) return __BIGINT_ERROR_VALUE__(); }
+        else if (!comp_res) { if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__(); }
         else {
-            __BIGINT_EMPTY_INIT__(&rem);
+            if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__();
             bigInt temp_quot; uint64_t temp_rem;
-            __BIGINT_EMPTY_INIT__(&temp_quot);
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) {
+                __BIGINT_FREE__(&rem);
+                return __BIGINT_ERROR_VALUE__();
+                // rem's memory has been allocated, temp_quot's hasn't
+            }
             __BIGINT_MAGNITUDED_DIVMOD_UI64__(&temp_quot, &temp_rem, &x, mag_val);
             rem.limbs[0] = temp_rem;
             rem.n        = (temp_rem) ? 1 : 0;
@@ -771,37 +804,56 @@ bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {
 }
 bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {}
 bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {}
-bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
+bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {                 //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
 
     bigInt res;
-    if (!x.n || !y.n) __BIGINT_EMPTY_INIT__(&res);
-    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_STANDARD_INIT__(&res, y);
-    else if (y.n == 1 && y.limbs[0] == 1) __BIGINT_STANDARD_INIT__(&res, x);
+    if (!x.n || !y.n) { if (unlikely(__BIGINT_EMPTY_INIT__(&res))) return __BIGINT_ERROR_VALUE__(); }
+    else if (x.n == 1 && x.limbs[0] == 1) { 
+        if (unlikely(__BIGINT_STANDARD_INIT__(&res, y))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
+    else if (y.n == 1 && y.limbs[0] == 1) {
+        if (unlikely(__BIGINT_STANDARD_INIT__(&res, x))) {
+            return __BIGINT_ERROR_VALUE__();
+        }
+    }
     else {
-        __BIGINT_EMPTY_INIT__(&res);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&res))) return __BIGINT_ERROR_VALUE__();
         __BIGINT_MAGNITUDED_MUL__(&res, &x, &y);
     }
     res.sign = x.sign * y.sign;
     return res;
 }
-bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {
+bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {                 //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(y.n);
     if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
     if (!y.n) return __BIGINT_ERROR_VALUE__();
 
     bigInt quot;
-    if (x.n == 0) __BIGINT_EMPTY_INIT__(&quot);
+    if (x.n == 0) { if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__(); }
     else if (y.n == 1 && y.limbs[0] == 1) {
-        __BIGINT_STANDARD_INIT__(&quot, x);
+        if (unlikely(__BIGINT_STANDARD_INIT__(&quot, x))) {
+            return __BIGINT_ERROR_VALUE__();
+        }
         quot.sign *= y.sign;
     }
-    else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_EMPTY_INIT__(&quot);
+    else if (x.n == 1 && x.limbs[0] == 1) { 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) {
+            return __BIGINT_ERROR_VALUE__(); 
+        }
+    }
     else {
-        __BIGINT_EMPTY_INIT__(&quot);
-        bigInt temp_rem; __BIGINT_EMPTY_INIT__(&temp_rem);
+        bigInt temp_rem; 
+        if (unlikely(__BIGINT_EMPTY_INIT__(&quot))) return __BIGINT_ERROR_VALUE__();
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_rem))) {
+            __BIGINT_FREE__(&quot);
+            return __BIGINT_ERROR_VALUE__();
+            // quot's memory has been allocated, temp_rem's hasn't
+        }
         __BIGINT_MAGNITUDED_DIVMOD__(&quot, &temp_rem, &x, &y);
         quot.sign = x.sign * y.sign;
         __BIGINT_NORMALIZE__(&quot);
@@ -809,20 +861,29 @@ bigInt __BIGINT_DIV__(const bigInt x, const bigInt y) {
     }
     return quot;
 }
-bigInt __BIGINT_MOD__(const bigInt x, const bigInt y) {
+bigInt __BIGINT_MOD__(const bigInt x, const bigInt y) {                 //? REFACTORED
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
 
     bigInt rem;
-    if (x.n == 0) __BIGINT_EMPTY_INIT__(&rem);
-    else if (y.n == 1 && y.limbs[0] == 1) __BIGINT_EMPTY_INIT__(&rem);
+    if (x.n == 0) { if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__(); }
+    else if (y.n == 1 && y.limbs[0] == 1) {
+        if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) {
+            return __BIGINT_ERROR_VALUE__();
+        }
+    }
     else {
         int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(&x, &y);
-        if (comp_res < 0) __BIGINT_STANDARD_INIT__(&rem, x);
-        else if (!comp_res) __BIGINT_EMPTY_INIT__(&rem);
+        if (comp_res < 0) { if (unlikely(__BIGINT_STANDARD_INIT__(&rem, x))) return __BIGINT_ERROR_VALUE__(); }
+        else if (!comp_res) { if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__(); }
         else {
-            __BIGINT_EMPTY_INIT__(&rem);
-            bigInt temp_quot; __BIGINT_EMPTY_INIT__(&temp_quot);
+            bigInt temp_quot;
+            if (unlikely(__BIGINT_EMPTY_INIT__(&rem))) return __BIGINT_ERROR_VALUE__();
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_quot))) {
+                __BIGINT_FREE__(&rem);
+                return __BIGINT_ERROR_VALUE__();
+                // rem's memory has been allocated, temp_quot's hasn't
+            }
             __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &rem, &x, &y);
             rem.sign = x.sign;
             __BIGINT_NORMALIZE__(&rem);
