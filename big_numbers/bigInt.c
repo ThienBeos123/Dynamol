@@ -580,8 +580,74 @@ uint8_t __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
         }
     }
 }
-uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {}
-uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {}
+uint8_t __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {
+    assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_PVALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return 1;
+
+    if (!y.n);
+    else if (!x->n) { if (unlikely(__BIGINT_MUT_COPY__(x, y))) return 1; }
+    else if (x->sign == y.sign) {
+        bigInt temp_sum;
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_sum))) return 1;
+        __BIGINT_MAGNITUDED_ADD__(&temp_sum, x, &y);
+        temp_sum.sign = x->sign;
+        if (unlikely(__BIGINT_MUT_COPY__(x, temp_sum))) {
+            __BIGINT_FREE__(&temp_sum);
+            return 1;
+        }
+        __BIGINT_FREE__(&temp_sum);
+    }
+    else {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(x, &y);
+        if (!comp_res) __BIGINT_RESET__(x);
+        else {
+            bigInt temp_sum;
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_sum))) return 1;
+            if (comp_res > 0) { __BIGINT_MAGNITUDED_SUB__(&temp_sum, x, &y); temp_sum.sign = x->sign; }
+            else { __BIGINT_MAGNITUDED_SUB__(&temp_sum, x, &y); temp_sum.sign = y.sign; }
+            if (unlikely(__BIGINT_MUT_COPY__(x, temp_sum))) {
+                __BIGINT_FREE__(&temp_sum);
+                return 1;
+            } __BIGINT_FREE__(&temp_sum);
+        }
+    }
+    return 0;
+}
+uint8_t __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {
+    assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_PVALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return 1;
+
+    if (!y.n);
+    else if (!x->n) { 
+        if (unlikely(__BIGINT_MUT_COPY__(x, y))) return 1; 
+        x->sign = -y.sign;
+    }
+    else if (x->sign == y.sign) {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(x, &y);
+        if (!comp_res) __BIGINT_RESET__(x);
+        else {
+            bigInt temp_diff;
+            if (unlikely(__BIGINT_EMPTY_INIT__(&temp_diff))) return 1;
+            if (comp_res > 0) { __BIGINT_MAGNITUDED_SUB__(&temp_diff, x, &y); temp_diff.sign = x->sign; }
+            else { __BIGINT_MAGNITUDED_SUB__(&temp_diff, x,  &y); temp_diff.sign = -x->sign; }
+            if (unlikely(__BIGINT_MUT_COPY__(x, temp_diff))) {
+                __BIGINT_FREE__(&temp_diff);
+                return 1;
+            } __BIGINT_FREE__(&temp_diff);
+        }
+    }
+    else {
+        bigInt temp_diff;
+        if (unlikely(__BIGINT_EMPTY_INIT__(&temp_diff))) return 1;
+        __BIGINT_MAGNITUDED_ADD__(&temp_diff, x, &y);
+        temp_diff.sign = x->sign;
+        if (unlikely(__BIGINT_MUT_COPY__(x, temp_diff))) {
+            __BIGINT_FREE__(&temp_diff);
+            return 1;
+        } __BIGINT_FREE__(&temp_diff);
+    }
+    return 0;
+}
 uint8_t __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {   
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y)) return 1;
@@ -822,8 +888,49 @@ bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val) {
     }
     return rem;
 }
-bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {}
-bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__(); 
+
+    bigInt sum;
+    if (!y.n) { if (unlikely(__BIGINT_STANDARD_INIT__(&sum, x))) return __BIGINT_ERROR_VALUE__(); }
+    else if (!x.n) { if (unlikely(__BIGINT_STANDARD_INIT__(&sum, y))) return __BIGINT_ERROR_VALUE__(); }
+    else if (x.sign == y.sign) {
+        if (unlikely(__BIGINT_EMPTY_INIT__(&sum))) return __BIGINT_ERROR_VALUE__();
+        __BIGINT_MAGNITUDED_ADD__(&sum, &x, &y);
+        sum.sign = x.sign;
+    }
+    else {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(&x, &y);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&sum))) return __BIGINT_ERROR_VALUE__();
+        if      (comp_res > 0) { __BIGINT_MAGNITUDED_SUB__(&sum, &x, &y); sum.sign = x.sign; }
+        else if (comp_res < 0) { __BIGINT_MAGNITUDED_SUB__(&sum, &y, &x); sum.sign = y.sign; }
+    }
+    return sum;
+}
+bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__(); 
+
+    bigInt diff;
+    if (!y.n) { if (unlikely(__BIGINT_STANDARD_INIT__(&diff, x))) return __BIGINT_ERROR_VALUE__(); }
+    else if (!x.n) { 
+        if (unlikely(__BIGINT_STANDARD_INIT__(&diff, y))) return __BIGINT_ERROR_VALUE__();
+        diff.sign = -y.sign;
+    }
+    else if (x.sign == y.sign) {
+        int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(&x, &y);
+        if (unlikely(__BIGINT_EMPTY_INIT__(&diff))) return __BIGINT_ERROR_VALUE__();
+        if      (comp_res > 0) { __BIGINT_MAGNITUDED_SUB__(&diff, &x, &y); diff.sign =  x.sign; }
+        else if (comp_res < 0) { __BIGINT_MAGNITUDED_SUB__(&diff, &y, &x); diff.sign = -x.sign; }
+    }
+    else {
+        if (unlikely(__BIGINT_EMPTY_INIT__(&diff))) return __BIGINT_ERROR_VALUE__();
+        __BIGINT_MAGNITUDED_ADD__(&diff, &x, &y);
+        diff.sign = x.sign;
+    }
+    return diff;
+}
 bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {   
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     if (!__BIGINT_VALIDATE__(x) || !__BIGINT_VALIDATE__(y)) return __BIGINT_ERROR_VALUE__();
