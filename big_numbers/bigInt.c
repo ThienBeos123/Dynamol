@@ -237,10 +237,57 @@ bigInt __BIGINT_NOT__(const bigInt x) {
     __BIGINT_NORMALIZE__(&res);
     return res;
 }
-bigInt __BIGINT_RSHIFT__(const bigInt x, size_t k) {}
-bigInt __BIGINT_LSHIFT__(const bigInt x, size_t k) {}
-uint8_t __BIGINT_MUT_RSHIFT__(bigInt *x, size_t k) {}
-uint8_t __BIGINT_MUT_LSHIFT__(bigInt *x, size_t k) {}
+bigInt __BIGINT_RSHIFT__(const bigInt x, size_t k) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
+
+    uint64_t discarded_bits = 0;
+    bigInt res; if (unlikely(__BIGINT_LIMBS_INIT__(&res, x.n))) return __BIGINT_ERROR_VALUE__();
+    for (size_t i = 0; i < x.n; ++i) {
+        uint64_t positioned_bits = discarded_bits << (BITS_IN_UINT64_T - k);
+        res.limbs[i] = (x.limbs[i] >> k) | positioned_bits;
+        discarded_bits = x.limbs[i] & ((1U << k) - 1);
+    }
+    return res;
+}
+bigInt __BIGINT_LSHIFT__(const bigInt x, size_t k) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!__BIGINT_VALIDATE__(x)) return __BIGINT_ERROR_VALUE__();
+
+    uint64_t discarded_bits = 0;
+    bigInt res; if (unlikely(__BIGINT_LIMBS_INIT__(&res, x.n))) return __BIGINT_ERROR_VALUE__();
+    for (size_t i = 0; i < x.n; ++i) {
+        res.limbs[i] = (x.limbs[i] << k) | discarded_bits;
+        uint64_t iso_mask = (1U << k) - 1;
+        discarded_bits = x.limbs[i] & (iso_mask << BITS_IN_UINT64_T - k);
+    }
+    return res;
+}
+uint8_t __BIGINT_MUT_RSHIFT__(bigInt *x, size_t k) {
+    assert(__BIGINT_PVALIDATE__(x));
+    if (!__BIGINT_PVALIDATE__(x)) return 1;
+
+    uint64_t discarded_bits = 0;
+    for (size_t i = 0; i < x->n; ++i) {
+        uint64_t positioned_bits = discarded_bits << (BITS_IN_UINT64_T - k);
+        discarded_bits = x->limbs[i] & ((1U << k) - 1);
+        x->limbs[i] = (x->limbs[i] >> k) | positioned_bits;
+    }
+    return 0;
+}
+uint8_t __BIGINT_MUT_LSHIFT__(bigInt *x, size_t k) {
+    assert(__BIGINT_PVALIDATE__(x));
+    if (!__BIGINT_PVALIDATE__(x)) return 1;
+
+    uint64_t discarded_bits = 0;
+    for (size_t i = 0; i < x->n; ++i) {
+        uint64_t previous_dbits = discarded_bits;
+        uint64_t iso_mask = (1U << k) - 1;
+        discarded_bits = x->limbs[i] & (iso_mask << BITS_IN_UINT64_T - k);
+        x->limbs[i] = (x->limbs[i] << k) | previous_dbits;
+    }
+    return 0;
+}
 /* ------------- Mutative Bitwise Operations ------------- */
 uint8_t __BIGINT_MUT_AND_UI64__  (bigInt *x, uint64_t val) {
     assert(__BIGINT_PVALIDATE__(x));

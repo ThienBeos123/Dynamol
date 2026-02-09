@@ -31,6 +31,7 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
@@ -97,6 +98,7 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -109,6 +111,7 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/ptrcheck.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/calculation.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
@@ -167,6 +170,7 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
@@ -233,6 +237,7 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -245,6 +250,7 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/ptrcheck.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
@@ -293,6 +299,7 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
@@ -359,6 +366,7 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -371,6 +379,7 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/ptrcheck.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
@@ -419,6 +428,7 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
@@ -485,6 +495,7 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -497,6 +508,7 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/ptrcheck.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/arch.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
@@ -540,6 +552,7 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
@@ -606,6 +619,7 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -618,6 +632,7 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/ptrcheck.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/arch.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
@@ -686,6 +701,8 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h:
 
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h:
+
 /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h:
 
 /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h:
@@ -705,6 +722,12 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h:
 
 /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h:
+
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/mul.c:
+
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/header/div.h:
 
@@ -822,10 +845,6 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h:
 
-/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/mul.c:
-
-/Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h:
-
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.c:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h:
@@ -853,6 +872,8 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/_mcontext.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/alloca.h:
 
