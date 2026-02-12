@@ -15,12 +15,23 @@
     #define __compiler_undefined 1
 #endif
 
-
 /* Architecture-specific Intrinsics */
 #if __ARCH_X86_64__
     #include <immintrin.h>
 #elif __ARCH_ARM64__
     #include <arm_neon.h>
+#endif
+
+
+
+//* =========== KEYWORDS & FUNCTIONALITIES =========== *//
+#if __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_THREADS__) 
+    #include <threads.h>
+    #define local_thread thread_local
+#elif (__compiler_gcc || __compiler_clang)
+    #define local_thread __thread
+#elif __compiler_msvc
+    #define local_thread __declspec(thread)
 #endif
 
 

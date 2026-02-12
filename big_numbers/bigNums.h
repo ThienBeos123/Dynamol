@@ -7,13 +7,17 @@ extern "C" {
 
 #include "../system/include.h"
 #include "../system/compiler.h"
-#include "../settings/settings.h"
-#include "../settings/numeric_config.h"
-#include "../settings/dnml_status.h"
+#include "../sconfigs/settings.h"
+#include "../sconfigs/numeric_config.h"
+#include "../sconfigs/dnml_status.h"
+#include "../sconfigs/arena.h"
 
 //todo =========================================== TYPE DEFINITION =============================================
+#define BIGINT_LIMBS_BITS 64
+typedef uint64_t limb_t;
+
 typedef struct __424947696E7465676572__ {
-    int8_t sign;                    bigint_limb *limbs; 
+    int8_t sign;                    limb_t *limbs; 
     size_t n; /* Used limbs */      size_t cap; /* Maximum limbs */
 } bigInt;
 

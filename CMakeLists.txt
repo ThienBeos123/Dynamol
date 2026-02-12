@@ -10,6 +10,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
 
 # Add include directories (so header files can be found)
 include_directories(${CMAKE_SOURCE_DIR}/system)
+include_directories(${CMAKE_SOURCE_DIR}/sconfigs)
 include_directories(${CMAKE_SOURCE_DIR}/intrinsics)
 include_directories(${CMAKE_SOURCE_DIR}/calculation_algorithms/Headers)
 include_directories(${CMAKE_SOURCE_DIR}/internal_utils)

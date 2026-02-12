@@ -3,8 +3,10 @@ extern "C" {
 #endif
 
 #include "../system/include.h"
-#include "../settings/settings.h"
-#include "../settings/dnml_status.h"
+#include "../sconfigs/settings.h"
+#include "../sconfigs/arena.h"
+#include "../sconfigs/dnml_status.h"
+
 #include "../intrinsics/intrinsics.h"
 #include "../intrinsics/limb_math.h"
 #include "../calculation_algorithms/calculation.h"

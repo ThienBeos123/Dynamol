@@ -1,3 +1,0 @@
-/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles/bigInt_casual_comp.dir
-/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles/edit_cache.dir
-/Users/admin/Desktop/Programming/Passion Projects/Dynamol/build/CMakeFiles/rebuild_cache.dir
