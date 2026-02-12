@@ -6,8 +6,10 @@ extern "C" {
 #endif
 
 #include "../system/include.h"
-#include "../system/numeric_config.h"
 #include "../system/compiler.h"
+#include "../settings/settings.h"
+#include "../settings/numeric_config.h"
+#include "../settings/dnml_status.h"
 
 //todo =========================================== TYPE DEFINITION =============================================
 typedef struct __424947696E7465676572__ {

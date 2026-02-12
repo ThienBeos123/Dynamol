@@ -107,18 +107,21 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/numeric_config.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/compiler.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/arch.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../settings/settings.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../settings/numeric_config.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/limits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/limits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/limits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/limits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/_limits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/compiler.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/arch.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../settings/dnml_status.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../intrinsics/../system/compiler.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../intrinsics/../system/numeric_config.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../intrinsics/../settings/numeric_config.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../intrinsics/limb_math.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../system/compiler.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../system/numeric_config.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../settings/numeric_config.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../settings/settings.h

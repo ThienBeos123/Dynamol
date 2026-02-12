@@ -114,14 +114,17 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/calculation.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/dnml_status.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/numeric_config.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/numeric_config.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/numeric_config.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/numeric_config.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/util.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
@@ -131,11 +134,13 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/header/num_theory.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/header/pow_root.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/util.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/numeric_config.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/arch.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/numeric_config.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/dnml_status.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums_func.h
@@ -699,6 +704,8 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h:
 
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/dnml_status.h:
+
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h:
 
 /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h:
@@ -867,6 +874,8 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/_endian.h:
 
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/settings.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/_types.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h:
@@ -882,6 +891,8 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: /Users/admin/Desktop
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int64_t.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uintmax_t.h:
+
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/settings/numeric_config.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int8_t.h:
 

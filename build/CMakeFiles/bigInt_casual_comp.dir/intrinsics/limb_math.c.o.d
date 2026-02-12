@@ -31,4 +31,4 @@ CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../system/arch.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../system/numeric_config.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../settings/numeric_config.h

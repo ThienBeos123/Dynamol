@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 #include "../system/compiler.h"
-#include "../system/numeric_config.h"
+#include "../settings/numeric_config.h"
 
 
 #define min(x, y) ( ((x) < (y)) ? (x) : (y) )
