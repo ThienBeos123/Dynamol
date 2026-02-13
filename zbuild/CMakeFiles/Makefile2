@@ -85,12 +85,12 @@ clean: CMakeFiles/bigInt_casual_comp.dir/clean
 CMakeFiles/bigInt_casual_comp.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7 "Built target bigInt_casual_comp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7,8 "Built target bigInt_casual_comp"
 .PHONY : CMakeFiles/bigInt_casual_comp.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/bigInt_casual_comp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 7
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/bigInt_casual_comp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 0
 .PHONY : CMakeFiles/bigInt_casual_comp.dir/rule
@@ -102,7 +102,7 @@ bigInt_casual_comp: CMakeFiles/bigInt_casual_comp.dir/rule
 # codegen rule for target.
 CMakeFiles/bigInt_casual_comp.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7 "Finished codegen for target bigInt_casual_comp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7,8 "Finished codegen for target bigInt_casual_comp"
 .PHONY : CMakeFiles/bigInt_casual_comp.dir/codegen
 
 # clean rule for target.

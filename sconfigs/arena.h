@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdalign.h>
+#include <stdlib.h>
 #include "../system/compiler.h"
 
 //* ============= Declarations =============

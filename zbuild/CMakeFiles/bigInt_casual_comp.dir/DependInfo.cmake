@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/bigNum_utils.c" "CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o" "gcc" "CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/misc_utils.c" "CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o" "gcc" "CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/intrinsics/limb_math.c" "CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o" "gcc" "CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o.d"
+  "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/ztest/main.c" "CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o" "gcc" "CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

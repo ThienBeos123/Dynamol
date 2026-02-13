@@ -273,6 +273,30 @@ intrinsics/limb_math.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.s
 .PHONY : intrinsics/limb_math.c.s
 
+ztest/main.o: ztest/main.c.o
+.PHONY : ztest/main.o
+
+# target to build an object file
+ztest/main.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o
+.PHONY : ztest/main.c.o
+
+ztest/main.i: ztest/main.c.i
+.PHONY : ztest/main.i
+
+# target to preprocess a source file
+ztest/main.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.i
+.PHONY : ztest/main.c.i
+
+ztest/main.s: ztest/main.c.s
+.PHONY : ztest/main.s
+
+# target to generate assembly for a file
+ztest/main.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.s
+.PHONY : ztest/main.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -300,6 +324,9 @@ help:
 	@echo "... intrinsics/limb_math.o"
 	@echo "... intrinsics/limb_math.i"
 	@echo "... intrinsics/limb_math.s"
+	@echo "... ztest/main.o"
+	@echo "... ztest/main.i"
+	@echo "... ztest/main.s"
 .PHONY : help
 
 

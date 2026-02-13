@@ -11,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o.d"
   "CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o"
   "CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o.d"
+  "CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o"
+  "CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o.d"
   "bigInt_casual_comp"
   "bigInt_casual_comp.pdb"
 )
