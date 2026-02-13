@@ -104,8 +104,6 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_common.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../sconfigs/arena.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdalign.h \

@@ -32,7 +32,6 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h \
@@ -93,7 +92,6 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
@@ -826,6 +824,8 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/bigNum_utils.c:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h:
+
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/div.c:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums_func.h:
@@ -868,21 +868,13 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 
 /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h:
 
-/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/mul.c:
-
-/Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h:
-
-/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/header/div.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h:
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/header/div.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h:
 
@@ -964,6 +956,8 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_pid_t.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/limits.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h:
@@ -995,6 +989,10 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_strings.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h:
+
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/mul.c:
+
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_stdio.h:
 
@@ -1056,9 +1054,9 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int32_t.h:
 

@@ -105,8 +105,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_common.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/arch.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../sconfigs/settings.h \

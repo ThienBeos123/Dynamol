@@ -104,8 +104,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_common.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../intrinsics/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../intrinsics/../system/arch.h \
