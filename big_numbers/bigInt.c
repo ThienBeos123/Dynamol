@@ -50,13 +50,10 @@ void __BIGINT_LIMBS_INIT__(bigInt *x, size_t n) {
     x->n     = 0; // Currently using no limb
     x->sign  = 1;
 }
-bigint_status __BIGINT_STANDARD_INIT__(bigInt *x, const bigInt y) {
-    if (x->limbs != NULL) return BIGINT_SUCCESS; // Already Initialized
-    #ifdef _DNML_DEBUG_MODE
-        assert(__BIGINT_STATE_VALIDATE__(y));
-    #else
-        if (!__BIGINT_STATE_VALIDATE__(y)) return BIGINT_ERR_INVAL;
-    #endif
+void __BIGINT_STANDARD_INIT__(bigInt *x, const bigInt y) {
+    if (x->limbs != NULL) return; // Already Initialized
+    assert(__BIGINT_STATE_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
 
     size_t alloc_size = (y.n) ? y.n : 1;
     limb_t *__BUFFER_P = malloc(alloc_size * sizeof(limb_t));
@@ -66,7 +63,6 @@ bigint_status __BIGINT_STANDARD_INIT__(bigInt *x, const bigInt y) {
     x->n        = y.n;
     x->cap      = alloc_size;
     x->sign     = (y.n) ? y.sign : 1;
-    return BIGINT_SUCCESS;
 }
 void __BIGINT_UI64_INIT__(bigInt *x, uint64_t in) {
     if (x->limbs != NULL) return; // ALREADY INITIALIZED
@@ -94,7 +90,14 @@ void __BIGINT_LD_INIT__(bigInt *x, long double in) {}
 
 
 //* =============================================== ASSIGNMENTS ============================================== */
-void __BIGINT_SET_BIGINT__(const bigInt x, bigInt *receiver) {}
+void __BIGINT_SET_BIGINT__(const bigInt x, bigInt *receiver) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_INTERNAL_PVALID__(receiver));
+    assert(x.limbs != receiver->limbs);
+}
+void __BIGINT_SET_BIGINT_SAFE__(const bigInt x, bigInt *receiver) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_PVALIDATE__(receiver));
+    assert(x.limbs != receiver->limbs);
+}
 /* --------- BigInt --> Primitive Types --------- */
 void __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver) {
     assert(__BIGINT_STATE_VALIDATE__(x));
@@ -338,6 +341,7 @@ void __BIGINT_MUT_XNOR_UI64__ (bigInt *x, uint64_t val) {
 }
 void __BIGINT_MUT_AND__  (bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!x->n);
     else if (!y.n) __BIGINT_RESET__(x);
     else {
@@ -352,6 +356,7 @@ void __BIGINT_MUT_AND__  (bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_NAND__ (bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!x->n) {
         size_t expanded_cap = (y.n) ? y.n : 1;
         __BIGINT_RESERVE__(x, expanded_cap);
@@ -369,6 +374,7 @@ void __BIGINT_MUT_NAND__ (bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_OR__   (bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!y.n);
     else if (!x->n) __BIGINT_MUT_COPY__(x, y);
     else {
@@ -383,6 +389,7 @@ void __BIGINT_MUT_OR__   (bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_NOR__  (bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!x->n && !y.n) {
         x->limbs[0] = UINT64_MAX;
         x->n        = 1;
@@ -398,6 +405,7 @@ void __BIGINT_MUT_NOR__  (bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_XOR__  (bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!x->n && !y.n);
     else {
         size_t operation_range = max(x->n, y.n);
@@ -411,6 +419,7 @@ void __BIGINT_MUT_XOR__  (bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_XNOR__ (bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!x->n && !y.n) {
         x->limbs[0] = UINT64_MAX;
         x->n        = 1;
@@ -548,6 +557,7 @@ bigInt __BIGINT_XNOR_UI64__ (const bigInt x, uint64_t val) {
 }
 bigInt __BIGINT_AND__   (const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!x.n || !y.n) __BIGINT_EMPTY_INIT__(&res);
     else {
@@ -565,6 +575,7 @@ bigInt __BIGINT_AND__   (const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_NAND__  (const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!x.n || !y.n) {
         size_t max = max(x.n, y.n);
@@ -587,6 +598,7 @@ bigInt __BIGINT_NAND__  (const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_OR__    (const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) || __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!y.n) __BIGINT_STANDARD_INIT__(&res, x);
     else if (!x.n) __BIGINT_STANDARD_INIT__(&res, y);
@@ -605,6 +617,7 @@ bigInt __BIGINT_OR__    (const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_NOR__   (const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!x.n && !y.n) {
         __BIGINT_EMPTY_INIT__(&res);
@@ -626,6 +639,7 @@ bigInt __BIGINT_NOR__   (const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_XOR__   (const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!x.n && !y.n) __BIGINT_EMPTY_INIT__(&res);
     else {
@@ -643,6 +657,7 @@ bigInt __BIGINT_XOR__   (const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_XNOR__  (const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!x.n && !y.n) {
         __BIGINT_EMPTY_INIT__(&res);
@@ -845,6 +860,7 @@ bigInt __BIGINT_EX_XNOR_I64__ (const bigInt x, int64_t val, size_t width) {
 }
 bigInt __BIGINT_EX_AND__   (const bigInt x, const bigInt y, size_t width) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
     if (width) {
         for (size_t i = 0; i < width; ++i) {
@@ -860,6 +876,8 @@ bigInt __BIGINT_EX_AND__   (const bigInt x, const bigInt y, size_t width) {
 }
 bigInt __BIGINT_EX_NAND__  (const bigInt x, const bigInt y, size_t width) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
+    assert(x.limbs != y.limbs);
     bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
     if (width) {
         for (size_t i = 0; i < width; ++i) {
@@ -875,6 +893,8 @@ bigInt __BIGINT_EX_NAND__  (const bigInt x, const bigInt y, size_t width) {
 }
 bigInt __BIGINT_EX_OR__    (const bigInt x, const bigInt y, size_t width) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
+    assert(x.limbs != y.limbs);
     bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
     if (width) {
         for (size_t i = 0; i < width; ++i) {
@@ -890,6 +910,7 @@ bigInt __BIGINT_EX_OR__    (const bigInt x, const bigInt y, size_t width) {
 }
 bigInt __BIGINT_EX_NOR__   (const bigInt x, const bigInt y, size_t width) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
     if (width) {
         for (size_t i = 0; i < width; ++i) {
@@ -905,6 +926,7 @@ bigInt __BIGINT_EX_NOR__   (const bigInt x, const bigInt y, size_t width) {
 }
 bigInt __BIGINT_EX_XOR__   (const bigInt x, const bigInt y, size_t width) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
     if (width) {
         for (size_t i = 0; i < width; ++i) {
@@ -920,6 +942,7 @@ bigInt __BIGINT_EX_XOR__   (const bigInt x, const bigInt y, size_t width) {
 }
 bigInt __BIGINT_EX_XNOR__  (const bigInt x, const bigInt y, size_t width) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
     if (width) {
         for (size_t i = 0; i < width; ++i) {
@@ -1041,6 +1064,7 @@ uint8_t __BIGINT_MORE_OR_EQUALL_UI64__(const bigInt x, const uint64_t val) {
 /* ------------------- BigInt ------------------ */
 uint8_t __BIGINT_EQUAL__(const bigInt a, const bigInt b) {
     assert(__BIGINT_VALIDATE__(a) && __BIGINT_VALIDATE__(b));
+    assert(a.limbs != b.limbs);
     if (!a.n) return (!b.n) ? 1 : 0;
     if (a.sign != b.sign) return 0;
     if (a.n    != b.n)    return 0;
@@ -1048,6 +1072,7 @@ uint8_t __BIGINT_EQUAL__(const bigInt a, const bigInt b) {
 }
 uint8_t __BIGINT_LESS__(const bigInt a, const bigInt b) {
     assert(__BIGINT_VALIDATE__(a) && __BIGINT_VALIDATE__(b));
+    assert(a.limbs != b.limbs);
     if (a.sign != b.sign) return (a.sign < b.sign);
     if (a.n    != b.n)    return (a.sign == 1) ? (a.n < b.n) : (a.n > b.n);
     return (a.sign == 1) ? 
@@ -1056,6 +1081,7 @@ uint8_t __BIGINT_LESS__(const bigInt a, const bigInt b) {
 }
 uint8_t __BIGINT_MORE__(const bigInt a, const bigInt b) {
     assert(__BIGINT_VALIDATE__(a) && __BIGINT_VALIDATE__(b));
+    assert(a.limbs != b.limbs);
     if (a.sign != b.sign) return (a.sign > b.sign);
     if (a.n    != b.n)    return (a.sign == 1) ? (a.n > b.n) : (a.n < b.n);
     return (a.sign == 1) ? 
@@ -1064,6 +1090,7 @@ uint8_t __BIGINT_MORE__(const bigInt a, const bigInt b) {
 }
 uint8_t __BIGINT_LESS_OR_EQUAL__(const bigInt a, const bigInt b) {
     assert(__BIGINT_VALIDATE__(a) && __BIGINT_VALIDATE__(b));
+    assert(a.limbs != b.limbs);
     if (a.sign != b.sign) return (a.sign < b.sign);
     if (a.n    != b.n)    return (a.sign == 1) ? (a.n < b.n) : (a.n > b.n);
     return (a.sign == 1) ? 
@@ -1072,6 +1099,7 @@ uint8_t __BIGINT_LESS_OR_EQUAL__(const bigInt a, const bigInt b) {
 }
 uint8_t __BIGINT_MORE_OR_EQUAL__(const bigInt a, const bigInt b) {
     assert(__BIGINT_VALIDATE__(a) && __BIGINT_VALIDATE__(b));
+    assert(a.limbs != b.limbs);
     if (a.sign != b.sign) return (a.sign > b.sign);
     if (a.n    != b.n)    return (a.sign == 1) ? (a.n > b.n) : (a.n < b.n);
     return (a.sign == 1) ? 
@@ -1330,6 +1358,7 @@ bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
 }
 void __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (max(x->n, y.n) + 1));
 
@@ -1371,6 +1400,7 @@ void __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (max(x->n, y.n) + 1));
 
@@ -1410,6 +1440,7 @@ void __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {
 }
 void __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n * y.n));
 
@@ -1433,6 +1464,7 @@ void __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
 }
 bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!y.n) return BIGINT_ERR_DOMAIN;
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + y.n));
@@ -1466,6 +1498,7 @@ bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
 }
 bigint_status __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x->limbs != y.limbs);
     if (!y.n) return BIGINT_ERR_DOMAIN;
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + y.n));
@@ -1632,6 +1665,7 @@ bigInt __BIGINT_MOD_I64__(const bigInt x, int64_t val, bigint_status *err) {
 }
 bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt sum;
     if (!y.n) __BIGINT_STANDARD_INIT__(&sum, x);
     else if (!x.n) __BIGINT_STANDARD_INIT__(&sum, y);
@@ -1648,6 +1682,7 @@ bigInt __BIGINT_ADD__(const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt diff;
     if (!y.n) __BIGINT_STANDARD_INIT__(&diff, x);
     else if (!x.n) { __BIGINT_STANDARD_INIT__(&diff, y); diff.sign = -y.sign; }
@@ -1664,6 +1699,7 @@ bigInt __BIGINT_SUB__(const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    assert(x.limbs != y.limbs);
     bigInt res;
     if (!x.n || !y.n) __BIGINT_EMPTY_INIT__(&res);
     else if (x.n == 1 && x.limbs[0] == 1) __BIGINT_STANDARD_INIT__(&res, y);
@@ -1677,6 +1713,7 @@ bigInt __BIGINT_MUL__(const bigInt x, const bigInt y) {
 }
 bigInt __BIGINT_DIV__(const bigInt x, const bigInt y, bigint_status *err) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y) && err);
+    assert(x.limbs != y.limbs);
     if (!y.n) { *err = BIGINT_ERR_DOMAIN; return __BIGINT_ERROR_VALUE__(); }
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, y.n);
@@ -1705,6 +1742,7 @@ bigInt __BIGINT_DIV__(const bigInt x, const bigInt y, bigint_status *err) {
 }
 bigInt __BIGINT_MOD__(const bigInt x, const bigInt y, bigint_status *err) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y) && err);
+    assert(x.limbs != y.limbs);
     if (!y.n) { *err = BIGINT_ERR_DOMAIN; return __BIGINT_ERROR_VALUE__(); }
     static local_thread dnml_arena _MASTER_ARENA;
     init_arena(&_MASTER_ARENA, x.n);
@@ -1801,9 +1839,6 @@ bigInt __BIGINT_MODINV__(const bigInt x, const bigInt modulus) {}
 
 
 //* ================================================= COPIES ================================================= */
-/*
-todo 1) Handle overlapping memory in bigInt COPIES that uses MEMCPY
-*/
 /* -------------  Mutative SMALL Copies ------------- */
 void __BIGINT_MUT_COPY_UI64__(bigInt *dst__, uint64_t source__) {
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__));
@@ -1869,6 +1904,7 @@ void __BIGINT_MUT_COPY_TRUNCOVER_LD__(bigInt *dst__, long double source__) {}
 void __BIGINT_MUT_COPY__(bigInt *dst__, bigInt source__) {
     assert(__BIGINT_STATE_VALIDATE__(source__));
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__));
+    assert(dst__->limbs != source__.limbs);
     __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
     /* Fast Paths */
     // Since they're equal, and due to Contract 3
@@ -1878,6 +1914,7 @@ void __BIGINT_MUT_COPY__(bigInt *dst__, bigInt source__) {
         dst__->sign = source__.sign;
         return;
     }
+
     /* Standard Route */
     if (dst__->cap < source__.n) __BIGINT_RESERVE__(dst__, source__.n);
     memcpy(dst__->limbs, source__.limbs, source__.n);
@@ -1887,6 +1924,7 @@ void __BIGINT_MUT_COPY__(bigInt *dst__, bigInt source__) {
 void __BIGINT_MUT_COPY_DEEP__(bigInt *dst__, bigInt source__) {
     assert(__BIGINT_STATE_VALIDATE__(source__));
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__));
+    assert(dst__->limbs != source__.limbs);
     __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
     /* Reallocation and resize */
     if (dst__->cap != source__.n) {
@@ -1908,6 +1946,7 @@ void __BIGINT_MUT_COPY_DEEP__(bigInt *dst__, bigInt source__) {
 void __BIGINT_MUT_COPY_OVER__(bigInt *dst__, bigInt source__) {
     assert(__BIGINT_STATE_VALIDATE__(source__));
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__));
+    assert(dst__->limbs != source__.limbs);
     __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
     /* Fast Paths */
     // Since they're equal, and due to Contract 3
@@ -1923,9 +1962,10 @@ void __BIGINT_MUT_COPY_OVER__(bigInt *dst__, bigInt source__) {
     dst__->n    = source__.n;
     dst__->sign = source__.sign;
 }
-void __BIGINT_MUT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__) {
+void __BIGINT_MUT_COPY_TRUNCOVER__(bigInt *dst__, bigInt source__) { 
     assert(__BIGINT_STATE_VALIDATE__(source__));
     assert(__BIGINT_MUTATIVE_SUBJECT_VALIDATE__(dst__));
+    assert(dst__->limbs != source__.limbs);
     __BIGINT_CANONICALIZE__(dst__); // Enforce contracts, ESPECAILLY Contract 3
     /* Fast Paths */
     // Since they're equal, and due to Contract 3

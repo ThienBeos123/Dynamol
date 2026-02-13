@@ -1,3 +1,10 @@
+#ifndef DNML_BIGNUM_FUNC
+#define DNML_BIGNUM_FUNC
+
+
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,6 +19,9 @@ extern "C" {
 #include "../calculation_algorithms/calculation.h"
 #include "../internal_utils/util.h"
 #include "bigNums.h"
+
+// Providing for
+#include "big_numbers.h"
 
 /* ------------------------------------    --   INTEGER FUNCTIONS    --   --------------------------------------- */
 /* Attribute Explanation:
@@ -31,7 +41,7 @@ extern "C" {
 void __BIGINT_EMPTY_INIT__(bigInt *__bigInteger); // Default Constructor
 void __BIGINT_FREE__(bigInt *x); // Destructor
 void __BIGINT_LIMBS_INIT__(bigInt *__bigInteger, size_t __fixed_size);
-bigint_status __BIGINT_STANDARD_INIT__(bigInt *__bigInteger, const bigInt __preBigInt);
+void __BIGINT_STANDARD_INIT__(bigInt *__bigInteger, const bigInt __preBigInt);
 void __BIGINT_UI64_INIT__(bigInt *__bigInteger, uint64_t __unsigned_int);
 void __BIGINT_I64_INIT__(bigInt *__bigInteger, int64_t __signed_int);
 void __BIGINT_LD_INIT__(bigInt *__bigInteger, long double __float );
@@ -75,6 +85,7 @@ void __BIGINT_LD_INIT__(bigInt *__bigInteger, long double __float );
 
 //* ------------------------ ASSIGNMENTS ------------------------ */
 void __BIGINT_SET_BIGINT__(const bigInt x, bigInt *receiver);
+void __BIGINT_SET_BIGINT_SAFE__(const bigInt x, bigInt *receiver);
 /* --------- BigInt --> Primitive Types --------- */
 void __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver);
 void __BIGINT_SET_I64__(const bigInt x, int64_t *receiver);
@@ -432,3 +443,7 @@ inline uint8_t __BIGINT_PVALIDATE__(bigInt *x);
 }
 #endif
 
+
+
+
+#endif
