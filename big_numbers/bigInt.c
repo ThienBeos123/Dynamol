@@ -260,7 +260,7 @@ void __BIGINT_MUT_LSHIFT__(bigInt *x, size_t k) {
         x->limbs[i] = (x->limbs[i] << k) | previous_dbits;
     }
 }
-/* ------------- Mutative Bitwise Operations ------------- */
+/* ------------- Mutative, Fixed-width ------------- */
 void __BIGINT_MUT_AND_UI64__  (bigInt *x, uint64_t val) {
     assert(__BIGINT_PVALIDATE__(x));
     if (x->n == 0) return;
@@ -424,6 +424,25 @@ void __BIGINT_MUT_XNOR__ (bigInt *x, const bigInt y) {
         } __BIGINT_NORMALIZE__(x);
     }
 }
+/* ------------- Mutative, Explicit-width ------------- */
+void __BIGINT_MUT_EX_AND_UI64__  (bigInt *x, uint64_t val, size_t range) {}
+void __BIGINT_MUT_EX_NAND_UI64__ (bigInt *x, uint64_t val, size_t range) {}
+void __BIGINT_MUT_EX_OR_UI64__   (bigInt *x, uint64_t val, size_t range) {}
+void __BIGINT_MUT_EX_NOR_UI64__  (bigInt *, uint64_t val, size_t range) {}
+void __BIGINT_MUT_EX_XOR_UI64__  (bigInt *x, uint64_t val, size_t range) {}
+void __BIGINT_MUT_EX_XNOR_UI64__ (bigInt *x, uint64_t val, size_t range) {}
+void __BIGINT_MUT_EX_AND_I64__  (bigInt *, int64_t val, size_t range) {}
+void __BIGINT_MUT_EX_NAND_I64__ (bigInt *x, int64_t val, size_t range) {}
+void __BIGINT_MUT_EX_OR_I64__   (bigInt *x, int64_t val, size_t range) {}
+void __BIGINT_MUT_EX_NOR_I64__  (bigInt *x, int64_t val, size_t range) {}
+void __BIGINT_MUT_EX_XOR_I64__  (bigInt *x, int64_t val, size_t range) {}
+void __BIGINT_MUT_EX_XNOR_I64__ (bigInt *x, int64_t val, size_t range) {}
+void __BIGINT_MUT_EX_AND__   (bigInt *x, const bigInt y, size_t range) {}
+void __BIGINT_MUT_EX_NAND__  (bigInt *x, const bigInt y, size_t range) {}
+void __BIGINT_MUT_EX_OR__    (bigInt *x, const bigInt y, size_t range) {}
+void __BIGINT_MUT_EX_NOR__   (bigInt *x, const bigInt y, size_t range) {}
+void __BIGINT_MUT_EX_XOR__   (bigInt *x, const bigInt y, size_t range) {}
+void __BIGINT_MUT_EX_XNOR__  (bigInt *x, const bigInt y, size_t range) {}
 /* ------------- Functional, Fixed-width ------------- */
 bigInt __BIGINT_AND_UI64__  (const bigInt x, uint64_t val) {
     assert(__BIGINT_VALIDATE__(x));
@@ -444,6 +463,7 @@ bigInt __BIGINT_NAND_UI64__ (const bigInt x, uint64_t val) {
     } else {
         res.limbs[0] = ~(x.limbs[0] & val);
         if (x.n > 1) memset(&res.limbs[1], UINT64_MAX, x.n - 1);
+        res.n = x.n;
     } return res;
 }
 bigInt __BIGINT_OR_UI64__   (const bigInt x, uint64_t val) {
@@ -460,7 +480,9 @@ bigInt __BIGINT_OR_UI64__   (const bigInt x, uint64_t val) {
         for (size_t i = 0; i < x.n; ++i) {
             uint64_t b = (i == 0) ? val : 0;
             res.limbs[i] = x.limbs[i] | b;
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = x.n; 
+        __BIGINT_NORMALIZE__(&res);
     } 
     return res;
 }
@@ -478,7 +500,9 @@ bigInt __BIGINT_NOR_UI64__  (const bigInt x, uint64_t val) {
         for (size_t i = 0; i < x.n; ++i) {
             uint64_t b = (i == 0) ? val : 0;
             res.limbs[i] = ~(x.limbs[i] | b);
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = x.n; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -496,7 +520,9 @@ bigInt __BIGINT_XOR_UI64__  (const bigInt x, uint64_t val) {
         for (size_t i = 0; i < x.n; ++i) {
             uint64_t b = (i == 0) ? val : 0;
             res.limbs[i] = x.limbs[i] ^ b;
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = x.n; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -514,7 +540,9 @@ bigInt __BIGINT_XNOR_UI64__ (const bigInt x, uint64_t val) {
         for (size_t i = 0; i < x.n; ++i) {
             uint64_t b = (i == 0) ? val : 0;
             res.limbs[i] = ~(x.limbs[i] ^ b);
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = x.n; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -529,7 +557,9 @@ bigInt __BIGINT_AND__   (const bigInt x, const bigInt y) {
             uint64_t a = (i < x.n) ? x.limbs[i] : 0;
             uint64_t b = (i < y.n) ? y.limbs[i] : 0;
             res.limbs[i] = a & b;
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = operation_range; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -541,6 +571,7 @@ bigInt __BIGINT_NAND__  (const bigInt x, const bigInt y) {
         size_t expanded_cap = max ? max : 1;
         __BIGINT_LIMBS_INIT__(&res, expanded_cap);
         memset(res.limbs, UINT64_MAX, expanded_cap);
+        res.n = expanded_cap;
     } else {
         size_t operation_range = max(x.n, y.n);
         __BIGINT_LIMBS_INIT__(&res, operation_range);
@@ -548,7 +579,9 @@ bigInt __BIGINT_NAND__  (const bigInt x, const bigInt y) {
             uint64_t a = (i < x.n) ? x.limbs[i] : 0;
             uint64_t b = (i < y.n) ? y.limbs[i] : 0;
             res.limbs[i] = ~(a & b);
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = operation_range;
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -564,7 +597,9 @@ bigInt __BIGINT_OR__    (const bigInt x, const bigInt y) {
             uint64_t a = (i < x.n) ? x.limbs[i] : 0;
             uint64_t b = (i < y.n) ? y.limbs[i] : 0;
             res.limbs[i] = a | b;
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = operation_range; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -583,7 +618,9 @@ bigInt __BIGINT_NOR__   (const bigInt x, const bigInt y) {
             uint64_t a = (i < x.n) ? x.limbs[i] : 0;
             uint64_t b = (i < y.n) ? y.limbs[i] : 0;
             res.limbs[i] = ~(a | b);
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = operation_range; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -598,7 +635,9 @@ bigInt __BIGINT_XOR__   (const bigInt x, const bigInt y) {
             uint64_t a = (i < x.n) ? x.limbs[i] : 0;
             uint64_t b = (i < y.n) ? y.limbs[i] : 0;
             res.limbs[i] = a ^ b;
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = operation_range; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
@@ -616,29 +655,284 @@ bigInt __BIGINT_XNOR__  (const bigInt x, const bigInt y) {
             uint64_t a = (i < x.n) ? x.limbs[i] : 0;
             uint64_t b = (i < y.n) ? y.limbs[i] : 0;
             res.limbs[i] = ~(a ^ b);
-        } __BIGINT_NORMALIZE__(&res);
+        }
+        res.n = operation_range; 
+        __BIGINT_NORMALIZE__(&res);
     }
     return res;
 }
 /* ------------- Functional, Explicit-width ------------- */
-bigInt __BIGINT_EX_AND_UI64__  (const bigInt x, uint64_t val, size_t width) {}
-bigInt __BIGINT_EX_NAND_UI64__ (const bigInt x, uint64_t val, size_t width) {}
-bigInt __BIGINT_EX_OR_UI64__   (const bigInt x, uint64_t val, size_t width) {}
-bigInt __BIGINT_EX_NOR_UI64__  (const bigInt x, uint64_t val, size_t width) {}
-bigInt __BIGINT_EX_XOR_UI64__  (const bigInt x, uint64_t val, size_t width) {}
-bigInt __BIGINT_EX_XNOR_UI64__ (const bigInt x, uint64_t val, size_t width) {}
-bigInt __BIGINT_EX_AND_I64__  (const bigInt x, int64_t val, size_t width) {}
-bigInt __BIGINT_EX_NAND_I64__ (const bigInt x, int64_t val, size_t width) {}
-bigInt __BIGINT_EX_OR_I64__   (const bigInt x, int64_t val, size_t width) {}
-bigInt __BIGINT_EX_NOR_I64__  (const bigInt x, int64_t val, size_t width) {}
-bigInt __BIGINT_EX_XOR_I64__  (const bigInt x, int64_t val, size_t width) {}
-bigInt __BIGINT_EX_XNOR_I64__ (const bigInt x, int64_t val, size_t width) {}
-bigInt __BIGINT_EX_AND__   (const bigInt x, const bigInt y, size_t width) {}
-bigInt __BIGINT_EX_NAND__  (const bigInt x, const bigInt y, size_t width) {}
-bigInt __BIGINT_EX_OR__    (const bigInt x, const bigInt y, size_t width) {}
-bigInt __BIGINT_EX_NOR__   (const bigInt x, const bigInt y, size_t width) {}
-bigInt __BIGINT_EX_XOR__   (const bigInt x, const bigInt y, size_t width) {}
-bigInt __BIGINT_EX_XNOR__  (const bigInt x, const bigInt y, size_t width) {}
+bigInt __BIGINT_EX_AND_UI64__  (const bigInt x, uint64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (x.n && width) {
+        res.limbs[0] = x.limbs[0] & val;
+        res.n        = res.limbs[0] ? 1 : 0;
+        res.sign     = res.limbs[0] ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_NAND_UI64__ (const bigInt x, uint64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i == 0) ? val : 0;
+            uint64_t b = (i < x.n) ? x.limbs[i] : 0;
+            res.limbs[i] = ~(a & b);
+        }
+        res.n = width; 
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 0;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_OR_UI64__   (const bigInt x, uint64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n)  ? x.limbs[i] : 0;
+            uint64_t b = (i == 0)   ? val : 0;
+            res.limbs[i] = a | b;
+        }
+        res.n = width; 
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 0;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_NOR_UI64__  (const bigInt x, uint64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n)  ? x.limbs[i] : 0;
+            uint64_t b = (i == 0)   ? val : 0;
+            res.limbs[i] = ~(a | b);
+        }
+        res.n = width; 
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_XOR_UI64__  (const bigInt x, uint64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n)  ? x.limbs[i] : 0;
+            uint64_t b = (i == 0)   ? val : 0;
+            res.limbs[i] = a ^ b;
+        }
+        res.n = width; 
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_XNOR_UI64__ (const bigInt x, uint64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n)  ? x.limbs[i] : 0;
+            uint64_t b = (i == 0)   ? val : 0;
+            res.limbs[i] = ~(a ^ b);
+        }
+        res.n = width; 
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_AND_I64__  (const bigInt x, int64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        uint8_t extension_bits = (val < 0) ? UINT64_MAX : 0;
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i]       : 0;
+            uint64_t b = (i == 0)  ? __MAG_I64__(val) : extension_bits;
+            res.limbs[i] = a & b;
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_NAND_I64__ (const bigInt x, int64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        uint8_t extension_bits = (val < 0) ? UINT64_MAX : 0;
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i]       : 0;
+            uint64_t b = (i == 0)  ? __MAG_I64__(val) : extension_bits;
+            res.limbs[i] = ~(a & b);
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_OR_I64__   (const bigInt x, int64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        uint8_t extension_bits = (val < 0) ? UINT64_MAX : 0;
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i]       : 0;
+            uint64_t b = (i == 0)  ? __MAG_I64__(val) : extension_bits;
+            res.limbs[i] = a | b;
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_NOR_I64__  (const bigInt x, int64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        uint8_t extension_bits = (val < 0) ? UINT64_MAX : 0;
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i]       : 0;
+            uint64_t b = (i == 0)  ? __MAG_I64__(val) : extension_bits;
+            res.limbs[i] = ~(a | b);
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_XOR_I64__  (const bigInt x, int64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        uint8_t extension_bits = (val < 0) ? UINT64_MAX : 0;
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i]       : 0;
+            uint64_t b = (i == 0)  ? __MAG_I64__(val) : extension_bits;
+            res.limbs[i] = a ^ b;
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_XNOR_I64__ (const bigInt x, int64_t val, size_t width) {
+    assert(__BIGINT_VALIDATE__(x));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        uint8_t extension_bits = (val < 0) ? UINT64_MAX : 0;
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i]       : 0;
+            uint64_t b = (i == 0)  ? __MAG_I64__(val) : extension_bits;
+            res.limbs[i] = ~(a ^ b);
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_AND__   (const bigInt x, const bigInt y, size_t width) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i] : 0;
+            uint64_t b = (i < y.n) ? y.limbs[i] : 0;
+            res.limbs[i] = a & b;
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_NAND__  (const bigInt x, const bigInt y, size_t width) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i] : 0;
+            uint64_t b = (i < y.n) ? y.limbs[i] : 0;
+            res.limbs[i] = ~(a & b);
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_OR__    (const bigInt x, const bigInt y, size_t width) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i] : 0;
+            uint64_t b = (i < y.n) ? y.limbs[i] : 0;
+            res.limbs[i] = a | b;
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_NOR__   (const bigInt x, const bigInt y, size_t width) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i] : 0;
+            uint64_t b = (i < y.n) ? y.limbs[i] : 0;
+            res.limbs[i] = ~(a | b);
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_XOR__   (const bigInt x, const bigInt y, size_t width) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i] : 0;
+            uint64_t b = (i < y.n) ? y.limbs[i] : 0;
+            res.limbs[i] = a ^ b;
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
+bigInt __BIGINT_EX_XNOR__  (const bigInt x, const bigInt y, size_t width) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    bigInt res; __BIGINT_LIMBS_INIT__(&res, (width) ? width : 1);
+    if (width) {
+        for (size_t i = 0; i < width; ++i) {
+            uint64_t a = (i < x.n) ? x.limbs[i] : 0;
+            uint64_t b = (i < y.n) ? y.limbs[i] : 0;
+            res.limbs[i] = ~(a ^ b);
+        }
+        res.n = width;
+        __BIGINT_NORMALIZE__(&res);
+        res.sign = (res.n) ? x.sign : 1;
+    }
+    return res;
+}
 
 
 

@@ -180,7 +180,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h
@@ -241,7 +240,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h
@@ -316,7 +314,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h
@@ -377,7 +374,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h
@@ -452,7 +448,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h
@@ -513,7 +508,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h
@@ -583,7 +577,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h
@@ -644,7 +637,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h
- /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h

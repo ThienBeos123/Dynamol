@@ -142,7 +142,7 @@ bigInt __BIGINT_RSHIFT__(const bigInt x, size_t k);
 bigInt __BIGINT_LSHIFT__(const bigInt x, size_t k);
 void __BIGINT_MUT_RSHIFT__(bigInt *x, size_t k);
 void __BIGINT_MUT_LSHIFT__(bigInt *x, size_t k);
-/* ------------- Mutative Bitwise Operations ------------- */
+/* ------------- Mutative, Fixed-width ------------- */
 void __BIGINT_MUT_AND_UI64__  (bigInt *x, uint64_t y);
 void __BIGINT_MUT_NAND_UI64__ (bigInt *x, uint64_t y);
 void __BIGINT_MUT_OR_UI64__   (bigInt *x, uint64_t y);
@@ -155,6 +155,25 @@ void __BIGINT_MUT_OR__   (bigInt *x, const bigInt y);
 void __BIGINT_MUT_NOR__  (bigInt *x, const bigInt y);
 void __BIGINT_MUT_XOR__  (bigInt *x, const bigInt y);
 void __BIGINT_MUT_XNOR__ (bigInt *x, const bigInt y);
+/* ------------- Mutative, Explicit-width ------------- */
+void __BIGINT_MUT_EX_AND_UI64__  (bigInt *x, uint64_t val, size_t range);
+void __BIGINT_MUT_EX_NAND_UI64__ (bigInt *x, uint64_t val, size_t range);
+void __BIGINT_MUT_EX_OR_UI64__   (bigInt *x, uint64_t val, size_t range);
+void __BIGINT_MUT_EX_NOR_UI64__  (bigInt *x, uint64_t val, size_t range);
+void __BIGINT_MUT_EX_XOR_UI64__  (bigInt *x, uint64_t val, size_t range);
+void __BIGINT_MUT_EX_XNOR_UI64__ (bigInt *x, uint64_t val, size_t range);
+void __BIGINT_MUT_EX_AND_I64__  (bigInt *x, int64_t val, size_t range);
+void __BIGINT_MUT_EX_NAND_I64__ (bigInt *x, int64_t val, size_t range);
+void __BIGINT_MUT_EX_OR_I64__   (bigInt *x, int64_t val, size_t range);
+void __BIGINT_MUT_EX_NOR_I64__  (bigInt *x, int64_t val, size_t range);
+void __BIGINT_MUT_EX_XOR_I64__  (bigInt *x, int64_t val, size_t range);
+void __BIGINT_MUT_EX_XNOR_I64__ (bigInt *x, int64_t val, size_t range);
+void __BIGINT_MUT_EX_AND__   (bigInt *x, const bigInt y, size_t range);
+void __BIGINT_MUT_EX_NAND__  (bigInt *x, const bigInt y, size_t range);
+void __BIGINT_MUT_EX_OR__    (bigInt *x, const bigInt y, size_t range);
+void __BIGINT_MUT_EX_NOR__   (bigInt *x, const bigInt y, size_t range);
+void __BIGINT_MUT_EX_XOR__   (bigInt *x, const bigInt y, size_t range);
+void __BIGINT_MUT_EX_XNOR__  (bigInt *x, const bigInt y, size_t range);
 /* ------------- Functional, Fixed-width ------------- */
 bigInt __BIGINT_AND_UI64__  (const bigInt x, uint64_t val);
 bigInt __BIGINT_NAND_UI64__ (const bigInt x, uint64_t val);
