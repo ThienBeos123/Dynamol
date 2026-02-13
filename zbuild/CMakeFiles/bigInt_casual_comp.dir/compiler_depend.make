@@ -145,7 +145,8 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: /Users/admin/Desktop/P
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/include.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums_func.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums_func.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/big_numbers.h
 
 CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/div.c \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h \
@@ -810,13 +811,15 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_printf.h:
-
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/misc_utils.c:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/bigNum_utils.c:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/div.c:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_printf.h:
+
+/Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/big_numbers.h:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums_func.h:
 

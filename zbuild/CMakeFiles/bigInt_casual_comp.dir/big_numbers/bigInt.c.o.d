@@ -1,6 +1,5 @@
 CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigInt.c \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums_func.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../system/include.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h \
@@ -144,4 +143,4 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/num_theory.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../internal_utils/util.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/big_numbers.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/_bigint.h

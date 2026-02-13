@@ -1,8 +1,16 @@
-#include "bigNums_func.h"
+#include "../system/include.h"
+#include "../sconfigs/settings.h"
+#include "../sconfigs/arena.h"
+#include "../sconfigs/dnml_status.h"
 
-    /* NOTE: +) For any function of type uint8_t, 
-    *           it is to be treated like a void function that handles errors (0 = success, 1 = error)  
-    */
+#include "../intrinsics/intrinsics.h"
+#include "../intrinsics/limb_math.h"
+#include "../calculation_algorithms/calculation.h"
+#include "../internal_utils/util.h"
+#include "bigNums.h"
+
+// Providing for
+#include "_bigint.h"
 
 
 //todo ============================================ INTRODUCTION ============================================= */
@@ -93,10 +101,19 @@ void __BIGINT_LD_INIT__(bigInt *x, long double in) {}
 void __BIGINT_SET_BIGINT__(const bigInt x, bigInt *receiver) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_INTERNAL_PVALID__(receiver));
     assert(x.limbs != receiver->limbs);
+    size_t set_range = (receiver->cap < x.n) ? receiver->cap : x.n;
+    memcpy(receiver->limbs, x.limbs, set_range * BYTES_IN_UINT64_T);
+    receiver->n     = set_range;
+    receiver->sign  = (set_range) ? x.sign : 1;
 }
-void __BIGINT_SET_BIGINT_SAFE__(const bigInt x, bigInt *receiver) {
+bigint_status __BIGINT_SET_BIGINT_SAFE__(const bigInt x, bigInt *receiver) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_PVALIDATE__(receiver));
     assert(x.limbs != receiver->limbs);
+    if (receiver->cap < x.n) return BIGINT_ERR_RANGE;
+    memcpy(receiver->limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
+    receiver->n     = x.n;
+    receiver->sign  = (x.n) ? x.sign : 1;
+    return BIGINT_SUCCESS;
 }
 /* --------- BigInt --> Primitive Types --------- */
 void __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver) {

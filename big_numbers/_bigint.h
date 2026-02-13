@@ -1,43 +1,19 @@
-#ifndef DNML_BIGNUM_FUNC
-#define DNML_BIGNUM_FUNC
+#ifndef dnml_big_int_
+#define dnml_big_int_
 
 
 
 
+typedef struct __424947696E7465676572__ bigInt;
+typedef struct __424947666C6F6174__ bigFloat;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "../system/include.h"
-#include "../sconfigs/settings.h"
-#include "../sconfigs/arena.h"
 #include "../sconfigs/dnml_status.h"
 
-#include "../intrinsics/intrinsics.h"
-#include "../intrinsics/limb_math.h"
-#include "../calculation_algorithms/calculation.h"
-#include "../internal_utils/util.h"
-#include "bigNums.h"
 
-// Providing for
-#include "big_numbers.h"
-
-/* ------------------------------------    --   INTEGER FUNCTIONS    --   --------------------------------------- */
-/* Attribute Explanation:
-*   +) sign     (uint8_t)       : Stores the sign (negative or positive)
-*   +) limbs    (*uint64_t)     : Pointer to each limb that holds part of the bigInt number
-*   +) n        (size_t)        : Number of currently used limbs (used to determine the bigInt value and in arithmetic)
-*   +) cap      (size_t)        : Essentially the bigInt object/number's maximum capacity 
-*/
-
-/* Terms Explanation:
-*   +) Mutative Model: Changes an existing bigInt object/variable value in place (Eg: x += 10; )
-*   +) Functional Model: -) Creates a new variable with the value of the expression (Eg: int x = 5 + 10; ) 
-*                        -) This transfer ownership of the allocated limbs to the caller, 
-                            forcing a manual deletion of the object (See more detailed explanation below on Functional Arithmetic)
-*/
-/* ------------- CONSTRUCTORS & DESCTRUCTORS -------------- */
+//todo ===============================   --   INTEGER NUMERICAL METHODS   --   =============================== */
+//* ------------- CONSTRUCTORS & DESCTRUCTORS -------------- */
 void __BIGINT_EMPTY_INIT__(bigInt *__bigInteger); // Default Constructor
 void __BIGINT_FREE__(bigInt *x); // Destructor
 void __BIGINT_LIMBS_INIT__(bigInt *__bigInteger, size_t __fixed_size);
@@ -85,7 +61,7 @@ void __BIGINT_LD_INIT__(bigInt *__bigInteger, long double __float );
 
 //* ------------------------ ASSIGNMENTS ------------------------ */
 void __BIGINT_SET_BIGINT__(const bigInt x, bigInt *receiver);
-void __BIGINT_SET_BIGINT_SAFE__(const bigInt x, bigInt *receiver);
+bigint_status __BIGINT_SET_BIGINT_SAFE__(const bigInt x, bigInt *receiver);
 /* --------- BigInt --> Primitive Types --------- */
 void __BIGINT_SET_UI64__(const bigInt x, uint64_t *receiver);
 void __BIGINT_SET_I64__(const bigInt x, int64_t *receiver);
@@ -439,9 +415,9 @@ inline uint8_t __BIGINT_PVALIDATE__(bigInt *x);
 #define bigInt_shrink           __BIGINT_SHRINK__
 #define bigInt_reset            __BIGINT_RESET__
 
-#ifdef __cplusplus
-}
-#endif
+
+
+
 
 
 
