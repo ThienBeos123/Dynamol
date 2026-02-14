@@ -3,11 +3,27 @@
 /* SIMPLE ALGORITHMS */
 void __BIGINT_SHORT_DIVISION__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
 void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {
+    // Setup
     uint8_t shift = __CLZ_UI64__(b->limbs[b->n - 1]);
-    bigInt a_copy, b_copy;
     size_t m = a->n, n = b->n;
-    __BIGINT_INTERNAL_EMPINIT__(&a_copy);           __BIGINT_INTERNAL_EMPINIT__(&b_copy);
-    __BIGINT_INTERNAL_ENSCAP__(&a_copy, m + 1);     __BIGINT_INTERNAL_ENSCAP__(&b_copy, n);
+    static local_thread dnml_arena _AB_ARENA;
+    init_arena(&_AB_ARENA, BYTES_IN_UINT64_T * (m + 1 + n) * 10); // For convenient abundance in storage
+
+    size_t a_mark = arena_mark(&_AB_ARENA); limb_t *a_limbs = arena_alloc(&_AB_ARENA, BYTES_IN_UINT64_T * (m + 1));
+    size_t b_mark = arena_mark(&_AB_ARENA); limb_t *b_limbs = arena_alloc(&_AB_ARENA, BYTES_IN_UINT64_T * (n));
+    bigInt a_copy = {
+        .limbs = a_limbs,           
+        .cap   = m + 1,             //  +)  Arena Allocation
+        .n     = 0,                 //      and Initialization
+        .sign  = 1                  //      of a_copy & b_copy
+    };                              //
+    bigInt b_copy = {               //  +)  This is to improve performances
+        .limbs = b_limbs,           //      and decrease the cost of
+        .cap   = n,                 //      discrete, independent,
+        .n     = 0,                 //      limbs for intermediate placeholder bigints
+        .sign  = 1
+    };
+
     /* 1. Normalization */
     /*  - This stage basically make sure b is large enough to be divided by a
     *     by making b's most significant limb's highest bit is 1
@@ -29,7 +45,6 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
     b_copy.n = n;
 
     /* 2. Quotient init */
-    __BIGINT_INTERNAL_EMPINIT__(quot);
     __BIGINT_INTERNAL_ENSCAP__(quot, m - n + 1);
 
     quot->n = m - n + 1;
@@ -52,7 +67,7 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
         __DIV_HELPER_UI64__(a2, a1, b1, &qhat, &rhat);
         // Validating quotient estimation (Prevent overestimation before multi-limb subtraction (expensive & risky))
         if (qhat == UINT64_MAX) --qhat; // Check if estimates quotient is too large
-        while (qhat * b0 > ((unsigned __int128)rhat << BITS_IN_UINT64_T) + a0) {
+        while (qhat * b0 > ((uint128)rhat << BITS_IN_UINT64_T) + a0) {
             /* We've already got: (note: B = 2^64)
             *    +) Dividend (3 limbs of a) = a2 * B^2 + a1 * B + a0
             *    +) Divisor  (2 limbs of b) = b1 * B + b0
@@ -129,7 +144,7 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
     }
 
     /* 6. Denormalize */
-    __BIGINT_INTERNAL_EMPINIT__(rem); __BIGINT_INTERNAL_ENSCAP__(rem, n);
+    __BIGINT_INTERNAL_ENSCAP__(rem, n);
     carry = 0;
     for (size_t i = n; i > 0; --i) {
         uint64_t x = a_copy.limbs[i];
@@ -137,8 +152,11 @@ void __BIGINT_KNUTH_D__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *
         carry = (shift ? x << BITS_IN_UINT64_T : 0);
     }
     rem->n = n;
-    __BIGINT_INTERNAL_TRIM_LZ__(quot); __BIGINT_INTERNAL_TRIM_LZ__(rem);
-    __BIGINT_INTERNAL_FREE__(&a_copy); __BIGINT_INTERNAL_FREE__(&b_copy);
+    __BIGINT_INTERNAL_TRIM_LZ__(quot);      /**/     __BIGINT_INTERNAL_TRIM_LZ__(rem);
+    if (quot->n == 0) quot->sign = 1;       /**/     if (rem->n == 0) rem->sign = 1;
+
+    arena_reset(&_AB_ARENA, b_mark); // Free b_copy
+    arena_reset(&_AB_ARENA, a_mark); // Free a_copy
 }
 void __BIGINT_NEWTON_RECIPROCAL__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {}
 void __BIGINT_DIVMOD_DISPATCH__(const bigInt *a, const bigInt *b, bigInt *quot, bigInt *rem) {

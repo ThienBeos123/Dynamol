@@ -1,4 +1,17 @@
+#ifndef DNML_MUL_H
+#define DNML_MUL_H
+
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "../../system/include.h"
+#include "../../system/compiler.h"
+#include "../../sconfigs/numeric_config.h"
+
 #include "../../intrinsics/intrinsics.h"
 #include "../../intrinsics/limb_math.h"
 #include "../../internal_utils/util.h"
@@ -9,7 +22,6 @@ void __BIGINT_SCHOOLBOOK__(bigInt *res, const bigInt *a, const bigInt *b);
 void __BIGINT_KARATSUBA__(bigInt *res, const bigInt *a, const bigInt *b);
 void __BIGINT_TOOM_3__(bigInt *res, const bigInt *a, const bigInt *b);
 void __BIGINT_SSA__(bigInt *res, const bigInt *a, const bigInt *b);
-
 void __BIGINT_MUL_DISPATCH__(bigInt *res, const bigInt *a, const bigInt *b);
 
 
@@ -22,3 +34,10 @@ void __BIGINT_MUL_DISPATCH__(bigInt *res, const bigInt *a, const bigInt *b);
 
 
 
+#ifdef __cplusplus
+}
+#endif
+
+
+
+#endif

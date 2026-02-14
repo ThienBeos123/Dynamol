@@ -25,6 +25,7 @@
 
 
 //* =========== KEYWORDS & FUNCTIONALITIES =========== *//
+/* Thread Locality - ESSENTIAL FOR ARENAS */
 #if __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_THREADS__) 
     #include <threads.h>
     #define local_thread thread_local
@@ -32,6 +33,18 @@
     #define local_thread __thread
 #elif __compiler_msvc
     #define local_thread __declspec(thread)
+#endif
+
+
+/* 128 bit Integer */
+#if defined(__SIZEOF_INT128__)
+    #define __HAS_int128__ 1
+    #define int128 __int128
+    #define uint128 unsigned __int128
+#else
+    #define __HAS_int128__ 0
+    #define int128  
+    #define uint128
 #endif
 
 

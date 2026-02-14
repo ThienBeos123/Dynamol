@@ -1480,8 +1480,8 @@ static void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const big
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
 void __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
     assert(__BIGINT_VALIDATE__(x));
-    static local_thread dnml_arena _MASTER_ARENA; 
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
+    static local_thread dnml_arena _BI_MUL_UI64_ARENA; 
+    init_arena(&_BI_MUL_UI64_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
 
     if (x->n == 0);
     else if (val == 1);
@@ -1489,8 +1489,8 @@ void __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_UI64__(x, val);
     else {
         __BIGINT_RESERVE__(x, x->n + 1); // Prevents memory leak of __TEMP_PROD__ on OOM inside MUT_COPY
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
+        size_t tmp_mark = arena_mark(&_BI_MUL_UI64_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_MUL_UI64_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
         bigInt __TEMP_PROD__ = {
             .limbs  = tmp_limbs,
             .cap    = x->n + 1,
@@ -1500,21 +1500,21 @@ void __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
 
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, val);
         __BIGINT_MUT_COPY__(x, &__TEMP_PROD__);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_MUL_UI64_ARENA, tmp_mark);
     }
 }
 bigint_status __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
     assert(__BIGINT_VALIDATE__(x));
     if (!val) return BIGINT_ERR_DOMAIN;
-    static local_thread dnml_arena _MASTER_ARENA; 
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+    static local_thread dnml_arena _BI_DIV_UI64_ARENA; 
+    init_arena(&_BI_DIV_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
 
     if (x->n == 0);
     else if (val == 1);
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
     else {
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+        size_t tmp_mark = arena_mark(&_BI_DIV_UI64_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_DIV_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
         bigInt temp_quot = { 
             .limbs = tmp_limbs, 
             .cap = x->n, 
@@ -1526,14 +1526,14 @@ bigint_status __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
         temp_quot.sign = x->sign;
         __BIGINT_NORMALIZE__(&temp_quot);
         __BIGINT_MUT_COPY__(x, &temp_quot);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_DIV_UI64_ARENA, tmp_mark);
     } return BIGINT_SUCCESS;
 }
 bigint_status __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
     assert(__BIGINT_VALIDATE__(x));
     if (!val) return BIGINT_ERR_DOMAIN;
-    static local_thread dnml_arena _MASTER_ARENA; 
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+    static local_thread dnml_arena _BI_MOD_UI64_ARENA; 
+    init_arena(&_BI_MOD_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
 
     if (x->n == 0);
     else if (val == 1) __BIGINT_RESET__(x);
@@ -1542,8 +1542,8 @@ bigint_status __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
         if (comp_res < 0);
         else if (!comp_res) __BIGINT_RESET__(x);
         else {
-            size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-            limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+            size_t tmp_mark = arena_mark(&_BI_MOD_UI64_ARENA);
+            limb_t *tmp_limbs = arena_alloc(&_BI_MOD_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
             bigInt temp_quot = {
                 .limbs = tmp_limbs,
                 .cap   = x->n,
@@ -1555,14 +1555,14 @@ bigint_status __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
             x->limbs[0] = temp_rem;
             x->n        = (temp_rem) ? 1 : 0;
             x->sign     = (temp_rem) ? x->sign : 1;
-            arena_reset(&_MASTER_ARENA, tmp_mark);
+            arena_reset(&_BI_MOD_UI64_ARENA, tmp_mark);
         }
     } return BIGINT_SUCCESS;
 }
 void __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_VALIDATE__(x));
-    static local_thread dnml_arena _MASTER_ARENA; 
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
+    static local_thread dnml_arena _BI_MUL_I64_ARENA; 
+    init_arena(&_BI_MUL_I64_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
 
     if (x->n == 0) return;
     if (!val) __BIGINT_RESET__(x);
@@ -1570,8 +1570,8 @@ void __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY_I64__(x, val);
     else {
         __BIGINT_RESERVE__(x, x->n + 1);
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
+        size_t tmp_mark = arena_mark(&_BI_MUL_I64_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_MUL_I64_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
         bigInt __TEMP_PROD__ = {
             .limbs  = tmp_limbs,
             .cap    = x->n + 1,
@@ -1581,22 +1581,22 @@ void __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
 
         __BIGINT_MAGNITUDED_MUL_UI64__(&__TEMP_PROD__, x, mag_val);
         __BIGINT_MUT_COPY__(x, &__TEMP_PROD__);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_MUL_I64_ARENA, tmp_mark);
     } 
     x->sign *= (val < 0) ? -1 : 1;
 }
 bigint_status __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_VALIDATE__(x));
     if (!val) return BIGINT_ERR_DOMAIN;
-    static local_thread dnml_arena _MASTER_ARENA; 
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+    static local_thread dnml_arena _BI_DIV_I64_ARENA; 
+    init_arena(&_BI_DIV_I64_ARENA, BYTES_IN_UINT64_T * x->n);
 
     if (x->n == 0);
     else if (val == 1 || val == -1) x->sign *= val;
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
     else {
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+        size_t tmp_mark = arena_mark(&_BI_DIV_I64_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_DIV_I64_ARENA, BYTES_IN_UINT64_T * x->n);
         bigInt temp_quot = {
             .limbs  = tmp_limbs,
             .cap    = x->n,
@@ -1609,14 +1609,14 @@ bigint_status __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
         temp_quot.sign = x->sign * ((val < 0) ? -1 : 1);
         __BIGINT_NORMALIZE__(&temp_quot);
         __BIGINT_MUT_COPY__(x, &temp_quot);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_DIV_I64_ARENA, tmp_mark);
     } return BIGINT_SUCCESS;
 }
 bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_VALIDATE__(x) && val);
     if (!val) return BIGINT_ERR_DOMAIN;
-    static local_thread dnml_arena _MASTER_ARENA; 
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+    static local_thread dnml_arena _BI_MOD_I64_ARENA; 
+    init_arena(&_BI_MOD_I64_ARENA, BYTES_IN_UINT64_T * x->n);
 
     if (x->n == 0);
     else if (val == 1 || val == -1) __BIGINT_RESET__(x);
@@ -1626,8 +1626,8 @@ bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
         if (comp_res < 0);
         else if (!comp_res) __BIGINT_RESET__(x);
         else {
-            size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-            limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+            size_t tmp_mark = arena_mark(&_BI_MOD_I64_ARENA);
+            limb_t *tmp_limbs = arena_alloc(&_BI_MOD_I64_ARENA, BYTES_IN_UINT64_T * x->n);
             bigInt temp_quot = {
                 .limbs  = tmp_limbs,
                 .cap    = x->n,
@@ -1639,22 +1639,22 @@ bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
             x->limbs[0] = temp_rem;
             x->n        = (temp_rem) ? 1 : 0;
             x->sign     = (temp_rem) ? x->sign : 1;
-            arena_reset(&_MASTER_ARENA, tmp_mark);
+            arena_reset(&_BI_MOD_I64_ARENA, tmp_mark);
         }
     } return BIGINT_SUCCESS;
 }
 void __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y->limbs);
-    static local_thread dnml_arena _MASTER_ARENA;
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
+    static local_thread dnml_arena _BI_ADD_ARENA;
+    init_arena(&_BI_ADD_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
 
     if (!y->n);
     else if (!x->n) __BIGINT_MUT_COPY__(x, y);
     else if (x->sign == y->sign) {
         __BIGINT_RESERVE__(x, max(x->n, y->n) + 1); // Prevents memory leaked from OOM early
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
+        size_t tmp_mark = arena_mark(&_BI_ADD_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_ADD_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
         bigInt temp_sum = {
             .limbs = tmp_limbs,
             .cap   = max(x->n, y->n) + 1,
@@ -1665,13 +1665,13 @@ void __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y) {
         __BIGINT_MAGNITUDED_ADD__(&temp_sum, x, y);
         temp_sum.sign = x->sign;
         __BIGINT_MUT_COPY__(x, &temp_sum);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_ADD_ARENA, tmp_mark);
     } else {
         int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(x, y);
         if (!comp_res) __BIGINT_RESET__(x);
         else {
-            size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-            limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+            size_t tmp_mark = arena_mark(&_BI_ADD_ARENA);
+            limb_t *tmp_limbs = arena_alloc(&_BI_ADD_ARENA, BYTES_IN_UINT64_T * x->n);
             bigInt temp_sum = {
                 .limbs = tmp_limbs,
                 .cap   = x->n,
@@ -1681,15 +1681,15 @@ void __BIGINT_MUT_ADD__(bigInt *x, const bigInt *y) {
             if (comp_res > 0)   { __BIGINT_MAGNITUDED_SUB__(&temp_sum, x, y); temp_sum.sign = x->sign; }
             else                { __BIGINT_MAGNITUDED_SUB__(&temp_sum, x, y); temp_sum.sign = y->sign; }
             __BIGINT_MUT_COPY__(x, &temp_sum);
-            arena_reset(&_MASTER_ARENA, tmp_mark);
+            arena_reset(&_BI_ADD_ARENA, tmp_mark);
         }
     }
 }
 void __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y->limbs);
-    static local_thread dnml_arena _MASTER_ARENA;
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
+    static local_thread dnml_arena _BI_SUB_ARENA;
+    init_arena(&_BI_SUB_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
 
     if (!y->n);
     else if (!x->n) { __BIGINT_MUT_COPY__(x, y);  x->sign = -y->sign; }
@@ -1697,8 +1697,8 @@ void __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {
         int8_t comp_res = __BIGINT_COMPARE_MAGNITUDE__(x, y);
         if (!comp_res) __BIGINT_RESET__(x);
         else {
-            size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-            limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
+            size_t tmp_mark = arena_mark(&_BI_SUB_ARENA);
+            limb_t *tmp_limbs = arena_alloc(&_BI_SUB_ARENA, BYTES_IN_UINT64_T * x->n);
             bigInt temp_diff = {
                 .limbs = tmp_limbs, 
                 .cap   = x->n,
@@ -1708,11 +1708,11 @@ void __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {
             if (comp_res > 0)   { __BIGINT_MAGNITUDED_SUB__(&temp_diff, x, y); temp_diff.sign = x->sign; }
             else                { __BIGINT_MAGNITUDED_SUB__(&temp_diff, x, y); temp_diff.sign = -x->sign; }
             __BIGINT_MUT_COPY__(x, &temp_diff);
-            arena_reset(&_MASTER_ARENA, tmp_mark);
+            arena_reset(&_BI_SUB_ARENA, tmp_mark);
         }
     } else {
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
+        size_t tmp_mark = arena_mark(&_BI_SUB_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_SUB_ARENA, BYTES_IN_UINT64_T * (max(x->n, y->n) + 1));
         bigInt temp_diff = {
             .limbs = tmp_limbs, 
             .cap   = max(x->n, y->n) + 1,
@@ -1722,21 +1722,21 @@ void __BIGINT_MUT_SUB__(bigInt *x, const bigInt *y) {
         __BIGINT_MAGNITUDED_ADD__(&temp_diff, x, y);
         temp_diff.sign = x->sign;
         __BIGINT_MUT_COPY__(x, &temp_diff);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_SUB_ARENA, tmp_mark);
     }
 }
 void __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y->limbs);
-    static local_thread dnml_arena _MASTER_ARENA;
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n * y->n));
+    static local_thread dnml_arena _BI_MUL_ARENA;
+    init_arena(&_BI_MUL_ARENA, BYTES_IN_UINT64_T * (x->n * y->n));
 
     if (x->n == 0) return;
     if (!y->n) __BIGINT_RESET__(x);
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_MUT_COPY__(x, y);
     else {
-        size_t tmp_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *tmp_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n * y->n));
+        size_t tmp_mark = arena_mark(&_BI_MUL_ARENA);
+        limb_t *tmp_limbs = arena_alloc(&_BI_MUL_ARENA, BYTES_IN_UINT64_T * (x->n * y->n));
         bigInt __TEMP_PROD__ = {
             .limbs = tmp_limbs,
             .cap   = x->n * y->n,
@@ -1745,7 +1745,7 @@ void __BIGINT_MUT_MUL__(bigInt *x, const bigInt *y) {
         };
         __BIGINT_MAGNITUDED_MUL__(&__TEMP_PROD__, x, y);
         __BIGINT_MUT_COPY__(x, &__TEMP_PROD__);
-        arena_reset(&_MASTER_ARENA, tmp_mark);
+        arena_reset(&_BI_MUL_ARENA, tmp_mark);
     }
     x->sign *= y->sign;
 }
@@ -1753,16 +1753,17 @@ bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y->limbs);
     if (!y->n) return BIGINT_ERR_DOMAIN;
-    static local_thread dnml_arena _MASTER_ARENA;
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + y->n));
+    static local_thread dnml_arena _BI_DIV_ARENA;
+    init_arena(&_BI_DIV_ARENA, BYTES_IN_UINT64_T * (x->n + y->n));
 
     if (x->n == 0);
     else if (y->n == 1 && y->limbs[0] == 1) x->sign *= y->sign;
     else if (x->n == 1 && x->limbs[0] == 1) __BIGINT_RESET__(x);
     else {
-        size_t quot_mark = arena_mark(&_MASTER_ARENA), rem_mark = arena_mark(&_MASTER_ARENA);
-        limb_t *quot_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
-        limb_t *rem_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * y->n);
+        size_t quot_mark = arena_mark(&_BI_DIV_ARENA); 
+        limb_t *quot_limbs = arena_alloc(&_BI_DIV_ARENA, BYTES_IN_UINT64_T * x->n);
+        size_t rem_mark = arena_mark(&_BI_DIV_ARENA); 
+        limb_t *rem_limbs = arena_alloc(&_BI_DIV_ARENA, BYTES_IN_UINT64_T * y->n);
         bigInt temp_quot = {
             .limbs = quot_limbs,
             .cap   = x->n,
@@ -1780,15 +1781,16 @@ bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt *y) {
         temp_quot.sign = x->sign * y->sign;
         __BIGINT_NORMALIZE__(&temp_quot);
         __BIGINT_MUT_COPY__(x, &temp_quot);
-        arena_reset(&_MASTER_ARENA, rem_mark); arena_reset(&_MASTER_ARENA, quot_mark);
+        arena_reset(&_BI_DIV_ARENA, rem_mark); 
+        arena_reset(&_BI_DIV_ARENA, quot_mark);
     } return BIGINT_SUCCESS;
 }
 bigint_status __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {
     assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y->limbs);
     if (!y->n) return BIGINT_ERR_DOMAIN;
-    static local_thread dnml_arena _MASTER_ARENA;
-    init_arena(&_MASTER_ARENA, BYTES_IN_UINT64_T * (x->n + y->n));
+    static local_thread dnml_arena _BI_MOD_ARENA;
+    init_arena(&_BI_MOD_ARENA, BYTES_IN_UINT64_T * (x->n + y->n));
 
     if (x->n == 0);
     else if (y->n == 1 && y->limbs[0] == 1) __BIGINT_RESET__(x);
@@ -1797,9 +1799,10 @@ bigint_status __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {
         if (comp_res < 0);
         else if (!comp_res) __BIGINT_RESET__(x);
         else {
-            size_t quot_mark = arena_mark(&_MASTER_ARENA), rem_mark = arena_mark(&_MASTER_ARENA);
-            limb_t *quot_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * x->n);
-            limb_t *rem_limbs = arena_alloc(&_MASTER_ARENA, BYTES_IN_UINT64_T * y->n);
+            size_t quot_mark = arena_mark(&_BI_MOD_ARENA);
+            limb_t *quot_limbs = arena_alloc(&_BI_MOD_ARENA, BYTES_IN_UINT64_T * x->n);
+            size_t rem_mark = arena_mark(&_BI_MOD_ARENA);
+            limb_t *rem_limbs = arena_alloc(&_BI_MOD_ARENA, BYTES_IN_UINT64_T * y->n);
             bigInt temp_quot = {
                 .limbs = quot_limbs,
                 .cap   = x->n,
@@ -1816,8 +1819,8 @@ bigint_status __BIGINT_MUT_MOD__(bigInt *x, const bigInt *y) {
             __BIGINT_MAGNITUDED_DIVMOD__(&temp_quot, &temp_rem, x, y);
             temp_rem.sign = x->sign;
             __BIGINT_MUT_COPY__(x, &temp_rem);
-            arena_reset(&_MASTER_ARENA, rem_mark); 
-            arena_reset(&_MASTER_ARENA, quot_mark);
+            arena_reset(&_BI_MOD_ARENA, rem_mark); 
+            arena_reset(&_BI_MOD_ARENA, quot_mark);
         }
     } return BIGINT_SUCCESS;
 }

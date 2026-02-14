@@ -12,13 +12,6 @@
 #define max(x, y) ( ((x) > (y)) ? (x) : (y) )
 
 
-/* 128 bit Integer */
-#if defined(__SIZEOF_INT128__)
-    #define __HAS_int128__  1
-#else
-    #define __HAS_int128__  0
-#endif
-
 /* Single-Limb Addition + Carry */
 static inline uint64_t __ADD_UI64__(uint64_t a, uint64_t b, uint64_t *carry) {
     #if __compiler_clang
@@ -79,7 +72,7 @@ static inline uint64_t __SUB_UI64__(uint64_t a, uint64_t b, uint64_t *borrow) {
 /* Wide Multiplication ---> 128 bit */
 static inline uint64_t __MUL_UI64__(uint64_t a, uint64_t b, uint64_t *hi) {
     #if __HAS_int128__
-        unsigned __int128 res = ((unsigned __int128)a) * ((unsigned __int128)b);
+        uint128 res = ((uint128)a) * ((uint128)b);
         *hi = (uint64_t)(res >> BITS_IN_UINT64_T);
         return (uint64_t)res;
     #else
