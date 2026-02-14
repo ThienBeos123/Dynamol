@@ -23,6 +23,7 @@ typedef struct {
 
 //* ============= Functionalities =============
 static inline void init_arena(dnml_arena *a, size_t init_cap) {
+    if (a->base) return;
     a->base = malloc(init_cap);
     if (!a->base) abort();
     a->cap      = init_cap;

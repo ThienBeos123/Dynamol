@@ -51,7 +51,7 @@ void __BIGINT_CLEAR__(bigInt *x) {
     x->sign  = 0;
 }
 void __BIGINT_EMPTY_INIT__(bigInt *x) {
-    if (x->limbs != NULL) return; // The bigInt is already initialized
+    if (x->limbs) return; // The bigInt is already initialized
     limb_t *P_BUFFER__ = malloc(sizeof(limb_t));
     if (P_BUFFER__ == NULL) abort();
     x->limbs = P_BUFFER__;
@@ -1478,10 +1478,14 @@ static void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const big
 
 //* ============================================ SIGNED ARITHMETIC ========================================== */
 /* ------------------- MUTATIVE ARITHMETIC -------------------- */
-void __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
+void __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {                     //* REFACTORED
     assert(__BIGINT_VALIDATE__(x));
-    static local_thread dnml_arena _BI_MUL_UI64_ARENA; 
-    init_arena(&_BI_MUL_UI64_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
+    static local_thread dnml_arena _BI_MUL_UI64_ARENA;
+    static local_thread bool _BIMUL_UI64_INITIAED_ = false;
+    if (!_BIMUL_UI64_INITIAED_) {
+        init_arena(&_BI_MUL_UI64_ARENA, BYTES_IN_UINT64_T * (x->n + 1));
+        _BIMUL_UI64_INITIAED_ = true;
+    }
 
     if (x->n == 0);
     else if (val == 1);
@@ -1503,11 +1507,15 @@ void __BIGINT_MUT_MUL_UI64__(bigInt *x, uint64_t val) {
         arena_reset(&_BI_MUL_UI64_ARENA, tmp_mark);
     }
 }
-bigint_status __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
+bigint_status __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {            //* REFACTORED
     assert(__BIGINT_VALIDATE__(x));
     if (!val) return BIGINT_ERR_DOMAIN;
     static local_thread dnml_arena _BI_DIV_UI64_ARENA; 
-    init_arena(&_BI_DIV_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
+    static local_thread bool _BIDIV_UI64_INITIATED_ = false;
+    if (!_BIDIV_UI64_INITIATED_) {
+        init_arena(&_BI_DIV_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
+        _BIDIV_UI64_INITIATED_ = true;
+    }
 
     if (x->n == 0);
     else if (val == 1);
@@ -1529,11 +1537,15 @@ bigint_status __BIGINT_MUT_DIV_UI64__(bigInt *x, uint64_t val) {
         arena_reset(&_BI_DIV_UI64_ARENA, tmp_mark);
     } return BIGINT_SUCCESS;
 }
-bigint_status __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
+bigint_status __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {            //* REFACTORED
     assert(__BIGINT_VALIDATE__(x));
     if (!val) return BIGINT_ERR_DOMAIN;
     static local_thread dnml_arena _BI_MOD_UI64_ARENA; 
-    init_arena(&_BI_MOD_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
+    static local_thread bool _BIMOD_UI64_INITIATED_;
+    if (!_BIMOD_UI64_INITIATED_) {
+        init_arena(&_BI_MOD_UI64_ARENA, BYTES_IN_UINT64_T * x->n);
+        _BIMOD_UI64_INITIATED_ = true;
+    }
 
     if (x->n == 0);
     else if (val == 1) __BIGINT_RESET__(x);

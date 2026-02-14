@@ -8,6 +8,11 @@
 #define I64_MAX_BIT_MASK 0x7FFFFFFFFFFFFFFFULL
 #define I64_MIN_BIT_MASK 0x8000000000000000ULL
 
+/* Precomputation */
+#define log2_10 3.322
+#define log2_16 4
+#define log2_2  1
+#define log2_8  3
 
 /* Multiplication */
 #define BIGINT_SCHOOLBOOK           64

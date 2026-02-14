@@ -6,10 +6,11 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <assert.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #include <math.h>
+#include <assert.h>
 
 #include "../big_numbers/bigNums.h"
 #include "../intrinsics/intrinsics.h"
@@ -21,7 +22,7 @@ extern "C" {
 /* ---------------------- */
 /* misc_utils.c */
 /* ---------------------- */
-uint8_t __COUNT_DIGIT_BASE__();
+size_t __BITCOUNT__(size_t digit_count, uint8_t base);
 uint64_t __MAG_I64__(int64_t val);
 
 
