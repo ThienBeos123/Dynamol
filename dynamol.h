@@ -4,8 +4,8 @@
 
 
 
-
-#include "big_numbers/_bigint.h"
+#include "big_numbers/bigNums.h"
+#include "big_numbers/bigInt_func.h"
 
 
 

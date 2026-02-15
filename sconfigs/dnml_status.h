@@ -11,14 +11,14 @@ typedef enum ___424947494E54_4552524F52___ {
 } bigint_status;
 
 typedef enum {
-    STR_SUCCESS = 100,
-    STR_NULL,
-    STR_EMPTY,
-    STR_INCOMPLETE,
-    STR_INVALID_SIGN,
-    STR_INVALID_BASE_PREFIX,
-    STR_INVALID_BASE,
-    STR_INVALID_DIGIT,
+    STR_SUCCESS = 100,          // 100
+    STR_NULL,                   // 101
+    STR_EMPTY,                  // 102
+    STR_INCOMPLETE,             // 103
+    STR_INVALID_SIGN,           // 104
+    STR_INVALID_BASE_PREFIX,    // 105
+    STR_INVALID_BASE,           // 106
+    STR_INVALID_DIGIT,          // 107
 } str_status;
 
 

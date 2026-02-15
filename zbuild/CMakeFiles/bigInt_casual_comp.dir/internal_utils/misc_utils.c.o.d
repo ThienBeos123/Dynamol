@@ -105,9 +105,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_wchar_t.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
-  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_string.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_rsize_t.h \
@@ -135,4 +132,4 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../intrinsics/limb_math.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../sconfigs/numeric_config.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../sconfigs/settings.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../sconfigs/arena.h

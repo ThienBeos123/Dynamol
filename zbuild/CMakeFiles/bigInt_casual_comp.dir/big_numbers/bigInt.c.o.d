@@ -1,5 +1,6 @@
 CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigInt.c \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigInt_func.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../system/include.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h \
@@ -96,10 +97,7 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h \
-  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/math.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_static_assert.h \
@@ -149,12 +147,11 @@ CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o: \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/../../internal_utils/../intrinsics/limb_math.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/../../internal_utils/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/../../internal_utils/../sconfigs/numeric_config.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/../../internal_utils/../sconfigs/settings.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/../../internal_utils/../sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/../../big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/mul.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/pow_root.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/num_theory.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../calculation_algorithms/header/mod.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../internal_utils/util.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/_bigint.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h

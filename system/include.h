@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <tgmath.h>
 
 #include <math.h>
 #include <assert.h>
