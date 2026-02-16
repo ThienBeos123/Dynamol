@@ -590,7 +590,7 @@ bigInt __BIGINT_FROM_STRNLEN__(const char* str, size_t len, str_status *err) {
     bigInt res;
     //* ====== 1. Sign Handling ====== *//
     size_t curr_pos = 0; uint8_t sign = 1;
-    unsigned char sign_op_res = _sign_handle_(str, &curr_pos, &sign);
+    unsigned char sign_op_res = _sign_handle_nlen_(str, &curr_pos, &sign, len);
     if (sign_op_res == 4) { *err = STR_INVALID_SIGN; return __BIGINT_ERROR_VALUE__(); }
     else if (sign_op_res == 3) { *err = STR_INCOMPLETE; return __BIGINT_ERROR_VALUE__(); }
 
@@ -712,6 +712,7 @@ str_status __BIGINT_TSET_STRING__(char* str, const bigInt x) {
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_TSET_STRING_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_TSET_STRING_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -741,6 +742,7 @@ str_status __BIGINT_TSET_BASE__(char* str, const bigInt x, uint8_t base) {
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_TSET_BASE_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_TSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -769,6 +771,7 @@ str_status __BIGINT_TSET_STRNLEN__(char* str, const bigInt x, size_t len) {
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_TSET_STRNLEN_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_TSET_STRNLEN_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -797,6 +800,7 @@ str_status __BIGINT_TSET_BASENLEN__(char* str, const bigInt x, uint8_t base, siz
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_TSET_BASENLEN_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_TSET_BASENLEN_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -812,7 +816,7 @@ str_status __BIGINT_TSET_BASENLEN__(char* str, const bigInt x, uint8_t base, siz
     return STR_SUCCESS;
 }
 /* ------------- Safe BigInt --> String ------------ */
-str_status __BIGINT_SSET_STRING__(char* str, const bigInt x) {
+str_status __BIGINT_SET_STRING__(char* str, const bigInt x) {
     assert(__BIGINT_INTERNAL_VALID__(&x));
     static local_thread dnml_arena _BI_SSET_STRING_ARENA;
     static local_thread bool _ARENA_INITIATED_ = false;
@@ -829,6 +833,7 @@ str_status __BIGINT_SSET_STRING__(char* str, const bigInt x) {
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_SSET_STRING_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_SSET_STRING_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -842,7 +847,7 @@ str_status __BIGINT_SSET_STRING__(char* str, const bigInt x) {
     arena_reset(&_BI_SSET_STRING_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
-str_status __BIGINT_SSET_BASE__(char* str, const bigInt x, uint8_t base) {
+str_status __BIGINT_SET_BASE__(char* str, const bigInt x, uint8_t base) {
     assert(__BIGINT_INTERNAL_VALID__(&x));
     static local_thread dnml_arena _BI_SSET_BASE_ARENA;
     static local_thread bool _ARENA_INITIATED_ = false;
@@ -859,6 +864,7 @@ str_status __BIGINT_SSET_BASE__(char* str, const bigInt x, uint8_t base) {
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_SSET_BASE_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -872,7 +878,7 @@ str_status __BIGINT_SSET_BASE__(char* str, const bigInt x, uint8_t base) {
     arena_reset(&_BI_SSET_BASE_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
-str_status __BIGINT_SSET_STRNLEN__(char* str, const bigInt x, size_t len) {
+str_status __BIGINT_SET_STRNLEN__(char* str, const bigInt x, size_t len) {
     assert(__BIGINT_INTERNAL_VALID__(&x));
     static local_thread dnml_arena _BI_SSET_BASE_ARENA;
     static local_thread bool _ARENA_INITIATED_ = false;
@@ -888,6 +894,7 @@ str_status __BIGINT_SSET_STRNLEN__(char* str, const bigInt x, size_t len) {
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_SSET_BASE_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -901,7 +908,7 @@ str_status __BIGINT_SSET_STRNLEN__(char* str, const bigInt x, size_t len) {
     arena_reset(&_BI_SSET_BASE_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
-str_status __BIGINT_SSET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t len) {
+str_status __BIGINT_SET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t len) {
     assert(__BIGINT_INTERNAL_VALID__(&x));
     static local_thread dnml_arena _BI_SSET_BASE_ARENA;
     static local_thread bool _ARENA_INITIATED_ = false;
@@ -917,6 +924,7 @@ str_status __BIGINT_SSET_BASENLEN__(char* str, const bigInt x, uint8_t base, siz
     if (sign_space) str[0] = '-';
     size_t tmp_mark = arena_mark(&_BI_SSET_BASE_ARENA);
     limb_t *tmp_limbs = arena_alloc(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    memcpy(tmp_limbs, x.limbs, x.n * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = x.sign,
         .cap   = x.n,       .n    = x.n,
@@ -931,9 +939,187 @@ str_status __BIGINT_SSET_BASENLEN__(char* str, const bigInt x, uint8_t base, siz
     return STR_SUCCESS;
 }
 /* ----------- Default String --> BigInt ----------- */
-str_status __BIGINT_GET_STRING__(bigInt *x, const char *str) {}
-str_status __BIGINT_GET_BASE__(bigInt *x, const char *str, uint8_t base) {}
-str_status __BIGINT_GET_STRNLEN__(bigInt *x, const char *str, size_t n) {}
+str_status __BIGINT_GET_STRING__(bigInt *x, const char *str) {
+    assert(__BIGINT_INTERNAL_PVALID__(x));
+    if (!str) return STR_NULL;
+    if (*str == '\0') return STR_EMPTY;
+    static local_thread dnml_arena _BI_GET_STRING_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_GET_STRING_ARENA, x->n);
+        _ARENA_INITIATED_ = true;
+    }
+    //* ====== 1. Sign Handling ====== *//
+    size_t curr_pos = 0; uint8_t sign = 1;
+    unsigned char sign_op_res = _sign_handle_(str, &curr_pos, &sign);
+    if (sign_op_res == 4) return STR_INVALID_SIGN;
+    else if (sign_op_res == 3) return STR_INCOMPLETE;
+
+    //* ====== 2. Prefix Handling ====== *//
+    uint8_t base = 10;
+    unsigned char prefix_op_res = _prefix_handle_(str, &curr_pos, &base);
+    if (prefix_op_res == 0) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        x->n = 0; x->sign = 1;
+    } else if (prefix_op_res == 2) return STR_INVALID_BASE_PREFIX;
+    // The remaining case (prefix_op_res == 1) indicates we have a decimal string with 1+ leading zero
+
+    //* ====== 3. Leading-Zeros Handling ====== *//
+    while (str[curr_pos] == '0' && str[curr_pos] != '\0') ++curr_pos; // Skipping all leading zeros
+    // String full of zeros
+    if (str[curr_pos] == '\0') {
+        // -0 is INVALID
+        if (sign = -1) return STR_INVALID_SIGN;
+        x->n = 0; x->sign = 1;
+        return STR_SUCCESS;
+    }
+
+    //* ======= 4. Initiating Resulting BigInt ======= *//
+    size_t d = strlen(&str[curr_pos]);
+    size_t bits = __BITCOUNT__(d, base);
+    size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
+    if (x->cap < cap) __BIGINT_INTERNAL_ENSCAP__(x, cap);
+    size_t tmp_mark = arena_mark(&_BI_GET_STRING_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_GET_STRING_ARENA, cap * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = sign,
+        .cap   = cap,      .n     = cap
+    };
+
+    //* ============= 5. Parsing and Initiating Value ================ *//
+    for (; curr_pos < d; ++curr_pos) {
+        uint8_t lookup_index = (uint8_t)(str[curr_pos] - '\0');
+        if (_VALUE_LOOKUP_[lookup_index] > base) {
+            arena_reset(&_BI_GET_STRING_ARENA, tmp_mark);
+            return STR_INVALID_DIGIT;
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
+    }
+    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
+    x->n = cap; x->n = cap; x->sign = sign;
+    arena_reset(&_BI_GET_STRING_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_GET_BASE__(bigInt *x, const char *str, uint8_t base) {
+    assert(__BIGINT_INTERNAL_PVALID__(x));
+    if (!str) return STR_NULL;
+    if (*str == '\0') return STR_EMPTY;
+    static local_thread dnml_arena _BI_GET_STRING_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_GET_STRING_ARENA, x->n);
+        _ARENA_INITIATED_ = true;
+    }
+    //* ====== 1. Sign Handling ====== *//
+    size_t curr_pos = 0; uint8_t sign = 1;
+    if (str[curr_pos] == '-') { sign = -1; ++curr_pos; }
+    else if (str[curr_pos] == '+') ++curr_pos;
+    if (str[curr_pos] == '\0') return STR_INCOMPLETE;
+
+    //* ====== 2. Leading-Zeros Handling ====== *//
+    while (str[curr_pos] == '0' && str[curr_pos] != '\0') ++curr_pos; // Skipping all leading zeros
+    // String full of zeros
+    if (str[curr_pos] == '\0') {
+        // -0 is INVALID
+        if (sign = -1) return STR_INVALID_SIGN;
+        x->n = 0; x->sign = 1;
+        return STR_SUCCESS;
+    }
+
+    //* ======= 3. Initiating Resulting BigInt ======= *//
+    size_t d = strlen(&str[curr_pos]);
+    size_t bits = __BITCOUNT__(d, base);
+    size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
+    if (x->cap < cap) __BIGINT_INTERNAL_ENSCAP__(x, cap);
+    size_t tmp_mark = arena_mark(&_BI_GET_STRING_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_GET_STRING_ARENA, cap * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = sign,
+        .cap   = cap,      .n     = cap
+    };
+
+
+    //* ============= 4. Parsing and Initiating Value ================ *//
+    for (; curr_pos < d; ++curr_pos) {
+        uint8_t lookup_index = (uint8_t)(str[curr_pos] - '\0');
+        if (_VALUE_LOOKUP_[lookup_index] > base) {
+            arena_reset(&_BI_GET_STRING_ARENA, tmp_mark);
+            return STR_INVALID_DIGIT;
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
+    }
+    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
+    x->n = cap; x->n = cap; x->sign = sign;
+    arena_reset(&_BI_GET_STRING_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_GET_STRNLEN__(bigInt *x, const char *str, size_t len) {
+    assert(__BIGINT_INTERNAL_PVALID__(x));
+    if (!str) return STR_NULL;
+    if (*str == '\0') return STR_EMPTY;
+    static local_thread dnml_arena _BI_GET_STRNLEN_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_GET_STRNLEN_ARENA, x->n);
+        _ARENA_INITIATED_ = true;
+    }
+     //* ====== 1. Sign Handling ====== *//
+    size_t curr_pos = 0; uint8_t sign = 1;
+    unsigned char sign_op_res = _sign_handle_nlen_(str, &curr_pos, &sign, len);
+    if (sign_op_res == 4) return STR_INVALID_SIGN;
+    else if (sign_op_res == 3) return STR_INCOMPLETE;
+
+    //* ====== 2. Prefix Handling ====== *//
+    uint8_t base = 10;
+    unsigned char prefix_op_res = _prefix_handle_nlen_(str, &curr_pos, &base, len);
+    if (prefix_op_res == 0) return STR_INVALID_BASE_PREFIX;
+    else if (prefix_op_res == 3) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        x->n = 0; x->sign = 1;
+        return STR_SUCCESS;
+    } else if (prefix_op_res == 2) return STR_INVALID_BASE_PREFIX;
+    // The remaining case (prefix_op_res == 1) indicates we have a decimal string with 1+ leading zero
+
+    //* ====== 3. Leading-Zeros Handling ====== *//
+    // Skipping all leading zeros
+    while (str[curr_pos] == '0' && (str[curr_pos] != '\0' || curr_pos < len)) ++curr_pos;
+    // String full of zeros
+    if (str[curr_pos] == '\0') return STR_INVALID_DIGIT;
+    else if (curr_pos == len) {
+        // -0 is INVALID
+        if (sign == -1) return STR_INVALID_SIGN;
+        x->n = 0; x->sign = 1;
+        return STR_SUCCESS;
+    }
+
+    //* ======= 4. Initiating Resulting BigInt ======= *//
+    size_t bits = __BITCOUNT__(len, base);
+    size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
+    if (x->cap < cap) __BIGINT_INTERNAL_ENSCAP__(x, cap);
+    size_t tmp_mark = arena_mark(&_BI_GET_STRNLEN_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_GET_STRNLEN_ARENA, cap * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = sign,
+        .cap   = cap,      .n     = cap
+    };
+
+    //* ============= 5. Parsing and Initiating Value ================ *//
+    for (; curr_pos < len; ++curr_pos) {
+        uint8_t lookup_index = (uint8_t)(str[curr_pos] - '\0');
+        if (_VALUE_LOOKUP_[lookup_index] > base) {
+            arena_reset(&_BI_GET_STRNLEN_ARENA, tmp_mark);
+            return STR_INVALID_DIGIT;
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
+    }
+    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
+    x->n = cap; x->n = cap; x->sign = sign;
+    arena_reset(&_BI_GET_STRNLEN_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
 str_status __BIGINT_GET_BASENLEN__(bigInt *x, const char *str, uint8_t base, size_t n) {}
 /* --------- Truncative String --> BigInt ---------- */
 str_status __BIGINT_TGET_STRING__(bigInt *x, const char *str) {}
