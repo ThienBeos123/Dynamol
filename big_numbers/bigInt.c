@@ -1549,7 +1549,7 @@ bigint_status __BIGINT_MUT_MOD_UI64__(bigInt *x, uint64_t val) {
         }
     } return BIGINT_SUCCESS;
 }
-void __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {                               //? REFACTORED
+void __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_PVALIDATE__(x));
     static local_thread dnml_arena _BI_MUL_I64_ARENA; 
     static local_thread bool _BIMUL_I64_INITIATED_ = false;
@@ -1579,7 +1579,7 @@ void __BIGINT_MUT_MUL_I64__(bigInt *x, int64_t val) {                           
     } 
     x->sign *= (val < 0) ? -1 : 1;
 }
-bigint_status __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {                      //? REFACTORED
+bigint_status __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_PVALIDATE__(x));
     if (!val) return BIGINT_ERR_DOMAIN;
     static local_thread dnml_arena _BI_DIV_I64_ARENA; 
@@ -1610,7 +1610,7 @@ bigint_status __BIGINT_MUT_DIV_I64__(bigInt *x, int64_t val) {                  
         arena_reset(&_BI_DIV_I64_ARENA, tmp_mark);
     } return BIGINT_SUCCESS;
 }
-bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {                      //? REFACTORED
+bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {
     assert(__BIGINT_PVALIDATE__(x) && val);
     if (!val) return BIGINT_ERR_DOMAIN;
     static local_thread dnml_arena _BI_MOD_I64_ARENA; 
@@ -1645,7 +1645,7 @@ bigint_status __BIGINT_MUT_MOD_I64__(bigInt *x, int64_t val) {                  
         }
     } return BIGINT_SUCCESS;
 }
-void __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {               //* REFACTORED
+void __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y.limbs);
     static local_thread dnml_arena _BI_ADD_ARENA;
@@ -1691,7 +1691,7 @@ void __BIGINT_MUT_ADD__(bigInt *x, const bigInt y) {               //* REFACTORE
         }
     }
 }
-void __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {               //* REFACTORED
+void __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y.limbs);
     static local_thread dnml_arena _BI_SUB_ARENA;
@@ -1735,7 +1735,7 @@ void __BIGINT_MUT_SUB__(bigInt *x, const bigInt y) {               //* REFACTORE
         arena_reset(&_BI_SUB_ARENA, tmp_mark);
     }
 }
-void __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {               //* REFACTORED
+void __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y.limbs);
     static local_thread dnml_arena _BI_MUL_ARENA;
@@ -1763,7 +1763,7 @@ void __BIGINT_MUT_MUL__(bigInt *x, const bigInt y) {               //* REFACTORE
     }
     x->sign *= y.sign;
 }
-bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {                      //todo REFACTORED
+bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y.limbs);
     if (!y.n) return BIGINT_ERR_DOMAIN;
@@ -1803,7 +1803,7 @@ bigint_status __BIGINT_MUT_DIV__(bigInt *x, const bigInt y) {                   
         arena_reset(&_BI_DIV_ARENA, quot_mark);
     } return BIGINT_SUCCESS;
 }
-bigint_status __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {                      //todo REFACTORED
+bigint_status __BIGINT_MUT_MOD__(bigInt *x, const bigInt y) {
     assert(__BIGINT_PVALIDATE__(x) && __BIGINT_VALIDATE__(y));
     assert(x->limbs != y.limbs);
     if (!y.n) return BIGINT_ERR_DOMAIN;

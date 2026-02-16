@@ -23,8 +23,11 @@ extern "C" {
 /* ---------------------- */
 /* str_parse.c */
 /* ---------------------- */
+static uint8_t is_numeric(char c);
 unsigned char _sign_handle_(const char *str, size_t *curr_pos, uint8_t *sign);
+unsigned char _sign_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *sign, size_t len);
 unsigned char _prefix_handle_(const char *str, size_t *curr_pos, uint8_t *base);
+unsigned char _prefix_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *base, size_t len);
 
 /* ---------------------- */
 /* misc_utils.c */

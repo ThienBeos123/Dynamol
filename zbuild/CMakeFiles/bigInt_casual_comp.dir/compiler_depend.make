@@ -191,7 +191,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h \
@@ -262,7 +261,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -277,7 +275,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
-  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/dnml_status.h \
@@ -288,8 +285,8 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o: /Users/adm
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/util.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h \
@@ -337,7 +334,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h \
@@ -408,7 +404,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -423,7 +418,6 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
-  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
@@ -435,8 +429,8 @@ CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o: /Users/adm
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/bigNums.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/util.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h \
@@ -482,7 +476,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h \
@@ -553,7 +546,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -568,7 +560,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
-  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/dnml_status.h \
@@ -582,8 +573,8 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o: /Users/admin/
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/util.h
 
@@ -620,7 +611,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/arm/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/assert.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/arm/_OSByteOrder.h \
@@ -691,7 +681,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
@@ -706,7 +695,6 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdint.h \
-  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/dnml_status.h \
@@ -720,8 +708,8 @@ CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o: /Users/admin/De
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/limb_math.h \
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/arena.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/numeric_config.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/util.h
 
@@ -863,12 +851,6 @@ CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o: /Users/admin/Desktop/Programmi
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/misc_utils.c:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/bigNum_utils.c:
-
-/Library/Developer/CommandLineTools/usr/lib/clang/17/include/tgmath.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/tgmath.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/complex.h:
 
 /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/div.c:
 
