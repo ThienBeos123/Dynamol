@@ -14,11 +14,12 @@ typedef enum {
     STR_SUCCESS = 100,          // 100
     STR_NULL,                   // 101
     STR_EMPTY,                  // 102
-    STR_INCOMPLETE,             // 103
-    STR_INVALID_SIGN,           // 104
-    STR_INVALID_BASE_PREFIX,    // 105
-    STR_INVALID_BASE,           // 106
-    STR_INVALID_DIGIT,          // 107
+    STR_INVALID_CAP,            // 103
+    STR_INCOMPLETE,             // 104
+    STR_INVALID_SIGN,           // 105
+    STR_INVALID_BASE_PREFIX,    // 106
+    STR_INVALID_BASE,           // 107
+    STR_INVALID_DIGIT,          // 108
 } str_status;
 
 

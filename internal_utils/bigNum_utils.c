@@ -38,7 +38,18 @@ inline void __BIGINT_INTERNAL_FREE__(bigInt *x) {
 }
 
 /* Safety Utilities */
-inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x) { /* BigInt Pointer Validity */
+inline uint8_t __BIGINT_INTERNAL_VALID__(const bigInt *x) { /* BigInt Validity */
+    /* State Validation */
+    if (x->limbs == NULL) return 0;
+    if (x->cap < 1) return 0;
+    if (x->n > x->cap) return 0;
+    if (x->sign != 1 && x->sign != -1) return 0;
+    /* Arithmetic Validation */
+    if (x->limbs[x->n - 1] == 0) return 0;
+    if (x->n == 0 && x->sign != 1) return 0;
+    return 1;
+}
+inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x) { /* BigInt Pointer State Validity */
     if (x->limbs == NULL) return 0;
     if (x->cap < 1) return 0;
     if (x->n > x->cap) return 0;

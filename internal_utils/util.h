@@ -45,6 +45,7 @@ inline void __BIGINT_INTERNAL_ENSCAP__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_REALLOC__(bigInt *x, size_t k);
 inline void __BIGINT_INTERNAL_FREE__(bigInt *x);
 
+inline uint8_t __BIGINT_INTERNAL_VALID__(const bigInt *x);
 inline uint8_t __BIGINT_INTERNAL_SVALID__(const bigInt *x);
 inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x);
 bigInt __BIGINT_ERROR_VALUE__(void);

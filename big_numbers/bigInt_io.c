@@ -364,14 +364,15 @@ str_status __BIGINT_BASENLEN_INIT__(bigInt *x, const char* str, uint8_t base, si
 
 //todo ================================= 2. CONVERSIONS & ASSIGNMENTS ================================= *//
 //* -------------------------- Conversions -------------------------- *//
-char* __BIGINT_TO_STRING__(const bigInt *x) {
-    uint8_t sign_space = (x->sign == -1) ? 1 : 0; // For NULl-Terminator + Sign
-    size_t str_length = __BIGINT_COUNTDB__(x, 10) + 1 + sign_space;
+char* __BIGINT_TO_STRING__(const bigInt x) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0; // For NULl-Terminator + Sign
+    size_t str_length = __BIGINT_COUNTDB__(&x, 10) + 1 + sign_space;
     // Arena & String
     static local_thread dnml_arena _BI_TO_STRING_ARENA;
     static local_thread bool process_initiate = false;
     if (!process_initiate) {
-        init_arena(&_BI_TO_STRING_ARENA, x->n);
+        init_arena(&_BI_TO_STRING_ARENA, x.n);
         process_initiate = true;
     } 
     char *res_str = malloc(str_length);
@@ -382,11 +383,11 @@ char* __BIGINT_TO_STRING__(const bigInt *x) {
 
     //* Temporary BigInt
     size_t tmp_mark = arena_mark(&_BI_TO_STRING_ARENA);
-    limb_t *tmp_limbs = arena_alloc(&_BI_TO_STRING_ARENA, x->n);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TO_STRING_ARENA, x.n);
     bigInt tmp_x = {
         .limbs = tmp_limbs,
-        .cap   = x->n,
-        .n     = x->n,
+        .cap   = x.n,
+        .n     = x.n,
         .sign  = 1,
     };
 
@@ -398,14 +399,15 @@ char* __BIGINT_TO_STRING__(const bigInt *x) {
     arena_reset(&_BI_TO_STRING_ARENA, tmp_mark);
     return res_str;
 }
-char* __BIGINT_TO_BASE__(const bigInt *x, uint8_t base) {
-    uint8_t sign_space = (x->sign == -1) ? 1 : 0; // For NULl-Terminator + Sign
-    size_t str_length = __BIGINT_COUNTDB__(x, base) + 1 + sign_space;
+char* __BIGINT_TO_BASE__(const bigInt x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0; // For NULl-Terminator + Sign
+    size_t str_length = __BIGINT_COUNTDB__(&x, base) + 1 + sign_space;
     // Arena & String
     static local_thread dnml_arena _BI_TO_STRING_ARENA;
     static local_thread bool process_initiate = false;
     if (!process_initiate) {
-        init_arena(&_BI_TO_STRING_ARENA, x->n);
+        init_arena(&_BI_TO_STRING_ARENA, x.n);
         process_initiate = true;
     } 
     char *res_str = malloc(str_length);
@@ -416,11 +418,11 @@ char* __BIGINT_TO_BASE__(const bigInt *x, uint8_t base) {
 
     //* Temporary BigInt
     size_t tmp_mark = arena_mark(&_BI_TO_STRING_ARENA);
-    limb_t *tmp_limbs = arena_alloc(&_BI_TO_STRING_ARENA, x->n);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TO_STRING_ARENA, x.n);
     bigInt tmp_x = {
         .limbs = tmp_limbs,
-        .cap   = x->n,
-        .n     = x->n,
+        .cap   = x.n,
+        .n     = x.n,
         .sign  = 1,
     };
 
@@ -432,16 +434,17 @@ char* __BIGINT_TO_BASE__(const bigInt *x, uint8_t base) {
     arena_reset(&_BI_TO_STRING_ARENA, tmp_mark);
     return res_str;
 }
-char* __BIGINT_TO_STRINGF__(const bigInt *x, uint8_t base, bool uppercase) {
+char* __BIGINT_TO_STRINGF__(const bigInt x, uint8_t base, bool uppercase) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
     uint8_t additional_val = (uppercase) ? 16 : 0;
-    uint8_t sign_space = (x->sign == -1) ? 1 : 0; // For NULl-Terminator + Sign
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0; // For NULl-Terminator + Sign
     uint8_t prefix_space = (base == 2 || base == 8 || base == 16) ? 2 : 0;
-    size_t str_length = __BIGINT_COUNTDB__(x, base) + 1 + sign_space + prefix_space;
+    size_t str_length = __BIGINT_COUNTDB__(&x, base) + 1 + sign_space + prefix_space;
     // Arena & String
     static local_thread dnml_arena _BI_TO_STRING_ARENA;
     static local_thread bool process_initiate = false;
     if (!process_initiate) {
-        init_arena(&_BI_TO_STRING_ARENA, x->n);
+        init_arena(&_BI_TO_STRING_ARENA, x.n);
         process_initiate = true;
     } 
     char *res_str = malloc(str_length);
@@ -460,11 +463,11 @@ char* __BIGINT_TO_STRINGF__(const bigInt *x, uint8_t base, bool uppercase) {
 
     //* Temporary BigInt
     size_t tmp_mark = arena_mark(&_BI_TO_STRING_ARENA);
-    limb_t *tmp_limbs = arena_alloc(&_BI_TO_STRING_ARENA, x->n);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TO_STRING_ARENA, x.n);
     bigInt tmp_x = {
         .limbs = tmp_limbs,
-        .cap   = x->n,
-        .n     = x->n,
+        .cap   = x.n,
+        .n     = x.n,
         .sign  = 1,
     };
 
@@ -694,30 +697,254 @@ bigInt __BIGINT_FROM_BASENLEN__(const char* str, uint8_t base, size_t len, str_s
 }
 //* -------------------------- Assignments -------------------------- *//
 /* --------- Truncative BigInt --> String ---------- */
-void __BIGINT_TSET_STRING__(char* str, const bigInt x) {}
-void __BIGINT_TSET_BASE__(char* str, const bigInt x, uint8_t base) {}
-void __BIGINT_TSET_STRNLEN__(char* str, const bigInt x, size_t n) {}
-void __BIGINT_TSET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t n) {}
+str_status __BIGINT_TSET_STRING__(char* str, const bigInt x) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_TSET_STRING_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_TSET_STRING_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    size_t str_length = strlen(str); // Early segfauly if no NULL-Terminator found
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (str_length <= sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_TSET_STRING_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TSET_STRING_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = str_length - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, 10);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, 10);
+    if (digit_needed < str_length) memset(&str[sign_space], '0', str_length - digit_needed);
+    arena_reset(&_BI_TSET_STRING_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_TSET_BASE__(char* str, const bigInt x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_TSET_BASE_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_TSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    size_t str_length = strlen(str); // Early segfauly if no NULL-Terminator found
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (str_length <= sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_TSET_BASE_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = str_length - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, base);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, base);
+    if (digit_needed < str_length) memset(&str[sign_space], '0', str_length - digit_needed);
+    arena_reset(&_BI_TSET_BASE_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_TSET_STRNLEN__(char* str, const bigInt x, size_t len) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_TSET_STRNLEN_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_TSET_STRNLEN_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (len <= sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_TSET_STRNLEN_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TSET_STRNLEN_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = len - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, 10);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, 10);
+    if (digit_needed < len) memset(&str[sign_space], '0', len - digit_needed);
+    arena_reset(&_BI_TSET_STRNLEN_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_TSET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t len) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_TSET_BASENLEN_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_TSET_BASENLEN_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (len <= sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_TSET_BASENLEN_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_TSET_BASENLEN_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = len - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, base);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, base);
+    if (digit_needed < len) memset(&str[sign_space], '0', len - digit_needed);
+    arena_reset(&_BI_TSET_BASENLEN_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
 /* ------------- Safe BigInt --> String ------------ */
-str_status __BIGINT_SSET_STRING__(char* str, const bigInt x) {}
-str_status __BIGINT_SSET_BASE__(char* str, const bigInt x, uint8_t base) {}
-str_status __BIGINT_SSET_STRNLEN__(char* str, const bigInt x, size_t n) {}
-str_status __BIGINT_SSET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t n) {}
+str_status __BIGINT_SSET_STRING__(char* str, const bigInt x) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_SSET_STRING_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_SSET_STRING_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    size_t str_length = strlen(str);
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (str_length <= sign_space) return STR_INVALID_CAP;
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, 10);
+    if (str_length < digit_needed + sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_SSET_STRING_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_SSET_STRING_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = str_length - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, 10);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    if (digit_needed < str_length) memset(&str[sign_space], '0', str_length - digit_needed);
+    arena_reset(&_BI_SSET_STRING_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_SSET_BASE__(char* str, const bigInt x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_SSET_BASE_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    size_t str_length = strlen(str);
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (str_length <= sign_space) return STR_INVALID_CAP;
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, base);
+    if (str_length < digit_needed + sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_SSET_BASE_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = str_length - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, base);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    if (digit_needed < str_length) memset(&str[sign_space], '0', str_length - digit_needed);
+    arena_reset(&_BI_SSET_BASE_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_SSET_STRNLEN__(char* str, const bigInt x, size_t len) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_SSET_BASE_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (len <= sign_space) return STR_INVALID_CAP;
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, 10);
+    if (len < digit_needed + sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_SSET_BASE_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = len - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, 10);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    if (digit_needed < len) memset(&str[sign_space], '0', len - digit_needed);
+    arena_reset(&_BI_SSET_BASE_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
+str_status __BIGINT_SSET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t len) {
+    assert(__BIGINT_INTERNAL_VALID__(&x));
+    static local_thread dnml_arena _BI_SSET_BASE_ARENA;
+    static local_thread bool _ARENA_INITIATED_ = false;
+    if (!_ARENA_INITIATED_) {
+        init_arena(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+        _ARENA_INITIATED_ = true;
+    }
+    if (!str) return STR_NULL;
+    uint8_t sign_space = (x.sign == -1) ? 1 : 0;
+    if (len <= sign_space) return STR_INVALID_CAP;
+    size_t digit_needed = __BIGINT_COUNTDB__(&x, base);
+    if (len < digit_needed + sign_space) return STR_INVALID_CAP;
+    if (sign_space) str[0] = '-';
+    size_t tmp_mark = arena_mark(&_BI_SSET_BASE_ARENA);
+    limb_t *tmp_limbs = arena_alloc(&_BI_SSET_BASE_ARENA, x.n * BYTES_IN_UINT64_T);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs, .sign = x.sign,
+        .cap   = x.n,       .n    = x.n,
+    };
+
+    for (size_t i = len - 1; i >= sign_space; --i) {
+        uint8_t numeric_value = __BIGINT_INTERNAL_DIVMOD_UI64__(&tmp_buf, base);
+        str[i] = _DIGIT_[numeric_value];
+    }
+    if (digit_needed < len) memset(&str[sign_space], '0', len - digit_needed);
+    arena_reset(&_BI_SSET_BASE_ARENA, tmp_mark);
+    return STR_SUCCESS;
+}
 /* ----------- Default String --> BigInt ----------- */
-void __BIGINT_GET_STRING__(char* str, const bigInt x) {}
-void __BIGINT_GET_BASE__(char* str, const bigInt x, uint8_t base) {}
-void __BIGINT_GET_STRNLEN__(char* str, const bigInt x, size_t n) {}
-void __BIGINT_GET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t n) {}
+str_status __BIGINT_GET_STRING__(bigInt *x, const char *str) {}
+str_status __BIGINT_GET_BASE__(bigInt *x, const char *str, uint8_t base) {}
+str_status __BIGINT_GET_STRNLEN__(bigInt *x, const char *str, size_t n) {}
+str_status __BIGINT_GET_BASENLEN__(bigInt *x, const char *str, uint8_t base, size_t n) {}
 /* --------- Truncative String --> BigInt ---------- */
-void __BIGINT_TGET_STRING__(char* str, const bigInt x) {}
-void __BIGINT_TGET_BASE__(char* str, const bigInt x, uint8_t base) {}
-void __BIGINT_TGET_STRNLEN__(char* str, const bigInt x, size_t n) {}
-void __BIGINT_TGET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t n) {}
+str_status __BIGINT_TGET_STRING__(bigInt *x, const char *str) {}
+str_status __BIGINT_TGET_BASE__(bigInt *x, const char *str, uint8_t base) {}
+str_status __BIGINT_TGET_STRNLEN__(bigInt *x, const char *str, size_t n) {}
+str_status __BIGINT_TGET_BASENLEN__(bigInt *x, const char *str, uint8_t base, size_t n) {}
 /* ------------- Safe String --> BigInt ------------ */
-str_status __BIGINT_SGET_STRING__(char* str, const bigInt x) {}
-str_status __BIGINT_SGET_BASE__(char* str, const bigInt x, uint8_t base) {}
-str_status __BIGINT_SGET_STRNLEN__(char* str, const bigInt x, size_t n) {}
-str_status __BIGINT_SGET_BASENLEN__(char* str, const bigInt x, uint8_t base, size_t n) {}
+str_status __BIGINT_SGET_STRING__(bigInt *x, const char *str) {}
+str_status __BIGINT_SGET_BASE__(bigInt *x, const char *str, uint8_t base) {}
+str_status __BIGINT_SGET_STRNLEN__(bigInt *x, const char *str, size_t n) {}
+str_status __BIGINT_SGET_BASENLEN__(bigInt *x, const char *str, uint8_t base, size_t n) {}
 
 
 
