@@ -117,24 +117,37 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named bigInt_casual_comp
+# Target rules for targets named bigInt_numeric
 
 # Build rule for target.
-bigInt_casual_comp: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bigInt_casual_comp
-.PHONY : bigInt_casual_comp
+bigInt_numeric: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bigInt_numeric
+.PHONY : bigInt_numeric
 
 # fast build rule for target.
-bigInt_casual_comp/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/build
-.PHONY : bigInt_casual_comp/fast
+bigInt_numeric/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/build
+.PHONY : bigInt_numeric/fast
+
+#=============================================================================
+# Target rules for targets named bigInt_io
+
+# Build rule for target.
+bigInt_io: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bigInt_io
+.PHONY : bigInt_io
+
+# fast build rule for target.
+bigInt_io/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/build
+.PHONY : bigInt_io/fast
 
 big_numbers/bigInt.o: big_numbers/bigInt.c.o
 .PHONY : big_numbers/bigInt.o
 
 # target to build an object file
 big_numbers/bigInt.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/big_numbers/bigInt.c.o
 .PHONY : big_numbers/bigInt.c.o
 
 big_numbers/bigInt.i: big_numbers/bigInt.c.i
@@ -142,7 +155,7 @@ big_numbers/bigInt.i: big_numbers/bigInt.c.i
 
 # target to preprocess a source file
 big_numbers/bigInt.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/big_numbers/bigInt.c.i
 .PHONY : big_numbers/bigInt.c.i
 
 big_numbers/bigInt.s: big_numbers/bigInt.c.s
@@ -150,15 +163,39 @@ big_numbers/bigInt.s: big_numbers/bigInt.c.s
 
 # target to generate assembly for a file
 big_numbers/bigInt.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/big_numbers/bigInt.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/big_numbers/bigInt.c.s
 .PHONY : big_numbers/bigInt.c.s
+
+big_numbers/bigInt_io.o: big_numbers/bigInt_io.c.o
+.PHONY : big_numbers/bigInt_io.o
+
+# target to build an object file
+big_numbers/bigInt_io.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/big_numbers/bigInt_io.c.o
+.PHONY : big_numbers/bigInt_io.c.o
+
+big_numbers/bigInt_io.i: big_numbers/bigInt_io.c.i
+.PHONY : big_numbers/bigInt_io.i
+
+# target to preprocess a source file
+big_numbers/bigInt_io.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/big_numbers/bigInt_io.c.i
+.PHONY : big_numbers/bigInt_io.c.i
+
+big_numbers/bigInt_io.s: big_numbers/bigInt_io.c.s
+.PHONY : big_numbers/bigInt_io.s
+
+# target to generate assembly for a file
+big_numbers/bigInt_io.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/big_numbers/bigInt_io.c.s
+.PHONY : big_numbers/bigInt_io.c.s
 
 calculation_algorithms/src/div.o: calculation_algorithms/src/div.c.o
 .PHONY : calculation_algorithms/src/div.o
 
 # target to build an object file
 calculation_algorithms/src/div.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/div.c.o
 .PHONY : calculation_algorithms/src/div.c.o
 
 calculation_algorithms/src/div.i: calculation_algorithms/src/div.c.i
@@ -166,7 +203,7 @@ calculation_algorithms/src/div.i: calculation_algorithms/src/div.c.i
 
 # target to preprocess a source file
 calculation_algorithms/src/div.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/div.c.i
 .PHONY : calculation_algorithms/src/div.c.i
 
 calculation_algorithms/src/div.s: calculation_algorithms/src/div.c.s
@@ -174,7 +211,7 @@ calculation_algorithms/src/div.s: calculation_algorithms/src/div.c.s
 
 # target to generate assembly for a file
 calculation_algorithms/src/div.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/div.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/div.c.s
 .PHONY : calculation_algorithms/src/div.c.s
 
 calculation_algorithms/src/mul.o: calculation_algorithms/src/mul.c.o
@@ -182,7 +219,7 @@ calculation_algorithms/src/mul.o: calculation_algorithms/src/mul.c.o
 
 # target to build an object file
 calculation_algorithms/src/mul.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/mul.c.o
 .PHONY : calculation_algorithms/src/mul.c.o
 
 calculation_algorithms/src/mul.i: calculation_algorithms/src/mul.c.i
@@ -190,7 +227,7 @@ calculation_algorithms/src/mul.i: calculation_algorithms/src/mul.c.i
 
 # target to preprocess a source file
 calculation_algorithms/src/mul.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/mul.c.i
 .PHONY : calculation_algorithms/src/mul.c.i
 
 calculation_algorithms/src/mul.s: calculation_algorithms/src/mul.c.s
@@ -198,7 +235,7 @@ calculation_algorithms/src/mul.s: calculation_algorithms/src/mul.c.s
 
 # target to generate assembly for a file
 calculation_algorithms/src/mul.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/calculation_algorithms/src/mul.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/mul.c.s
 .PHONY : calculation_algorithms/src/mul.c.s
 
 internal_utils/bigNum_utils.o: internal_utils/bigNum_utils.c.o
@@ -206,7 +243,8 @@ internal_utils/bigNum_utils.o: internal_utils/bigNum_utils.c.o
 
 # target to build an object file
 internal_utils/bigNum_utils.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/bigNum_utils.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/bigNum_utils.c.o
 .PHONY : internal_utils/bigNum_utils.c.o
 
 internal_utils/bigNum_utils.i: internal_utils/bigNum_utils.c.i
@@ -214,7 +252,8 @@ internal_utils/bigNum_utils.i: internal_utils/bigNum_utils.c.i
 
 # target to preprocess a source file
 internal_utils/bigNum_utils.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/bigNum_utils.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/bigNum_utils.c.i
 .PHONY : internal_utils/bigNum_utils.c.i
 
 internal_utils/bigNum_utils.s: internal_utils/bigNum_utils.c.s
@@ -222,7 +261,8 @@ internal_utils/bigNum_utils.s: internal_utils/bigNum_utils.c.s
 
 # target to generate assembly for a file
 internal_utils/bigNum_utils.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/internal_utils/bigNum_utils.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/bigNum_utils.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/bigNum_utils.c.s
 .PHONY : internal_utils/bigNum_utils.c.s
 
 internal_utils/misc_utils.o: internal_utils/misc_utils.c.o
@@ -230,7 +270,8 @@ internal_utils/misc_utils.o: internal_utils/misc_utils.c.o
 
 # target to build an object file
 internal_utils/misc_utils.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/misc_utils.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/misc_utils.c.o
 .PHONY : internal_utils/misc_utils.c.o
 
 internal_utils/misc_utils.i: internal_utils/misc_utils.c.i
@@ -238,7 +279,8 @@ internal_utils/misc_utils.i: internal_utils/misc_utils.c.i
 
 # target to preprocess a source file
 internal_utils/misc_utils.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/misc_utils.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/misc_utils.c.i
 .PHONY : internal_utils/misc_utils.c.i
 
 internal_utils/misc_utils.s: internal_utils/misc_utils.c.s
@@ -246,15 +288,44 @@ internal_utils/misc_utils.s: internal_utils/misc_utils.c.s
 
 # target to generate assembly for a file
 internal_utils/misc_utils.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/internal_utils/misc_utils.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/misc_utils.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/misc_utils.c.s
 .PHONY : internal_utils/misc_utils.c.s
+
+internal_utils/str_parse.o: internal_utils/str_parse.c.o
+.PHONY : internal_utils/str_parse.o
+
+# target to build an object file
+internal_utils/str_parse.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/str_parse.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/str_parse.c.o
+.PHONY : internal_utils/str_parse.c.o
+
+internal_utils/str_parse.i: internal_utils/str_parse.c.i
+.PHONY : internal_utils/str_parse.i
+
+# target to preprocess a source file
+internal_utils/str_parse.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/str_parse.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/str_parse.c.i
+.PHONY : internal_utils/str_parse.c.i
+
+internal_utils/str_parse.s: internal_utils/str_parse.c.s
+.PHONY : internal_utils/str_parse.s
+
+# target to generate assembly for a file
+internal_utils/str_parse.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/internal_utils/str_parse.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/internal_utils/str_parse.c.s
+.PHONY : internal_utils/str_parse.c.s
 
 intrinsics/limb_math.o: intrinsics/limb_math.c.o
 .PHONY : intrinsics/limb_math.o
 
 # target to build an object file
 intrinsics/limb_math.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/intrinsics/limb_math.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/intrinsics/limb_math.c.o
 .PHONY : intrinsics/limb_math.c.o
 
 intrinsics/limb_math.i: intrinsics/limb_math.c.i
@@ -262,7 +333,8 @@ intrinsics/limb_math.i: intrinsics/limb_math.c.i
 
 # target to preprocess a source file
 intrinsics/limb_math.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/intrinsics/limb_math.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/intrinsics/limb_math.c.i
 .PHONY : intrinsics/limb_math.c.i
 
 intrinsics/limb_math.s: intrinsics/limb_math.c.s
@@ -270,7 +342,8 @@ intrinsics/limb_math.s: intrinsics/limb_math.c.s
 
 # target to generate assembly for a file
 intrinsics/limb_math.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/intrinsics/limb_math.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/intrinsics/limb_math.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/intrinsics/limb_math.c.s
 .PHONY : intrinsics/limb_math.c.s
 
 ztest/main.o: ztest/main.c.o
@@ -278,7 +351,8 @@ ztest/main.o: ztest/main.c.o
 
 # target to build an object file
 ztest/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/ztest/main.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/ztest/main.c.o
 .PHONY : ztest/main.c.o
 
 ztest/main.i: ztest/main.c.i
@@ -286,7 +360,8 @@ ztest/main.i: ztest/main.c.i
 
 # target to preprocess a source file
 ztest/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/ztest/main.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/ztest/main.c.i
 .PHONY : ztest/main.c.i
 
 ztest/main.s: ztest/main.c.s
@@ -294,7 +369,8 @@ ztest/main.s: ztest/main.c.s
 
 # target to generate assembly for a file
 ztest/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_casual_comp.dir/build.make CMakeFiles/bigInt_casual_comp.dir/ztest/main.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/ztest/main.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/ztest/main.c.s
 .PHONY : ztest/main.c.s
 
 # Help Target
@@ -305,10 +381,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... bigInt_casual_comp"
+	@echo "... bigInt_io"
+	@echo "... bigInt_numeric"
 	@echo "... big_numbers/bigInt.o"
 	@echo "... big_numbers/bigInt.i"
 	@echo "... big_numbers/bigInt.s"
+	@echo "... big_numbers/bigInt_io.o"
+	@echo "... big_numbers/bigInt_io.i"
+	@echo "... big_numbers/bigInt_io.s"
 	@echo "... calculation_algorithms/src/div.o"
 	@echo "... calculation_algorithms/src/div.i"
 	@echo "... calculation_algorithms/src/div.s"
@@ -321,6 +401,9 @@ help:
 	@echo "... internal_utils/misc_utils.o"
 	@echo "... internal_utils/misc_utils.i"
 	@echo "... internal_utils/misc_utils.s"
+	@echo "... internal_utils/str_parse.o"
+	@echo "... internal_utils/str_parse.i"
+	@echo "... internal_utils/str_parse.s"
 	@echo "... intrinsics/limb_math.o"
 	@echo "... intrinsics/limb_math.i"
 	@echo "... intrinsics/limb_math.s"

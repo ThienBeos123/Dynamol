@@ -32,7 +32,8 @@ unsigned char _prefix_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *b
 /* ---------------------- */
 /* misc_utils.c */
 /* ---------------------- */
-size_t __BITCOUNT__(size_t digit_count, uint8_t base);
+size_t __BITCOUNT___(size_t digit_count, uint8_t base);
+uint8_t __BASEN_DCOUNT__(uint64_t val, uint8_t base);
 uint64_t __MAG_I64__(int64_t val);
 
 

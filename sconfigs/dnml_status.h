@@ -2,15 +2,13 @@
 #define __DNML_STAT_H__
 
 
-typedef enum ___424947494E54_4552524F52___ {
-    BIGINT_SUCCESS = 0,
-    BIGINT_NULL,
-    BIGINT_ERR_INVAL,
-    BIGINT_ERR_RANGE,
-    BIGINT_ERR_DOMAIN
-} bigint_status;
+typedef enum ___44594E414D4F4C_737461747573___ {
+    BIGINT_SUCCESS = 0,         // 0
+    BIGINT_NULL,                // 1
+    BIGINT_ERR_INVAL,           // 2
+    BIGINT_ERR_RANGE,           // 3
+    BIGINT_ERR_DOMAIN,          // 4
 
-typedef enum {
     STR_SUCCESS = 100,          // 100
     STR_NULL,                   // 101
     STR_EMPTY,                  // 102
@@ -20,7 +18,7 @@ typedef enum {
     STR_INVALID_BASE_PREFIX,    // 106
     STR_INVALID_BASE,           // 107
     STR_INVALID_DIGIT,          // 108
-} str_status;
+} dnml_status;
 
 
 #endif

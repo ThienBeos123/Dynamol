@@ -48,5 +48,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/bigInt_casual_comp.dir/DependInfo.cmake"
+  "CMakeFiles/bigInt_numeric.dir/DependInfo.cmake"
+  "CMakeFiles/bigInt_io.dir/DependInfo.cmake"
   )

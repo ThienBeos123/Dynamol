@@ -19,23 +19,29 @@ include_directories(${CMAKE_SOURCE_DIR}/big_numbers)
 # =====================================================
 # BigInt Executable (compilation test)
 # =====================================================
-add_executable(bigInt_casual_comp
+add_executable(bigInt_numeric
     big_numbers/bigInt.c
     internal_utils/bigNum_utils.c
     internal_utils/misc_utils.c
+    internal_utils/str_parse.c
     intrinsics/limb_math.c
     calculation_algorithms/src/mul.c
     calculation_algorithms/src/div.c
 )
 
-target_compile_options(bigInt_casual_comp PRIVATE -Wno-unused-function)
-target_sources(bigInt_casual_comp PRIVATE ztest/main.c)
+target_compile_options(bigInt_numeric PRIVATE -Wno-unused-function)
+target_sources(bigInt_numeric PRIVATE ztest/main.c)
 
-# # =====================================================
-# # BigInt_IO Executable (for future use)
-# # =====================================================
-# add_executable(bigInt_io_test
-#     big_numbers/bigInt_io.c
-#     internal_utils/bigNum_utils.c
-#     intrinsics/limb_math.c
-# )
+# =====================================================
+# BigInt_IO Executable (compiling multiple source files)
+# =====================================================
+add_executable(bigInt_io
+    big_numbers/bigInt_io.c
+    internal_utils/bigNum_utils.c
+    internal_utils/misc_utils.c
+    internal_utils/str_parse.c
+    intrinsics/limb_math.c
+)
+
+target_compile_options(bigInt_io PRIVATE -Wno-unused-function)
+target_sources(bigInt_io PRIVATE ztest/main.c)

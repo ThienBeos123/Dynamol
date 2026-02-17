@@ -14,6 +14,11 @@
 #define log2_2  1
 #define log2_8  3
 
+//*========================================== Thresholds //*========================================== *//
+/* String Parsing */
+#define DASI_NAIVE_PARSE            750 // digits <= 750
+#define DASI_DandC_PARSE            750 // digits > 750
+
 /* Multiplication */
 #define BIGINT_SCHOOLBOOK           64
 #define BIGINT_KARATSUBA            256
