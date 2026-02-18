@@ -31,4 +31,7 @@ CMakeFiles/bigInt_io.dir/intrinsics/limb_math.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../system/arch.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/intrinsics/../sconfigs/numeric_config.h

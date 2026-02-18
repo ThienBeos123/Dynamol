@@ -517,7 +517,7 @@ bigInt __BIGINT_DESERIALIZE__(FILE *stream, const char* str, size_t len, dnml_st
 
 //* -------------------- GENERAL UTILITIES --------------------- */
 void __BIGINT_LIMB_DUMP__(const bigInt x);
-void __BIGINT_HEX_DUMP__(const bigInt x);
+void __BIGINT_HEX_DUMP__(const bigInt x, bool uppercase);
 void __BIGINT_BIN_DUMP__(const bigInt x); 
 void __BIGINT_INFO__(const bigInt x);
 

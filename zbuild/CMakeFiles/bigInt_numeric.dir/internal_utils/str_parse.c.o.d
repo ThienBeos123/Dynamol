@@ -114,6 +114,9 @@ CMakeFiles/bigInt_numeric.dir/internal_utils/str_parse.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../system/arch.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../sconfigs/settings.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/internal_utils/../big_numbers/../sconfigs/numeric_config.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/limits.h \

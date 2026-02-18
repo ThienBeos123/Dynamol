@@ -97,4 +97,7 @@ CMakeFiles/bigInt_io.dir/ztest/main.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_dev_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_mode_t.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/ztest/../sconfigs/../system/compiler.h \
-  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/ztest/../sconfigs/../system/arch.h
+  /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/ztest/../sconfigs/../system/arch.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h

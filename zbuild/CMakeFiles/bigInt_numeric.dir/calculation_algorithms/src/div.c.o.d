@@ -113,6 +113,9 @@ CMakeFiles/bigInt_numeric.dir/calculation_algorithms/src/div.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../system/arch.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../sconfigs/arena.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdalign.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/calculation_algorithms/src/../header/../../sconfigs/../system/compiler.h \

@@ -57,6 +57,13 @@ static inline void _HORNER_PARSE__() {}
 static inline void _DC_PARSE__() {}
 static inline void _DIV_SMALL__() {}
 static inline void _DC_DIV_LARGE__() {}
+static inline void _ASCII_COLUMN__(limb_t *val, char* c) {
+    val = (uint8_t*)val;
+    for (uint8_t i = 7; i >= 0; --i) {
+        c[i] = (*val >= 32 && *val <= 126) ? (char)(*val) : '.';
+        ++val;
+    }
+}
 
 
 
@@ -1789,7 +1796,7 @@ void __BIGINT_SPUTF__(const bigInt x, uint8_t base) {
     assert(__BIGINT_INTERNAL_VALID__(&x));
     if (x.n == 0) putchar('0\n');
     else if (x.n == 1) {
-        if (base == 10)         printf("$s %" PRIu64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
+        if (base == 10)         printf("%s %" PRIu64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
         else if (base == 8)     printf("%s %#%" PRIo64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
         else if (base == 16)    printf("%s %#%" PRIX64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
         else if (base == 2) {
@@ -1916,7 +1923,7 @@ void __BIGINT_SFPUTF__(FILE *stream, const bigInt x, uint8_t base) {
     assert(__BIGINT_INTERNAL_VALID__(&x));
     if (x.n == 0) fputc('0\n', stream);
     else if (x.n == 1) {
-        if (base == 10)         fprintf(stream, "$s %" PRIu64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
+        if (base == 10)         fprintf(stream, "%s %" PRIu64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
         else if (base == 8)     fprintf(stream, "%s %#%" PRIo64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
         else if (base == 16)    fprintf(stream, "%s %#%" PRIX64 "\n", (x.sign == -1) ? "-" : "", x.limbs[0]);
         else if (base == 2) {
@@ -1969,7 +1976,13 @@ void __BIGINT_SFPUTF__(FILE *stream, const bigInt x, uint8_t base) {
         arena_reset(_DASI_PUT_ARENA, tmp_mark);
     }
 }
-
+/* --------- Decimal INPUT ---------  */
+void __BIGINT_GET__(bigInt *x) {}
+void __BIGINT_SGET__(bigInt *x) {}
+void __BIGINT_TGET__(bigInt *x) {}
+void __BIGINT_FGET__(FILE *stream, bigInt *x) {}
+void __BIGINT_FSGET__(FILE *stream, bigInt *x) {}
+void __BIGINT_FTGET__(FILE *stream, bigInt *x) {}
 
 
 
@@ -1988,8 +2001,82 @@ bigInt __BIGINT_DESERIALIZE__(FILE *stream, const char* str, size_t len, dnml_st
 
 
 //todo ====================================== 5. GENERAL UTILITIES ===================================== *//
-void __BIGINT_LIMB_DUMP__(const bigInt x) {}
-void __BIGINT_HEX_DUMP__(const bigInt x) {}
-void __BIGINT_BIN_DUMP__(const bigInt x) {} 
-void __BIGINT_INFO__(const bigInt x) {}
+void __BIGINT_LIMB_DUMP__(const bigInt x) {
+    assert(__BIGINT_INTERNAL_PVALID__(&x));
+    puts  ("---------- DECIMAL LIMB DUMP ----------\n");
+    printf("Limbs' starting location: %p\n", (void*)(x.limbs));
+    puts  ("-----------------------------------------");
+    limb_t *tmp_value; char ascii[8];
+    #if __ARCH_X86_64__ || __ARCH_ARM64__
+        // PRINTING LIMB DUMP FOR 64 BITS ARCHITECTURE
+        puts("memloc              offset     value                   ASCII\n");
+    #else
+        // PRINTING LIMB DUMP FOR 32 BITS ARCHITECTURE
+        puts("memloc      offset      value                   ASCII\n");
+    #endif
+    for (size_t i = 0; i < x.cap; ++i) {
+        tmp_value = (limb_t*)tmp_value;
+        *tmp_value = x.limbs[i];
+        _ASCII_COLUMN__(tmp_value, &ascii);
+        printf("%p %#9zx %20" PRIu64 "%.8s", &x.limbs[i], i, x.limbs[i], ascii);
+    } putchar('\n');
+}
+void __BIGINT_HEX_DUMP__(const bigInt x, bool uppercase) {
+    assert(__BIGINT_INTERNAL_PVALID__(&x));
+    puts  ("------------- HEX LIMB DUMP -------------\n");
+    printf("Limbs' starting location: %p\n", (void*)(x.limbs));
+    puts  ("-----------------------------------------\n");
+    limb_t *tmp_value; char ascii[8];
+    #if __ARCH_X86_64__ || __ARCH_ARM64__
+        // PRINTING LIMB DUMP FOR 64 BITS ARCHITECTURE
+        puts("memloc              offset     value               ASCII\n");
+    #else
+        // PRINTING LIMB DUMP FOR 32 BITS ARCHITECTURE
+        puts("memloc      offset      value               ASCII\n");
+    #endif
+    for (size_t i = 0; i < x.cap; ++i) {
+        tmp_value = (limb_t*)tmp_value;
+        *tmp_value = x.limbs[i];
+        _ASCII_COLUMN__(tmp_value, &ascii);
+        printf("%p %#9zx %#16" PRIX64 "%.8s", &x.limbs[i], i, x.limbs[i], ascii);
+    } putchar('\n');
+    puts  ("-----------------------------------------\n");
+}
+void __BIGINT_BIN_DUMP__(const bigInt x) {
+    assert(__BIGINT_INTERNAL_PVALID__(&x));
+    puts  ("----------- BINARY LIMB DUMP ----------\n");
+    printf("Limbs' starting location: %p\n", (void*)(x.limbs));
+    puts  ("-----------------------------------------");
+    limb_t *tmp_value; char d[64], ascii[8];
+    #if __ARCH_X86_64__ || __ARCH_ARM64__
+        // PRINTING LIMB DUMP FOR 64 BITS ARCHITECTURE
+        puts("memloc              offset     value                                                                    ASCII\n");
+    #else
+        // PRINTING LIMB DUMP FOR 32 BITS ARCHITECTURE
+        puts("memloc      offset      value                                                                    ASCII\n");
+    #endif
+    for (size_t i = 0; i < x.cap; ++i) {
+        tmp_value = (limb_t*)tmp_value;
+        *tmp_value = x.limbs[i];
+        // Format the value to be fixed-width
+        for (uint8_t i = 63; i >= 0; --i) {
+            d[i] = (*tmp_value & 1) ? '1' : '0';
+            *tmp_value >>= 1;
+        }
+        _ASCII_COLUMN__(tmp_value, &ascii);
+        printf("%p %#9zx %.64s %.8s", &x.limbs[i], i, d, ascii);
+    } putchar('\n');
+} 
+void __BIGINT_INFO__(const bigInt x) {
+    assert(__BIGINT_INTERNAL_PVALID__(&x));
+    puts    ("-------- [ BIGINT DEBUG INFO ] --------\n");
+    printf  ("Adress:       %p\n", x.limbs);
+    printf  ("Sign:         %" PRId8 " %s\n", x.sign, (x.sign == -1) ? "(Negative)" : "(Positive)");
+    printf  ("Size:         %zu limbs (Used)\n", x.n);
+    printf  ("Capacity:     %zu limbs (Total)\n\n", x.cap);
+
+    puts    ("Limb Data (Little-Endian: LSL -> MSL)\n");
+    for (size_t i = 0; i < x.cap; ++i) printf("[%10zu]: %#16" PRIX64, x.limbs[i], i);
+    puts  ("-----------------------------------------\n");
+}
 

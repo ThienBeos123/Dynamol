@@ -116,6 +116,9 @@ CMakeFiles/bigInt_numeric.dir/big_numbers/bigInt.c.o: \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdalign.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../sconfigs/../system/compiler.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../sconfigs/../system/arch.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../sconfigs/dnml_status.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../intrinsics/intrinsics.h \
   /Users/admin/Desktop/Programming/Passion\ Projects/Dynamol/big_numbers/../intrinsics/../system/compiler.h \

@@ -9,7 +9,7 @@
 #endif
 
 /* Detecting ARM Architecture */
-#if defined(__aarch64_) || defined(_M_ARM64)
+#if defined(__aarch64__) || defined(_M_ARM64)
     #define __ARCH_ARM64__ 1
 #else
     #define __ARCH_ARM64__ 0

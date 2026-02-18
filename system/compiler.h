@@ -6,13 +6,21 @@
 /* Compiler Detection */
 #if defined(__clang__) /* Clang Compiler */
     #define __compiler_clang 1
+    #define __compiler_gcc   0
+    #define __compiler_msvc  0
 #elif defined(__GNUC__) /* GNU GCC Compiler */
-    #define __compiler_gcc  1
+    #define __compiler_clang 0
+    #define __compiler_gcc   1
+    #define __compiler_msvc  0
 #elif defined(_MSC_VER) /* MSVC Compiler */
-    #define __compiler_msvc 1
+    #define __compiler_clang 0
+    #define __compiler_gcc   0
+    #define __compiler_msvc  1
     #include <intrin.h>
 #else /* Unsupported, Niche Compilers */
-    #define __compiler_undefined 1
+    #define __compiler_clang 0
+    #define __compiler_gcc   0
+    #define __compiler_msvc  0
 #endif
 
 /* Architecture-specific Intrinsics */
@@ -52,9 +60,12 @@
 #if __compiler_msvc
     #define inline __forceinline
     #define restrict __restrict
-#else
+#elif (__compiler_clang || __compiler_gcc)
     #define inline __attribute__((always_inline))
     #define restrict __restrict__
+#else
+    #define inline inline
+    #define restrict 
 #endif
 
 /* Count Leading Zeros - CLZ */
@@ -106,7 +117,7 @@
 #if (__compiler_clang || __compiler_gcc)
     #define assume(x)           if(!(x)) __builtin_unreachable()
     #define unreachable()                __builtin_unreachable()
-#elif __compiler_msbvc
+#elif __compiler_msvc
     #define assume(x) __assume(x)
     #define unreachable() __assume(0)
 #else
