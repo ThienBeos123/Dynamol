@@ -57,11 +57,11 @@ static inline void _HORNER_PARSE__() {}
 static inline void _DC_PARSE__() {}
 static inline void _DIV_SMALL__() {}
 static inline void _DC_DIV_LARGE__() {}
-static inline void _ASCII_COLUMN__(limb_t *val, char* c) {
-    val = (uint8_t*)val;
+static inline void _ASCII_COLUMN__(limb_t val, char* c) {
+    uint8_t *p = &val;
     for (uint8_t i = 7; i >= 0; --i) {
-        c[i] = (*val >= 32 && *val <= 126) ? (char)(*val) : '.';
-        ++val;
+        c[i] = (*p >= 32 && *p <= 126) ? (char)(*p) : '.';
+        ++p;
     }
 }
 
@@ -1976,13 +1976,292 @@ void __BIGINT_SFPUTF__(FILE *stream, const bigInt x, uint8_t base) {
         arena_reset(_DASI_PUT_ARENA, tmp_mark);
     }
 }
-/* --------- Decimal INPUT ---------  */
-void __BIGINT_GET__(bigInt *x) {}
-void __BIGINT_SGET__(bigInt *x) {}
-void __BIGINT_TGET__(bigInt *x) {}
-void __BIGINT_FGET__(FILE *stream, bigInt *x) {}
-void __BIGINT_FSGET__(FILE *stream, bigInt *x) {}
-void __BIGINT_FTGET__(FILE *stream, bigInt *x) {}
+/* --------- Standard Stream (stdin) INPUT ---------  */
+dnml_status __BIGINT_GET__(bigInt *x) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    //* Whitespace & Sign *//
+    uint16_t current_char = _skip_whitespace__(stdin); uint8_t sign = 1;
+    if (current_char == '-') { sign = -1; current_char = getchar(); }
+    else if (current_char == '+') { current_char = getchar(); }
+    else if (!is_numeric(current_char)) return STR_INVALID_SIGN;
+    // ---> Forcing it to be prefix/leading zero/decimal value valid
+
+    //* Base-prefix & Leading Zeros *//
+    uint8_t base = 10;
+    uint8_t prefix_res = _prefix_handle_stream__(stdin, &base, &current_char);
+    if (prefix_res == 1);
+    else if (prefix_res == 0) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    } else if (prefix_res == 2) return STR_INVALID_BASE_PREFIX;
+    // Leading Zeros
+    while ((current_char = getchar()) != EOF && !isspace(current_char) && current_char == '0');
+    if (current_char == EOF || isspace(current_char)) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumulator loop *//
+    uint64_t threshold; uint8_t index_lookup, numerical_val;
+    bigInt tmp_buf; __BIGINT_LIMBS_INIT__(&tmp_buf, x->cap);
+    while (_is_valid_digit__(&current_char)) {
+        index_lookup = (uint8_t)(current_char - '\0');
+        numerical_val = _VALUE_LOOKUP_[index_lookup];
+        threshold = (UINT64_MAX - numerical_val) / base;
+        if (numerical_val >= base) { 
+            __BIGINT_INTERNAL_FREE__(&tmp_buf); 
+            return STR_INVALID_DIGIT; 
+        } if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+            // Grows geometrically internally anyways
+            __BIGINT_INTERNAL_ENSCAP__(&tmp_buf, tmp_buf.n + 1);
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+    }
+    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_FREE__(&tmp_buf);
+    return STR_SUCCESS;
+}
+dnml_status __BIGINT_GETB__(bigInt *x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    //* Whitespace, Sign, & Leading zeros *//
+    uint16_t current_char = _skip_whitespace__(stdin); uint8_t sign = 1;
+    if (current_char == '-') { sign = -1; current_char = getchar(); }
+    else if (current_char == '+') { current_char = getchar(); }
+    else if (!is_numeric(current_char)) return STR_INVALID_SIGN;
+    // ---> Forcing it to be leading zero/decimal value valid
+    while ((current_char = getchar()) != EOF && !isspace(current_char) && current_char == '0');
+    if (current_char == EOF || isspace(current_char)) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumulator loop *//
+    uint64_t threshold; uint8_t index_lookup, numerical_val;
+    bigInt tmp_buf; __BIGINT_LIMBS_INIT__(&tmp_buf, x->cap);
+    while (_is_valid_digit__(&current_char)) {
+        index_lookup = (uint8_t)(current_char - '\0');
+        numerical_val = _VALUE_LOOKUP_[index_lookup];
+        threshold = (UINT64_MAX - numerical_val) / base;
+        if (numerical_val >= base) { 
+            __BIGINT_INTERNAL_FREE__(&tmp_buf); 
+            return STR_INVALID_DIGIT; 
+        } if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+            // Grows geometrically internally anyways
+            __BIGINT_INTERNAL_ENSCAP__(&tmp_buf, tmp_buf.n + 1);
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+    }
+    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_FREE__(&tmp_buf);
+    return STR_SUCCESS;
+}
+dnml_status __BIGINT_SGET__(bigInt *x) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_SGET_ARENA = _USE_ARENA();
+    //* Whitespace & Sign *//
+    uint16_t current_char = _skip_whitespace__(stdin); uint8_t sign = 1;
+    if (current_char == '-') { sign = -1; current_char = getchar(); }
+    else if (current_char == '+') { current_char = getchar(); }
+    else if (!is_numeric(current_char)) return STR_INVALID_SIGN;
+    // ---> Forcing it to be prefix/leading zero/decimal value valid
+
+    //* Base-prefix & Leading Zeros *//
+    uint8_t base = 10;
+    uint8_t prefix_res = _prefix_handle_stream__(stdin, &base, &current_char);
+    if (prefix_res == 1);
+    else if (prefix_res == 0) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    } else if (prefix_res == 2) return STR_INVALID_BASE_PREFIX;
+    // Leading Zeros
+    while ((current_char = getchar()) != EOF && !isspace(current_char) && current_char == '0');
+    if (current_char == EOF || isspace(current_char)) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumulator loop *//
+    uint64_t threshold; uint8_t index_lookup, numerical_val;
+    size_t tmp_mark = arena_mark(_DASI_SGET_ARENA);
+    limb_t *tmp_limbs = arena_alloc(_DASI_SGET_ARENA, x->cap);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs,     .sign = 1,
+        .n     = 0,             .cap  = x->cap
+    };
+    while (_is_valid_digit__(&current_char)) {
+        index_lookup = (uint8_t)(current_char - '\0');
+        numerical_val = _VALUE_LOOKUP_[index_lookup];
+        threshold = (UINT64_MAX - numerical_val) / base;
+        if (numerical_val >= base) { 
+            // Invalid Digit from the user
+            arena_reset(_DASI_SGET_ARENA, tmp_mark);
+            tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+        } if (tmp_buf.n == tmp_buf.cap && tmp_buf.limbs[tmp_buf.n - 1] > threshold) {
+            // Overflow/Too small
+            arena_reset(_DASI_SGET_ARENA, tmp_mark);
+            tmp_limbs = NULL; return BIGINT_ERR_RANGE;
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+    }
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_SGET_ARENA, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+dnml_status __BIGINT_SGETB__(bigInt *x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_SGETB_ARENA = _USE_ARENA();
+    //* Whitespace, Sign, & Leading Zeros *//
+    uint16_t current_char = _skip_whitespace__(stdin); uint8_t sign = 1;
+    if (current_char == '-') { sign = -1; current_char = getchar(); }
+    else if (current_char == '+') { current_char = getchar(); }
+    else if (!is_numeric(current_char)) return STR_INVALID_SIGN;
+    // ---> Forcing it to be leading zero/decimal value valid
+    while ((current_char = getchar()) != EOF && !isspace(current_char) && current_char == '0');
+    if (current_char == EOF || isspace(current_char)) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumulator loop *//
+    uint64_t threshold; uint8_t index_lookup, numerical_val;
+    size_t tmp_mark = arena_mark(_DASI_SGETB_ARENA);
+    limb_t *tmp_limbs = arena_alloc(_DASI_SGETB_ARENA, x->cap);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs,     .sign = 1,
+        .n     = 0,             .cap  = x->cap
+    };
+    while (_is_valid_digit__(&current_char)) {
+        index_lookup = (uint8_t)(current_char - '\0');
+        numerical_val = _VALUE_LOOKUP_[index_lookup];
+        threshold = (UINT64_MAX - numerical_val) / base;
+        if (numerical_val >= base) { 
+            // Invalid Digit from the user
+            arena_reset(_DASI_SGETB_ARENA, tmp_mark);
+            tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+        } if (tmp_buf.n == tmp_buf.cap && tmp_buf.limbs[tmp_buf.n - 1] > threshold) {
+            // Overflow/Too small
+            arena_reset(_DASI_SGETB_ARENA, tmp_mark);
+            tmp_limbs = NULL; return BIGINT_ERR_RANGE;
+        }
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+    }
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_SGETB_ARENA, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+dnml_status __BIGINT_TGET__(bigInt *x) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_TGET_ARENA = _USE_ARENA();
+    //* Whitespace & Sign *//
+    uint16_t current_char = _skip_whitespace__(stdin); uint8_t sign = 1;
+    if (current_char == '-') { sign = -1; current_char = getchar(); }
+    else if (current_char == '+') { current_char = getchar(); }
+    else if (!is_numeric(current_char)) return STR_INVALID_SIGN;
+    // ---> Forcing it to be prefix/leading zero/decimal value valid
+
+    //* Base-prefix & Leading Zeros *//
+    uint8_t base = 10;
+    uint8_t prefix_res = _prefix_handle_stream__(stdin, &base, &current_char);
+    if (prefix_res == 1);
+    else if (prefix_res == 0) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    } else if (prefix_res == 2) return STR_INVALID_BASE_PREFIX;
+    // Leading Zeros
+    while ((current_char = getchar()) != EOF && !isspace(current_char) && current_char == '0');
+    if (current_char == EOF || isspace(current_char)) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumulator loop *//
+    uint64_t threshold; uint8_t index_lookup, numerical_val;
+    size_t tmp_mark = arena_mark(_DASI_TGET_ARENA);
+    limb_t *tmp_limbs = arena_alloc(_DASI_TGET_ARENA, x->cap);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs,     .sign = 1,
+        .n     = 0,             .cap  = x->cap
+    };
+    while (_is_valid_digit__(&current_char)) {
+        index_lookup = (uint8_t)(current_char - '\0');
+        numerical_val = _VALUE_LOOKUP_[index_lookup];
+        threshold = (UINT64_MAX - numerical_val) / base;
+        if (numerical_val >= base) { 
+            // Invalid Digit from the user
+            arena_reset(_DASI_TGET_ARENA, tmp_mark);
+            tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+        }
+        // Not in the loop condition since
+        // we have to update the threshold first. 
+        if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) break;
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+    }
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_TGET_ARENA, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+dnml_status __BIGINT_TGETB__(bigInt *x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_TGETB_ARENA = _USE_ARENA();
+    //* Whitespace, Sign, & Leading zeros *//
+    uint16_t current_char = _skip_whitespace__(stdin); uint8_t sign = 1;
+    if (current_char == '-') { sign = -1; current_char = getchar(); }
+    else if (current_char == '+') { current_char = getchar(); }
+    else if (!is_numeric(current_char)) return STR_INVALID_SIGN;
+    // ---> Forcing it to be leading zero/decimal value valid
+    while ((current_char = getchar()) != EOF && !isspace(current_char) && current_char == '0');
+    if (current_char == EOF || isspace(current_char)) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        else __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumulator loop *//
+    uint64_t threshold; uint8_t index_lookup, numerical_val;
+    size_t tmp_mark = arena_mark(_DASI_TGETB_ARENA);
+    limb_t *tmp_limbs = arena_alloc(_DASI_TGETB_ARENA, x->cap);
+    bigInt tmp_buf = {
+        .limbs = tmp_limbs,     .sign = 1,
+        .n     = 0,             .cap  = x->cap
+    };
+    while (_is_valid_digit__(&current_char)) {
+        index_lookup = (uint8_t)(current_char - '\0');
+        numerical_val = _VALUE_LOOKUP_[index_lookup];
+        threshold = (UINT64_MAX - numerical_val) / base;
+        if (numerical_val >= base) { 
+            // Invalid Digit from the user
+            arena_reset(_DASI_TGETB_ARENA, tmp_mark);
+            tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+        }
+        // Not in the loop condition since
+        // we have to update the threshold first. 
+        if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) break;
+        __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+        __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+    }
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_TGETB_ARENA, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+/* --------- Custom Stream INPUT ---------  */
+dnml_status __BIGINT_FGET__(FILE *stream, bigInt *x) {}
+dnml_status __BIGINT_FGETB__(FILE *stream, bigInt *x, uint8_t base) {}
+dnml_status __BIGINT_FSGET__(FILE *stream, bigInt *x) {}
+dnml_status __BIGINT_FSGETB__(FILE *stream, bigInt *x, uint8_t base) {}
+dnml_status __BIGINT_FTGET__(FILE *stream, bigInt *x) {}
+dnml_status __BIGINT_FTGETB__(FILE *stream, bigInt *x, uint8_t base) {}
 
 
 
@@ -2006,7 +2285,6 @@ void __BIGINT_LIMB_DUMP__(const bigInt x) {
     puts  ("---------- DECIMAL LIMB DUMP ----------\n");
     printf("Limbs' starting location: %p\n", (void*)(x.limbs));
     puts  ("-----------------------------------------");
-    limb_t *tmp_value; char ascii[8];
     #if __ARCH_X86_64__ || __ARCH_ARM64__
         // PRINTING LIMB DUMP FOR 64 BITS ARCHITECTURE
         puts("memloc              offset     value                   ASCII\n");
@@ -2014,10 +2292,9 @@ void __BIGINT_LIMB_DUMP__(const bigInt x) {
         // PRINTING LIMB DUMP FOR 32 BITS ARCHITECTURE
         puts("memloc      offset      value                   ASCII\n");
     #endif
+    char ascii[8];
     for (size_t i = 0; i < x.cap; ++i) {
-        tmp_value = (limb_t*)tmp_value;
-        *tmp_value = x.limbs[i];
-        _ASCII_COLUMN__(tmp_value, &ascii);
+        _ASCII_COLUMN__(x.limbs[i], &ascii);
         printf("%p %#9zx %20" PRIu64 "%.8s", &x.limbs[i], i, x.limbs[i], ascii);
     } putchar('\n');
 }
@@ -2026,7 +2303,6 @@ void __BIGINT_HEX_DUMP__(const bigInt x, bool uppercase) {
     puts  ("------------- HEX LIMB DUMP -------------\n");
     printf("Limbs' starting location: %p\n", (void*)(x.limbs));
     puts  ("-----------------------------------------\n");
-    limb_t *tmp_value; char ascii[8];
     #if __ARCH_X86_64__ || __ARCH_ARM64__
         // PRINTING LIMB DUMP FOR 64 BITS ARCHITECTURE
         puts("memloc              offset     value               ASCII\n");
@@ -2034,10 +2310,9 @@ void __BIGINT_HEX_DUMP__(const bigInt x, bool uppercase) {
         // PRINTING LIMB DUMP FOR 32 BITS ARCHITECTURE
         puts("memloc      offset      value               ASCII\n");
     #endif
+    char ascii[8];
     for (size_t i = 0; i < x.cap; ++i) {
-        tmp_value = (limb_t*)tmp_value;
-        *tmp_value = x.limbs[i];
-        _ASCII_COLUMN__(tmp_value, &ascii);
+        _ASCII_COLUMN__(x.limbs[i], &ascii);
         printf("%p %#9zx %#16" PRIX64 "%.8s", &x.limbs[i], i, x.limbs[i], ascii);
     } putchar('\n');
     puts  ("-----------------------------------------\n");
@@ -2047,7 +2322,6 @@ void __BIGINT_BIN_DUMP__(const bigInt x) {
     puts  ("----------- BINARY LIMB DUMP ----------\n");
     printf("Limbs' starting location: %p\n", (void*)(x.limbs));
     puts  ("-----------------------------------------");
-    limb_t *tmp_value; char d[64], ascii[8];
     #if __ARCH_X86_64__ || __ARCH_ARM64__
         // PRINTING LIMB DUMP FOR 64 BITS ARCHITECTURE
         puts("memloc              offset     value                                                                    ASCII\n");
@@ -2055,15 +2329,15 @@ void __BIGINT_BIN_DUMP__(const bigInt x) {
         // PRINTING LIMB DUMP FOR 32 BITS ARCHITECTURE
         puts("memloc      offset      value                                                                    ASCII\n");
     #endif
+    limb_t temp_val; char d[64], ascii[8];
     for (size_t i = 0; i < x.cap; ++i) {
-        tmp_value = (limb_t*)tmp_value;
-        *tmp_value = x.limbs[i];
+        temp_val = x.limbs[i];
         // Format the value to be fixed-width
         for (uint8_t i = 63; i >= 0; --i) {
-            d[i] = (*tmp_value & 1) ? '1' : '0';
-            *tmp_value >>= 1;
+            d[i] = (temp_val & 1) ? '1' : '0';
+            temp_val >>= 1;
         }
-        _ASCII_COLUMN__(tmp_value, &ascii);
+        _ASCII_COLUMN__(x.limbs[i], &ascii);
         printf("%p %#9zx %.64s %.8s", &x.limbs[i], i, d, ascii);
     } putchar('\n');
 } 

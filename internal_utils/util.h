@@ -23,11 +23,14 @@ extern "C" {
 /* ---------------------- */
 /* str_parse.c */
 /* ---------------------- */
-static uint8_t is_numeric(char c);
-unsigned char _sign_handle_(const char *str, size_t *curr_pos, uint8_t *sign);
-unsigned char _sign_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *sign, size_t len);
-unsigned char _prefix_handle_(const char *str, size_t *curr_pos, uint8_t *base);
-unsigned char _prefix_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *base, size_t len);
+uint8_t is_numeric(char c);
+uint16_t _skip_whitespace__(FILE *stream);
+uint8_t _is_valid_digit__(uint16_t *curr_char);
+uint8_t _sign_handle_(const char *str, size_t *curr_pos, uint8_t *sign);
+uint8_t _sign_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *sign, size_t len);
+uint8_t _prefix_handle_(const char *str, size_t *curr_pos, uint8_t *base);
+uint8_t _prefix_handle_nlen_(const char *str, size_t *curr_pos, uint8_t *base, size_t len);
+uint8_t _prefix_handle_stream__(FILE* stream, uint8_t *base, uint16_t *curr_char);
 
 /* ---------------------- */
 /* misc_utils.c */
@@ -55,6 +58,7 @@ void __BIGINT_INTERNAL_TRIM_LZ__(bigInt *x);
 inline void __BIGINT_INTERNAL_ZSET__(bigInt *x);
 size_t __BIGINT_COUNTDB__(const bigInt *x, uint8_t base);
 size_t __BIGINT_LIMBS_NEEDED__(size_t bits);
+uint8_t __BIGINT_WILL_OVERFLOW__(const bigInt *x, uint64_t threshold);
 
 void __BIGINT_INTERNAL_ADD_UI64__(bigInt *x, uint64_t val);
 void __BIGINT_INTERNAL_MUL_UI64__(bigInt *x, uint64_t val);

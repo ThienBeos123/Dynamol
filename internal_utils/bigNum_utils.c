@@ -96,6 +96,9 @@ size_t __BIGINT_COUNTDB__(const bigInt *x, uint8_t base) {
 size_t __BIGINT_LIMBS_NEEDED__(size_t bits) { 
     return (size_t)(bits / BIGINT_LIMBS_BITS) + 1; 
 }
+uint8_t __BIGINT_WILL_OVERFLOW__(const bigInt *x, uint64_t threshold) {
+    return (x->n == x->cap && x->limbs[x->n - 1] > threshold);
+}
 
 /* Internal Arithmetic */
 void __BIGINT_INTERNAL_ADD_UI64__(bigInt *x, uint64_t val) {

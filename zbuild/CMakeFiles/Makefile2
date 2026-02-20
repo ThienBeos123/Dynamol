@@ -63,13 +63,11 @@ CMAKE_BINARY_DIR = "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zb
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/bigInt_numeric.dir/all
-all: CMakeFiles/bigInt_io.dir/all
+all: CMakeFiles/bigInt.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
-codegen: CMakeFiles/bigInt_numeric.dir/codegen
-codegen: CMakeFiles/bigInt_io.dir/codegen
+codegen: CMakeFiles/bigInt.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -77,73 +75,40 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/bigInt_numeric.dir/clean
-clean: CMakeFiles/bigInt_io.dir/clean
+clean: CMakeFiles/bigInt.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/bigInt_numeric.dir
+# Target rules for target CMakeFiles/bigInt.dir
 
 # All Build rule for target.
-CMakeFiles/bigInt_numeric.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=8,9,10,11,12,13,14,15,16 "Built target bigInt_numeric"
-.PHONY : CMakeFiles/bigInt_numeric.dir/all
+CMakeFiles/bigInt.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target bigInt"
+.PHONY : CMakeFiles/bigInt.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/bigInt_numeric.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 9
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/bigInt_numeric.dir/all
+CMakeFiles/bigInt.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 10
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/bigInt.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 0
-.PHONY : CMakeFiles/bigInt_numeric.dir/rule
+.PHONY : CMakeFiles/bigInt.dir/rule
 
 # Convenience name for target.
-bigInt_numeric: CMakeFiles/bigInt_numeric.dir/rule
-.PHONY : bigInt_numeric
+bigInt: CMakeFiles/bigInt.dir/rule
+.PHONY : bigInt
 
 # codegen rule for target.
-CMakeFiles/bigInt_numeric.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=8,9,10,11,12,13,14,15,16 "Finished codegen for target bigInt_numeric"
-.PHONY : CMakeFiles/bigInt_numeric.dir/codegen
+CMakeFiles/bigInt.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7,8,9,10 "Finished codegen for target bigInt"
+.PHONY : CMakeFiles/bigInt.dir/codegen
 
 # clean rule for target.
-CMakeFiles/bigInt_numeric.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_numeric.dir/build.make CMakeFiles/bigInt_numeric.dir/clean
-.PHONY : CMakeFiles/bigInt_numeric.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/bigInt_io.dir
-
-# All Build rule for target.
-CMakeFiles/bigInt_io.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7 "Built target bigInt_io"
-.PHONY : CMakeFiles/bigInt_io.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/bigInt_io.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 7
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/bigInt_io.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" 0
-.PHONY : CMakeFiles/bigInt_io.dir/rule
-
-# Convenience name for target.
-bigInt_io: CMakeFiles/bigInt_io.dir/rule
-.PHONY : bigInt_io
-
-# codegen rule for target.
-CMakeFiles/bigInt_io.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/admin/Desktop/Programming/Passion Projects/Dynamol/zbuild/CMakeFiles" --progress-num=1,2,3,4,5,6,7 "Finished codegen for target bigInt_io"
-.PHONY : CMakeFiles/bigInt_io.dir/codegen
-
-# clean rule for target.
-CMakeFiles/bigInt_io.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt_io.dir/build.make CMakeFiles/bigInt_io.dir/clean
-.PHONY : CMakeFiles/bigInt_io.dir/clean
+CMakeFiles/bigInt.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/clean
+.PHONY : CMakeFiles/bigInt.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -493,13 +493,20 @@ void __BIGINT_SPUTF__(const bigInt x, uint8_t base);
 void __BIGINT_SFPUT__(FILE *stream, const bigInt x);
 void __BIGINT_SFPUTB__(FILE *stream, const bigInt x, uint8_t base);
 void __BIGINT_SFPUTF__(FILE *stream, const bigInt x, uint8_t base);
-/* --------- Decimal INPUT ---------  */
-void __BIGINT_GET__(bigInt *x);
-void __BIGINT_SGET__(bigInt *x);
-void __BIGINT_TGET__(bigInt *x);
-void __BIGINT_FGET__(FILE *stream, bigInt *x);
-void __BIGINT_FSGET__(FILE *stream, bigInt *x);
-void __BIGINT_FTGET__(FILE *stream, bigInt *x);
+/* --------- Standard Stream (stdin) INPUT ---------  */
+dnml_status __BIGINT_GET__(bigInt *x);
+dnml_status __BIGINT_GETB__(bigInt *x, uint8_t base);
+dnml_status __BIGINT_SGET__(bigInt *x);
+dnml_status __BIGINT_SGETB__(bigInt *x, uint8_t base);
+dnml_status __BIGINT_TGET__(bigInt *x);
+dnml_status __BIGINT_TGETB__(bigInt *x, uint8_t base);
+/* --------- Custom Stream INPUT ---------  */
+dnml_status __BIGINT_FGET__(FILE *stream, bigInt *x);
+dnml_status __BIGINT_FGETB__(FILE *stream, bigInt *x, uint8_t base);
+dnml_status __BIGINT_FSGET__(FILE *stream, bigInt *x);
+dnml_status __BIGINT_FSGETB__(FILE *stream, bigInt *x, uint8_t base);
+dnml_status __BIGINT_FTGET__(FILE *stream, bigInt *x);
+dnml_status __BIGINT_FTGETB__(FILE *stream, bigInt *x, uint8_t base);
 
 
 

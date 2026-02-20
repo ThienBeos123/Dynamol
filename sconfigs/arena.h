@@ -38,8 +38,8 @@ static inline void arena_destruct(dnml_arena *a) {
     a->offset   = 0;
 }
 static inline size_t align_forward(size_t x, size_t align) { return (x + (align - 1)) & ~(align - 1); }
-static inline void arena_grow(dnml_arena *a, size_t min_cap) {
-    if (a->cap >= min_cap) return;
+static inline size_t arena_grow(dnml_arena *a, size_t min_cap) {
+    if (a->cap >= min_cap) return a->cap;
     size_t new_cap = (a->cap) ? a->cap : 1;
     while (new_cap < min_cap) new_cap *= 2;
     
@@ -47,6 +47,7 @@ static inline void arena_grow(dnml_arena *a, size_t min_cap) {
     if (!buf) abort();
     a->base     = buf;
     a->cap      = new_cap; 
+    return new_cap;
 }
 
 // Accepts any type (CRUCIAL)
