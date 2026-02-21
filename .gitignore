@@ -1,0 +1,8 @@
+zbuild/
+*.o
+*.out
+*.a
+*.so
+*.dSYM
+.vscode/
+.idea/

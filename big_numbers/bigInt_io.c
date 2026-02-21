@@ -2319,7 +2319,7 @@ dnml_status __BIGINT_FGET__(FILE *stream, bigInt *x) {
         parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
         //* THE ACTUAL ACCUMALATION
         if (parse_res > 0) {
-            for (i = parse_res - 1; i >= 0; --i) {
+            for (i = 0; i < parse_res; ++i) {
                 index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
                 numerical_val = _VALUE_LOOKUP_[index_lookup];
                 threshold = (UINT64_MAX - numerical_val) / base;
@@ -2373,7 +2373,7 @@ dnml_status __BIGINT_FGETB__(FILE *stream, bigInt *x, uint8_t base) {
         parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
         //* THE ACTUAL ACCUMALATION
         if (parse_res > 0) {
-            for (i = parse_res - 1; i >= 0; --i) {
+            for (i = 0; i < parse_res; ++i) {
                 index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
                 numerical_val = _VALUE_LOOKUP_[index_lookup];
                 threshold = (UINT64_MAX - numerical_val) / base;
@@ -2463,7 +2463,7 @@ dnml_status __BIGINT_FSGET__(FILE *stream, bigInt *x) {
         parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
         //* THE ACTUAL ACCUMALATION
         if (parse_res > 0) {
-            for (i = parse_res - 1; i >= 0; --i) {
+            for (i = 0; i < parse_res; ++i) {
                 index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
                 numerical_val = _VALUE_LOOKUP_[index_lookup];
                 threshold = (UINT64_MAX - numerical_val) / base;
@@ -2522,7 +2522,7 @@ dnml_status __BIGINT_FSGETB__(FILE *stream, bigInt *x, uint8_t base) {
         parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
         //* THE ACTUAL ACCUMALATION
         if (parse_res > 0) {
-            for (i = parse_res - 1; i >= 0; --i) {
+            for (i = 0; i < parse_res; ++i) {
                 index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
                 numerical_val = _VALUE_LOOKUP_[index_lookup];
                 threshold = (UINT64_MAX - numerical_val) / base;
@@ -2614,7 +2614,7 @@ dnml_status __BIGINT_FTGET__(FILE *stream, bigInt *x) {
         parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
         //* THE ACTUAL ACCUMALATION
         if (parse_res > 0) {
-            for (i = parse_res - 1; i >= 0; --i) {
+            for (i = 0; i < parse_res; ++i) {
                 index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
                 numerical_val = _VALUE_LOOKUP_[index_lookup];
                 threshold = (UINT64_MAX - numerical_val) / base;
@@ -2674,7 +2674,7 @@ dnml_status __BIGINT_FTGETB__(FILE *stream, bigInt *x, uint8_t base) {
         parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
         //* THE ACTUAL ACCUMALATION
         if (parse_res > 0) {
-            for (i = parse_res - 1; i >= 0; --i) {
+            for (i = 0; i < parse_res; ++i) {
                 index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
                 numerical_val = _VALUE_LOOKUP_[index_lookup];
                 threshold = (UINT64_MAX - numerical_val) / base;
