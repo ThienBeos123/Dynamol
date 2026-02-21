@@ -6,7 +6,9 @@ uint16_t _skip_whitespace__(FILE *stream) {
     while ((c = fgetc(stream)) != EOF && isspace(c));
     return c;
 }
-uint8_t _is_valid_digit__(uint16_t *curr_char) { return (*curr_char != EOF && !isspace(*curr_char)); }
+uint8_t _is_valid_digit__(uint16_t *curr_char) { 
+    return (*curr_char != EOF && !isspace(*curr_char)); 
+}
 
 uint8_t _sign_handle_(const char *str, size_t *curr_pos, uint8_t *sign) {
     *sign = 1;

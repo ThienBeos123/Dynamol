@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include <errno.h>
 #include <ctype.h>
 #include <math.h>
 #include <assert.h>

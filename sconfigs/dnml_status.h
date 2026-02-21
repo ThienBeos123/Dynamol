@@ -18,6 +18,10 @@ typedef enum ___44594E414D4F4C_737461747573___ {
     STR_INVALID_BASE_PREFIX,    // 106
     STR_INVALID_BASE,           // 107
     STR_INVALID_DIGIT,          // 108
+
+    FILE_ERR_PARSE = 200,       // 200
+    FILE_INVAL,                 // 201
+    FILE_ILLEGAL                // 202
 } dnml_status;
 
 

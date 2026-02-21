@@ -45,6 +45,8 @@ static const char _DIGIT_[32] = {
 };
 
 /* Global, Thread-local Arena */
+static const uint16_t ___DASI_IO_BUFSIZE = 16384;
+static local_thread char ___DASI_IO_CHUNKBUF_[___DASI_IO_BUFSIZE];
 static local_thread dnml_arena ___DASI_IO_ARENA_;
 static inline dnml_arena* _USE_ARENA(void) {
     // Support 512 limbs (the gold standard)
@@ -2003,7 +2005,7 @@ dnml_status __BIGINT_GET__(bigInt *x) {
 
     //* Main accumulator loop *//
     uint64_t threshold; uint8_t index_lookup, numerical_val;
-    bigInt tmp_buf; __BIGINT_LIMBS_INIT__(&tmp_buf, x->cap);
+    bigInt tmp_buf; __BIGINT_INTERNAL_LINIT__(&tmp_buf, x->cap);
     while (_is_valid_digit__(&current_char)) {
         index_lookup = (uint8_t)(current_char - '\0');
         numerical_val = _VALUE_LOOKUP_[index_lookup];
@@ -2040,7 +2042,7 @@ dnml_status __BIGINT_GETB__(bigInt *x, uint8_t base) {
 
     //* Main accumulator loop *//
     uint64_t threshold; uint8_t index_lookup, numerical_val;
-    bigInt tmp_buf; __BIGINT_LIMBS_INIT__(&tmp_buf, x->cap);
+    bigInt tmp_buf; __BIGINT_INTERNAL_LINIT__(&tmp_buf, x->cap);
     while (_is_valid_digit__(&current_char)) {
         index_lookup = (uint8_t)(current_char - '\0');
         numerical_val = _VALUE_LOOKUP_[index_lookup];
@@ -2256,12 +2258,451 @@ dnml_status __BIGINT_TGETB__(bigInt *x, uint8_t base) {
     tmp_limbs = NULL; return STR_SUCCESS;
 }
 /* --------- Custom Stream INPUT ---------  */
-dnml_status __BIGINT_FGET__(FILE *stream, bigInt *x) {}
-dnml_status __BIGINT_FGETB__(FILE *stream, bigInt *x, uint8_t base) {}
-dnml_status __BIGINT_FSGET__(FILE *stream, bigInt *x) {}
-dnml_status __BIGINT_FSGETB__(FILE *stream, bigInt *x, uint8_t base) {}
-dnml_status __BIGINT_FTGET__(FILE *stream, bigInt *x) {}
-dnml_status __BIGINT_FTGETB__(FILE *stream, bigInt *x, uint8_t base) {}
+dnml_status __BIGINT_FGET__(FILE *stream, bigInt *x) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    //* Whitespace -> Setup -> Signs *//
+    char lexical_comp[3];
+    while (isspace(fgetc(stream))) fseek(stream, 1, SEEK_CUR); // Whitespace
+    size_t parse_res = fread(lexical_comp, sizeof(char), 3, stream);
+    if (ferror(stream)) return FILE_ERR_PARSE;
+    long offset_set = 0;
+    uint8_t sign = 1, base = 10, curr_lexpos = 0;
+    if (lexical_comp[curr_lexpos] == '-') { 
+        sign = -1; ++curr_lexpos; 
+        if (curr_lexpos >= parse_res) return STR_INCOMPLETE;
+    } else if (lexical_comp[curr_lexpos] == '+') { 
+        ++curr_lexpos; 
+        if (curr_lexpos >= parse_res) return STR_INCOMPLETE;
+    }
+    else if (!is_numeric(lexical_comp[curr_lexpos])) return STR_INVALID_SIGN;
+
+    //* Prefix & leading zeros *//
+    if (is_numeric(lexical_comp[curr_lexpos]) // The string is currently "9.."
+    && lexical_comp[curr_lexpos] != '0') offset_set = -(parse_res - curr_lexpos - 1);
+    else {
+        ++curr_lexpos;
+        if (curr_lexpos >= parse_res) {
+            // The string is just 1 singular 0 ('0' or '-0', etc)
+            if (sign == -1) return STR_INVALID_SIGN;
+            __BIGINT_INTERNAL_ZSET__(x); return STR_SUCCESS;
+        } else if (is_numeric(lexical_comp[curr_lexpos])) {
+            // The string is base-10 with leading zeros ('09' or '00', etc)
+            offset_set = (-parse_res - curr_lexpos - 1);
+        } else {
+            switch (lexical_comp[curr_lexpos]) {
+                // Hexadecimal (Base-16)
+                case 'x':       base = 16; break;
+                case 'X':       base = 16; break;
+                // Binary (Base-2)
+                case 'b':       base = 2; break;
+                case 'B':       base = 2; break;
+                // Octal (Base-8)
+                case 'o':       base = 8; break;
+                case 'O':       base = 8; break;
+                //! INVALID BASE PREFIX
+                default:        return STR_INVALID_BASE_PREFIX; break;
+            } offset_set = (-parse_res - curr_lexpos - 1);
+        }
+    } fseek(stream, offset_set, SEEK_CUR);
+    int curr_char = fgetc(stream);
+    while (curr_char != EOF && curr_char == '0') curr_char = fgetc(stream);
+    if (curr_char == EOF) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        __BIGINT_INTERNAL_ZSET__(x); return STR_SUCCESS;
+    }
+
+    //* Main accumalator loop *//
+    uint64_t threshold; size_t i;
+    uint8_t index_lookup, numerical_val;
+    bigInt tmp_buf; __BIGINT_INTERNAL_LINIT__(&tmp_buf, x->cap);
+    while (1) {
+        parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
+        //* THE ACTUAL ACCUMALATION
+        if (parse_res > 0) {
+            for (i = parse_res - 1; i >= 0; --i) {
+                index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
+                numerical_val = _VALUE_LOOKUP_[index_lookup];
+                threshold = (UINT64_MAX - numerical_val) / base;
+                if (numerical_val >= base) { __BIGINT_INTERNAL_FREE__(&tmp_buf); return STR_INVALID_DIGIT; } 
+                if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+                    __BIGINT_INTERNAL_ENSCAP__(&tmp_buf, tmp_buf.cap + 5);
+                }
+                __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+                __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+            }
+        }
+        //* ENDING CONDITION
+        if (parse_res < ___DASI_IO_BUFSIZE) {
+            if (ferror(stream)) {
+                __BIGINT_INTERNAL_FREE__(&tmp_buf);
+                return FILE_ERR_PARSE;
+            } else if (feof(stream)) break;
+        }
+    }
+    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_FREE__(&tmp_buf);
+    return STR_SUCCESS;
+}
+dnml_status __BIGINT_FGETB__(FILE *stream, bigInt *x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    //* Whitespace -> Signs -> Leading Zeros *//
+    uint8_t sign = 1; int curr_char;
+    while (isspace(fgetc(stream))) fseek(stream, 1, SEEK_CUR); // Whitespace
+    curr_char = fgetc(stream);
+    if (curr_char == '-' || curr_char == '+') {
+        if (curr_char == '-') sign = -1;
+        if (fgetc(stream) == EOF) return STR_INCOMPLETE;
+    }
+    else if (!is_numeric(curr_char)) return STR_INVALID_DIGIT;
+    else ungetc(curr_char, stream); // Rewind back if curr_char is numeric (0-9)
+    // Skipping Leading Zeros
+    do { curr_char = fgetc(stream); }
+    while (curr_char != EOF && curr_char == '0');
+    if (curr_char == EOF) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumalator loop *//
+    uint8_t index_lookup, numerical_val, i; 
+    size_t parse_res; uint64_t threshold;
+    bigInt tmp_buf; __BIGINT_INTERNAL_LINIT__(&tmp_buf, x->cap);
+    while (1) {
+        parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
+        //* THE ACTUAL ACCUMALATION
+        if (parse_res > 0) {
+            for (i = parse_res - 1; i >= 0; --i) {
+                index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
+                numerical_val = _VALUE_LOOKUP_[index_lookup];
+                threshold = (UINT64_MAX - numerical_val) / base;
+                if (numerical_val >= base) { __BIGINT_INTERNAL_FREE__(&tmp_buf); return STR_INVALID_DIGIT; } 
+                if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+                    __BIGINT_INTERNAL_ENSCAP__(&tmp_buf, tmp_buf.cap + 5);
+                }
+                __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+                __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+            }
+        }
+        //* ENDING CONDITION
+        if (parse_res < ___DASI_IO_BUFSIZE) {
+            if (ferror(stream)) {
+                __BIGINT_INTERNAL_FREE__(&tmp_buf);
+                return FILE_ERR_PARSE;
+            } else if (feof(stream)) break;
+        }
+    }
+    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
+    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_FREE__(&tmp_buf);
+    return STR_SUCCESS;
+}
+dnml_status __BIGINT_FSGET__(FILE *stream, bigInt *x) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_FSGET = _USE_ARENA();
+    //* Whitespace -> Setup -> Signs *//
+    char lexical_comp[3];
+    while (isspace(fgetc(stream))) fseek(stream, 1, SEEK_CUR); // Whitespace
+    size_t parse_res = fread(lexical_comp, sizeof(char), 3, stream);
+    if (ferror(stream)) return FILE_ERR_PARSE;
+    long offset_set = 0;
+    uint8_t sign = 1, base = 10, curr_lexpos = 0;
+    if (lexical_comp[curr_lexpos] == '-') { 
+        sign = -1; ++curr_lexpos; 
+        if (curr_lexpos >= parse_res) return STR_INCOMPLETE;
+    } else if (lexical_comp[curr_lexpos] == '+') { 
+        ++curr_lexpos; 
+        if (curr_lexpos >= parse_res) return STR_INCOMPLETE;
+    }
+    else if (!is_numeric(lexical_comp[curr_lexpos])) return STR_INVALID_SIGN;
+
+    //* Prefix & leading zeros *//
+    if (is_numeric(lexical_comp[curr_lexpos]) // The string is currently "9.."
+    && lexical_comp[curr_lexpos] != '0') offset_set = -(parse_res - curr_lexpos - 1);
+    else {
+        ++curr_lexpos;
+        if (curr_lexpos >= parse_res) {
+            // The string is just 1 singular 0 ('0' or '-0', etc)
+            if (sign == -1) return STR_INVALID_SIGN;
+            __BIGINT_INTERNAL_ZSET__(x); return STR_SUCCESS;
+        } else if (is_numeric(lexical_comp[curr_lexpos])) {
+            // The string is base-10 with leading zeros ('09' or '00', etc)
+            offset_set = (-parse_res - curr_lexpos - 1);
+        } else {
+            switch (lexical_comp[curr_lexpos]) {
+                // Hexadecimal (Base-16)
+                case 'x':       base = 16; break;
+                case 'X':       base = 16; break;
+                // Binary (Base-2)
+                case 'b':       base = 2; break;
+                case 'B':       base = 2; break;
+                // Octal (Base-8)
+                case 'o':       base = 8; break;
+                case 'O':       base = 8; break;
+                //! INVALID BASE PREFIX
+                default:        return STR_INVALID_BASE_PREFIX; break;
+            } offset_set = (-parse_res - curr_lexpos - 1);
+        }
+    } fseek(stream, offset_set, SEEK_CUR);
+    char curr_char = fgetc(stream);
+    while (curr_char != EOF && curr_char == '0') curr_char = fgetc(stream);
+    if (curr_char == EOF) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        __BIGINT_INTERNAL_ZSET__(x); return STR_SUCCESS;
+    }
+
+    //* Main accumalator loop *//
+    uint64_t threshold; size_t i;
+    uint8_t index_lookup, numerical_val;
+    size_t tmp_mark = arena_mark(_DASI_FSGET);
+    limb_t *tmp_limbs = arena_alloc(_DASI_FSGET, x->cap);
+    bigInt tmp_buf = { .limbs = tmp_limbs, /**/ .n = 0, /**/ .cap = x->cap };
+    while (1) {
+        parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
+        //* THE ACTUAL ACCUMALATION
+        if (parse_res > 0) {
+            for (i = parse_res - 1; i >= 0; --i) {
+                index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
+                numerical_val = _VALUE_LOOKUP_[index_lookup];
+                threshold = (UINT64_MAX - numerical_val) / base;
+                if (numerical_val >= base) { 
+                    arena_reset(_DASI_FSGET, tmp_mark); 
+                    tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+                } if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+                    arena_reset(_DASI_FSGET, tmp_mark);
+                    tmp_limbs = NULL; return BIGINT_ERR_DOMAIN;
+                }
+                __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+                __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+            }
+        }
+        //* ENDING CONDITION
+        if (parse_res < ___DASI_IO_BUFSIZE) {
+            if (ferror(stream)) {
+                arena_reset(_DASI_FSGET, tmp_mark);
+                tmp_limbs = NULL; return FILE_ERR_PARSE; 
+            } else if (feof(stream)) break;
+        }
+    }
+    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_FSGET, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+dnml_status __BIGINT_FSGETB__(FILE *stream, bigInt *x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_FSGETB = _USE_ARENA();
+    //* Whitespace -> Signs -> Leading Zeros *//
+    uint8_t sign = 1; int curr_char;
+    while (isspace(fgetc(stream))) fseek(stream, 1, SEEK_CUR); // Whitespace
+    curr_char = fgetc(stream);
+    if (curr_char == '-' || curr_char == '+') {
+        if (curr_char == '-') sign = -1;
+        if (fgetc(stream) == EOF) return STR_INCOMPLETE;
+    }
+    else if (!is_numeric(curr_char)) return STR_INVALID_DIGIT;
+    else ungetc(curr_char, stream); // Rewind back if curr_char is numeric (0-9)
+    // Skipping Leading Zeros
+    do { curr_char = fgetc(stream); }
+    while (curr_char != EOF && curr_char == '0');
+    if (curr_char == EOF) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumalator loop *//
+    uint8_t index_lookup, numerical_val, i; 
+    size_t parse_res; uint64_t threshold;
+    size_t tmp_mark = arena_mark(_DASI_FSGETB);
+    limb_t *tmp_limbs = arena_alloc(_DASI_FSGETB, x->cap);
+    bigInt tmp_buf = { .limbs = tmp_limbs, /**/ .n = 0, /**/ .cap = x->cap };
+    while (1) {
+        parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
+        //* THE ACTUAL ACCUMALATION
+        if (parse_res > 0) {
+            for (i = parse_res - 1; i >= 0; --i) {
+                index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
+                numerical_val = _VALUE_LOOKUP_[index_lookup];
+                threshold = (UINT64_MAX - numerical_val) / base;
+                if (numerical_val >= base) { 
+                    arena_reset(_DASI_FSGETB, tmp_mark); 
+                    tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+                } if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+                    arena_reset(_DASI_FSGETB, tmp_mark); 
+                    tmp_limbs = NULL; return BIGINT_ERR_DOMAIN; 
+                }
+                __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+                __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+            }
+        }
+        //* ENDING CONDITION
+        if (parse_res < ___DASI_IO_BUFSIZE) {
+            if (ferror(stream)) {
+                arena_reset(_DASI_FSGETB, tmp_mark); 
+                tmp_limbs = NULL; return FILE_ERR_PARSE; 
+            } else if (feof(stream)) break;
+        }
+    }
+    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_FSGETB, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+dnml_status __BIGINT_FTGET__(FILE *stream, bigInt *x) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_FSGET = _USE_ARENA();
+    //* Whitespace -> Setup -> Signs *//
+    char lexical_comp[3];
+    while (isspace(fgetc(stream))) fseek(stream, 1, SEEK_CUR); // Whitespace
+    size_t parse_res = fread(lexical_comp, sizeof(char), 3, stream);
+    if (ferror(stream)) return FILE_ERR_PARSE;
+    long offset_set = 0;
+    uint8_t sign = 1, base = 10, curr_lexpos = 0;
+    if (lexical_comp[curr_lexpos] == '-') { 
+        sign = -1; ++curr_lexpos; 
+        if (curr_lexpos >= parse_res) return STR_INCOMPLETE;
+    } else if (lexical_comp[curr_lexpos] == '+') { 
+        ++curr_lexpos; 
+        if (curr_lexpos >= parse_res) return STR_INCOMPLETE;
+    }
+    else if (!is_numeric(lexical_comp[curr_lexpos])) return STR_INVALID_SIGN;
+
+    //* Prefix & leading zeros *//
+    if (is_numeric(lexical_comp[curr_lexpos]) // The string is currently "9.."
+    && lexical_comp[curr_lexpos] != '0') offset_set = -(parse_res - curr_lexpos - 1);
+    else {
+        ++curr_lexpos;
+        if (curr_lexpos >= parse_res) {
+            // The string is just 1 singular 0 ('0' or '-0', etc)
+            if (sign == -1) return STR_INVALID_SIGN;
+            __BIGINT_INTERNAL_ZSET__(x); return STR_SUCCESS;
+        } else if (is_numeric(lexical_comp[curr_lexpos])) {
+            // The string is base-10 with leading zeros ('09' or '00', etc)
+            offset_set = (-parse_res - curr_lexpos - 1);
+        } else {
+            switch (lexical_comp[curr_lexpos]) {
+                // Hexadecimal (Base-16)
+                case 'x':       base = 16; break;
+                case 'X':       base = 16; break;
+                // Binary (Base-2)
+                case 'b':       base = 2; break;
+                case 'B':       base = 2; break;
+                // Octal (Base-8)
+                case 'o':       base = 8; break;
+                case 'O':       base = 8; break;
+                //! INVALID BASE PREFIX
+                default:        return STR_INVALID_BASE_PREFIX; break;
+            } offset_set = (-parse_res - curr_lexpos - 1);
+        }
+    } fseek(stream, offset_set, SEEK_CUR);
+    char curr_char = fgetc(stream);
+    while (curr_char != EOF && curr_char == '0') curr_char = fgetc(stream);
+    if (curr_char == EOF) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        __BIGINT_INTERNAL_ZSET__(x); return STR_SUCCESS;
+    }
+
+    //* Main accumalator loop *//
+    uint64_t threshold; size_t i;
+    uint8_t index_lookup, numerical_val, terminate_loop = 0;
+    size_t tmp_mark = arena_mark(_DASI_FSGET);
+    limb_t *tmp_limbs = arena_alloc(_DASI_FSGET, x->cap);
+    bigInt tmp_buf = { .limbs = tmp_limbs, /**/ .n = 0, /**/ .cap = x->cap };
+    while (1) {
+        parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
+        //* THE ACTUAL ACCUMALATION
+        if (parse_res > 0) {
+            for (i = parse_res - 1; i >= 0; --i) {
+                index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
+                numerical_val = _VALUE_LOOKUP_[index_lookup];
+                threshold = (UINT64_MAX - numerical_val) / base;
+                if (numerical_val >= base) { 
+                    arena_reset(_DASI_FSGET, tmp_mark); 
+                    tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+                } if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) { 
+                    // Ends the entire accumalation loop
+                    // -----> Acquire a "truncative" effect
+                    terminate_loop = 1; break; 
+                }
+                __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+                __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+            }
+        }
+        //* ENDING CONDITION
+        if (parse_res < ___DASI_IO_BUFSIZE) {
+            if (ferror(stream)) {
+                arena_reset(_DASI_FSGET, tmp_mark);
+                tmp_limbs = NULL; return FILE_ERR_PARSE; 
+            } else if (feof(stream)) break;
+        } else if (terminate_loop) break;
+    }
+    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_FSGET, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
+dnml_status __BIGINT_FTGETB__(FILE *stream, bigInt *x, uint8_t base) {
+    assert(__BIGINT_INTERNAL_SVALID__(x));
+    dnml_arena *_DASI_FSGETB = _USE_ARENA();
+    //* Whitespace -> Signs -> Leading Zeros *//
+    uint8_t sign = 1; int curr_char;
+    while (isspace(fgetc(stream))) fseek(stream, 1, SEEK_CUR); // Whitespace
+    curr_char = fgetc(stream);
+    if (curr_char == '-' || curr_char == '+') {
+        if (curr_char == '-') sign = -1;
+        if (fgetc(stream) == EOF) return STR_INCOMPLETE;
+    }
+    else if (!is_numeric(curr_char)) return STR_INVALID_DIGIT;
+    else ungetc(curr_char, stream); // Rewind back if curr_char is numeric (0-9)
+    // Skipping Leading Zeros
+    do { curr_char = fgetc(stream); }
+    while (curr_char != EOF && curr_char == '0');
+    if (curr_char == EOF) {
+        if (sign == -1) return STR_INVALID_SIGN;
+        __BIGINT_INTERNAL_ZSET__(x);
+    }
+
+    //* Main accumalator loop *//
+    uint8_t index_lookup, numerical_val, i; 
+    size_t parse_res; uint64_t threshold; uint8_t terminate_loop = 0;
+    size_t tmp_mark = arena_mark(_DASI_FSGETB);
+    limb_t *tmp_limbs = arena_alloc(_DASI_FSGETB, x->cap);
+    bigInt tmp_buf = { .limbs = tmp_limbs, /**/ .n = 0, /**/ .cap = x->cap };
+    while (1) {
+        parse_res = fread(___DASI_IO_CHUNKBUF_, sizeof(char), ___DASI_IO_BUFSIZE, stream);
+        //* THE ACTUAL ACCUMALATION
+        if (parse_res > 0) {
+            for (i = parse_res - 1; i >= 0; --i) {
+                index_lookup = (uint8_t)(___DASI_IO_CHUNKBUF_[i] - '\0');
+                numerical_val = _VALUE_LOOKUP_[index_lookup];
+                threshold = (UINT64_MAX - numerical_val) / base;
+                if (numerical_val >= base) { 
+                    arena_reset(_DASI_FSGETB, tmp_mark); 
+                    tmp_limbs = NULL; return STR_INVALID_DIGIT; 
+                } if (__BIGINT_WILL_OVERFLOW__(&tmp_buf, threshold)) {
+                    // Termiante the whole accumalation loop
+                    // -----> Achieve the "truncative effect"
+                    terminate_loop = 1; break;
+                }
+                __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
+                __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
+            }
+        }
+        //* ENDING CONDITION
+        if (parse_res < ___DASI_IO_BUFSIZE) {
+            if (ferror(stream)) {
+                arena_reset(_DASI_FSGETB, tmp_mark); 
+                tmp_limbs = NULL; return FILE_ERR_PARSE; 
+            } else if (feof(stream)) break;
+        } else if (terminate_loop) break;
+    }
+    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
+    x->n = tmp_buf.n; x->sign = sign;
+    arena_reset(_DASI_FSGETB, tmp_mark);
+    tmp_limbs = NULL; return STR_SUCCESS;
+}
 
 
 

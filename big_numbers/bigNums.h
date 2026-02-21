@@ -18,8 +18,8 @@ extern "C" {
 typedef uint64_t limb_t;
 
 typedef struct __424947696E7465676572__ {
-    int8_t sign;                    limb_t *limbs; 
     size_t n; /* Used limbs */      size_t cap; /* Maximum limbs */
+    limb_t *limbs;                  int8_t sign;
 } bigInt;
 
 typedef struct __424947666C6F6174__ {
