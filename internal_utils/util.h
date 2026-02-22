@@ -55,13 +55,16 @@ inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x);
 bigInt __BIGINT_ERROR_VALUE__(void);
 
 inline void __BIGINT_INTERNAL_COPY__(bigInt *dst, const bigInt *source);
-void __BIGINT_INTERNAL_TRIM_LZ__(bigInt *x);
+inline void __BIGINT_INTERNAL_TRIM_LZ__(bigInt *x);
 inline void __BIGINT_INTERNAL_ZSET__(bigInt *x);
+inline void __BIGINT_INTERNAL_SWAP__(bigInt *x, bigInt *y);
 size_t __BIGINT_COUNTDB__(const bigInt *x, uint8_t base);
 size_t __BIGINT_LIMBS_NEEDED__(size_t bits);
 uint8_t __BIGINT_WILL_OVERFLOW__(const bigInt *x, uint64_t threshold);
 size_t __BIGINT_CTZ__(const bigInt *x);
 
+inline int8_t __BIGINT_INTERNAL_COMP__(const bigInt *x, const bigInt *y);
+inline uint8_t __BIGINT_IS_EVEN__(const bigInt *x);
 void __BIGINT_INTERNAL_ADD_UI64__(bigInt *x, uint64_t val);
 void __BIGINT_INTERNAL_MUL_UI64__(bigInt *x, uint64_t val);
 uint64_t __BIGINT_INTERNAL_DIVMOD_UI64__(bigInt *x, uint64_t val);

@@ -1,5 +1,12 @@
 #include "util.h"
 
+static local_thread dnml_arena _DASI_UTILS_ARENA;
+static inline dnml_arena* _USE_ARENA(void) {
+    // Support 512 limbs (the gold standard)
+    if (_DASI_UTILS_ARENA.base = NULL) init_arena(&_DASI_UTILS_ARENA, 4096);
+    return &_DASI_UTILS_ARENA;
+}
+
 /* Constructors and Destructors */
 inline void __BIGINT_INTERNAL_EMPINIT__(bigInt *x) {
     x->limbs = malloc(sizeof(uint64_t));
@@ -84,6 +91,17 @@ inline void __BIGINT_INTERNAL_ZSET__(bigInt *x) {
     x->n    = 0;
     x->sign = 1;
 }
+inline void __BIGINT_INTERNAL_SWAP__(bigInt *x, bigInt *y) {
+    dnml_arena *buf_arena = _USE_ARENA();
+    size_t tmp_mark = arena_mark(buf_arena);
+    limb_t *tmp_buf = arena_alloc(buf_arena, y->n * BYTES_IN_UINT64_T);
+    __BIGINT_INTERNAL_ENSCAP__(x, y->n);
+    __BIGINT_INTERNAL_ENSCAP__(y, x->n);
+    memcpy(tmp_buf, y->limbs, y->n * BYTES_IN_UINT64_T);
+    memcpy(y->limbs, x->limbs, x->n * BYTES_IN_UINT64_T);
+    memcpy(x->limbs, tmp_buf, y->n * BYTES_IN_UINT64_T);
+    arena_reset(buf_arena, tmp_mark); tmp_buf = NULL;
+}
 size_t __BIGINT_COUNTDB__(const bigInt *x, uint8_t base) {
     size_t first_few_bits = (x->n - 1) * BIGINT_LIMBS_BITS;
     size_t bits_per_digit;
@@ -116,6 +134,13 @@ size_t __BIGINT_CTZ__(const bigInt *x) {
 }
 
 /* Internal Arithmetic */
+inline int8_t __BIGINT_INTERNAL_COMP__(const bigInt *x, const bigInt *y) {
+    if (x->n != y->n) return (x->n > y->n) ? 1 : -1;
+    for (size_t i = x->n - 1; i >= 0; --i) {
+        if (x->limbs[i] != y->limbs[i]) return (x->limbs[i] > y->limbs[i]) ? 1 : -1;
+    } return 0;
+}
+inline uint8_t __BIGINT_IS_EVEN__(const bigInt *x) { return !(x->limbs[0] & 1); }
 void __BIGINT_INTERNAL_ADD_UI64__(bigInt *x, uint64_t val) {
     if (val == 0) return;
     uint64_t carry = val;
@@ -148,14 +173,17 @@ uint64_t __BIGINT_INTERNAL_DIVMOD_UI64__(bigInt *x, uint64_t val) {
 }
 void __BIGINT_INTERNAL_SUB__(bigInt *x, const bigInt *y) {}
 void __BIGINT_INTERNAL_RSHIFT__(bigInt *x, size_t k) {
+    if (!k) return;
     uint64_t discarded_bits = 0;
     for (size_t i = 0; i < x->n; ++i) {
         uint64_t positioned_bits = discarded_bits << (BITS_IN_UINT64_T - k);
         discarded_bits = x->limbs[i] & ((1U << k) - 1);
         x->limbs[i] = (x->limbs[i] >> k) | positioned_bits;
     }
+    __BIGINT_INTERNAL_TRIM_LZ__(x);
 }
 void __BIGINT_INTERNAL_LSHIFT__(bigInt *x, size_t k) {
+    if (!k) return;
     uint64_t discarded_bits = 0;
     for (size_t i = 0; i < x->n; ++i) {
         uint64_t previous_dbits = discarded_bits;
