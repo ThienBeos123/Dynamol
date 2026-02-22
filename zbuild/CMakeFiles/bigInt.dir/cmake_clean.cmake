@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/bigInt.dir/calculation_algorithms/src/div.c.o.d"
   "CMakeFiles/bigInt.dir/calculation_algorithms/src/mul.c.o"
   "CMakeFiles/bigInt.dir/calculation_algorithms/src/mul.c.o.d"
+  "CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.o"
+  "CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.o.d"
   "CMakeFiles/bigInt.dir/internal_utils/bigNum_utils.c.o"
   "CMakeFiles/bigInt.dir/internal_utils/bigNum_utils.c.o.d"
   "CMakeFiles/bigInt.dir/internal_utils/misc_utils.c.o"

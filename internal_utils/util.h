@@ -35,9 +35,9 @@ uint8_t _prefix_handle_stream__(FILE* stream, uint8_t *base, uint16_t *curr_char
 /* ---------------------- */
 /* misc_utils.c */
 /* ---------------------- */
-size_t __BITCOUNT___(size_t digit_count, uint8_t base);
-uint8_t __BASEN_DCOUNT__(uint64_t val, uint8_t base);
-uint64_t __MAG_I64__(int64_t val);
+inline size_t __BITCOUNT___(size_t digit_count, uint8_t base);
+inline uint8_t __BASEN_DCOUNT__(uint64_t val, uint8_t base);
+inline uint64_t __MAG_I64__(int64_t val);
 
 
 /* ---------------------- */

@@ -35,6 +35,7 @@
 #define BIGINT_NEWTON               512 // n >= 512     DIV + MOD
 
 /* GCD - Greatest Common Divisor */
+#define BIGINT_EUCLID               1
 #define BIGINT_STEIN                512
 #define BIGINT_LEHMER               2048
 #define BIGINT_HALF_GCD             2048

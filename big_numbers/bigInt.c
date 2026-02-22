@@ -1439,22 +1439,37 @@ static inline void __BIGINT_MAGNITUDED_DIVMOD_UI64__(bigInt *quot, uint64_t *rem
     __BIGINT_NORMALIZE__(quot);
 }
 /* --------------- MAGNITUDED CORE NUMBER-THEORETIC ---------------- */
-uint64_t ___GCD_UI64___(uint64_t a, uint64_t b) {}
-static void __BIGINT_MAGNITUDED_GCD_UI64__(uint64_t *res, const bigInt a, uint64_t val) {}
-static void __BIGINT_MAGNITUDED_LCM_UI64__(bigInt *res, const bigInt a, uint64_t val) {}
-static void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt a, const bigInt b) {}
-static void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt a, const bigInt b) {}
-static void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt a, uint64_t modulus) {}
-static void __BIGINT_MAGNITUDED_EUCMOD__(bigInt *res, const bigInt a, const bigInt modulus) {}
-static void __BIGINT_MAGNITUDED_PRIMATEST__(const bigInt x) {}
+inline uint64_t ___GCD_UI64___(uint64_t a, uint64_t b) { return __BIGINT_EUCLID__(a, b); }
+static void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt *a, const bigInt *b) {
+    __BIGINT_GCD_DISPATCH__(res, a, b);
+}
+static void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt *a, const bigInt *b) {
+    dnml_arena *_BIGINT_MAGLCM_ARENA = _USE_ARENA();
+    size_t gcdres_mark = arena_mark(_BIGINT_MAGLCM_ARENA);
+    limb_t *gcdres_limbs = arena_alloc(_BIGINT_MAGLCM_ARENA, min(a->n, b->n));
+    size_t tmp_mark = arena_mark(_BIGINT_MAGLCM_ARENA);
+    limb_t *tmp_limbs = arena_alloc(_BIGINT_MAGLCM_ARENA, min(a->n, b->n));
+    gcdres_limbs = _BIGINT_MAGLCM_ARENA->base += gcdres_mark;
+    bigInt gcd_res = { .limbs = gcdres_limbs, /**/ .n = 0, /**/ .cap = min(a->n, b->n) }; 
+    bigInt temp_rem = { .limbs = tmp_limbs, /**/ .n = 0, /**/ .cap = min(a->n, b->n) }; 
+    __BIGINT_GCD_DISPATCH__(&gcd_res, a, b);
+    __BIGINT_MAGNITUDED_DIVMOD__(res, &temp_rem, a, &gcd_res);
+    __BIGINT_MAGNITUDED_MUL__(&gcd_res, res, b);
+    __BIGINT_MUT_COPY__(res, gcd_res);
+    arena_reset(_BIGINT_MAGLCM_ARENA, tmp_mark);
+    arena_reset(_BIGINT_MAGLCM_ARENA, gcdres_mark);
+}
+static void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt *a, uint64_t modulus) {}
+static void __BIGINT_MAGNITUDED_EUCMOD__(bigInt *res, const bigInt *a, const bigInt *modulus) {}
+static void __BIGINT_MAGNITUDED_PRIMATEST__(const bigInt *x) {}
 /* ----------------- MAGNITUDED MODULAR-ARITHMETIC ------------------ */
-static void __BIGINT_MAGNITUDED_MODADD__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
-static void __BIGINT_MAGNITUDED_MODSUB__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
-static void __BIGINT_MAGNITUDED_MODMUL__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
-static void __BIGINT_MAGNITUDED_MODDIV__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
-static void __BIGINT_MAGNITUDED_MODEXP__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
-static void __BIGINT_MAGNITUDED_MODSQR__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
-static void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod) {}
+static void __BIGINT_MAGNITUDED_MODADD__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+static void __BIGINT_MAGNITUDED_MODSUB__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+static void __BIGINT_MAGNITUDED_MODMUL__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+static void __BIGINT_MAGNITUDED_MODDIV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+static void __BIGINT_MAGNITUDED_MODEXP__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+static void __BIGINT_MAGNITUDED_MODSQR__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
+static void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod) {}
 
 
 
@@ -2040,13 +2055,43 @@ bigInt __BIGINT_MOD__(const bigInt x, const bigInt y, dnml_status *err) {
 
 //* ======================================== SIGNED NUMBER THEORETIC ========================================= */
 /* -------------- Pure Number Theoretic -------------- */
-uint64_t __BIGINT_GCD_UI64__(const bigInt x, uint64_t val) {}
-int64_t __BIGINT_GCD_I64__(const bigInt x, int64_t val) {}
-bigInt __BIGINT_GCD__(const bigInt x, const bigInt y) {}
+bigInt __BIGINT_GCD_UI64__(const bigInt x, uint64_t val) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!val) return x;
+    bigInt res;
+    if (x.n == 0) __BIGINT_UI64_INIT__(&res, val);
+    else if (x.n == 1) __BIGINT_UI64_INIT__(&res, ___GCD_UI64___(x.limbs[0], val));
+    else {
+        bigInt y; __BIGINT_UI64_INIT__(&res, val);
+        __BIGINT_MAGNITUDED_GCD__(&res, &x, &y);
+    } return res;
+}
+bigInt __BIGINT_GCD_I64__(const bigInt x, int64_t val) {
+    assert(__BIGINT_VALIDATE__(x));
+    if (!val) return x;
+    bigInt res;
+    if (x.n == 0) __BIGINT_UI64_INIT__(&res, __MAG_I64__(val));
+    else if (x.n == 1) __BIGINT_UI64_INIT__(&res, ___GCD_UI64___(x.limbs[0], __MAG_I64__(val)));
+    else {
+        bigInt y; __BIGINT_UI64_INIT__(&res, __MAG_I64__(val));
+        __BIGINT_MAGNITUDED_GCD__(&res, &x, &y);
+    } return res;
+}
+bigInt __BIGINT_GCD__(const bigInt x, const bigInt y) {
+    assert(__BIGINT_VALIDATE__(x) && __BIGINT_VALIDATE__(y));
+    if (x.n == 0) return y;
+    else if (y.n == 0) return x;
+    bigInt res;
+    if (x.n == 1 && y.n == 1) __BIGINT_UI64_INIT__(&res, ___GCD_UI64___(x.limbs[0], y.limbs[0]));
+    else {
+        __BIGINT_LIMBS_INIT__(&res, min(x.n, y.n));
+        __BIGINT_MAGNITUDED_GCD__(&res, &x, &y);
+    } return res;
+}
 bigInt __BIGINT_LCM_UI64__(const bigInt x, uint64_t val) {}
 bigInt __BIGINT_LCM_I64__(const bigInt x, int64_t val) {}
 bigInt __BIGINT_LCM__(const bigInt x, const bigInt y) {}
-uint8_t __BIGINT_IS_PRIME__(const bigInt x) {}
+bool __BIGINT_IS_PRIME__(const bigInt x) {}
 /* ---------------- Modular Reduction ---------------- */
 void __BIGINT_MUT_MODULO_UI64__(bigInt *x, uint64_t modulus) {}
 void __BIGINT_MUT_MODULO_I64__(bigInt *x, int64_t modulus) {}

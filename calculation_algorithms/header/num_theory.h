@@ -26,6 +26,7 @@ uint64_t __BIGINT_EUCLID__(uint64_t u, uint64_t v);
 void __BIGINT_STEIN__(bigInt *res, const bigInt *u, const bigInt *v);
 void __BIGINT_LEHMER__(bigInt *res, const bigInt *u, const bigInt *v);
 void __BIGINT_HALF__(bigInt *res, const bigInt *u, const bigInt *v);
+void __BIGINT_GCD_DISPATCH__(bigInt *res, const bigInt *u, const bigInt *v);
 
 
 

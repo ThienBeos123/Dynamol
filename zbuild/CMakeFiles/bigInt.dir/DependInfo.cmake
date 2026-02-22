@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/big_numbers/bigInt_io.c" "CMakeFiles/bigInt.dir/big_numbers/bigInt_io.c.o" "gcc" "CMakeFiles/bigInt.dir/big_numbers/bigInt_io.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/div.c" "CMakeFiles/bigInt.dir/calculation_algorithms/src/div.c.o" "gcc" "CMakeFiles/bigInt.dir/calculation_algorithms/src/div.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/mul.c" "CMakeFiles/bigInt.dir/calculation_algorithms/src/mul.c.o" "gcc" "CMakeFiles/bigInt.dir/calculation_algorithms/src/mul.c.o.d"
+  "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/calculation_algorithms/src/num_theory.c" "CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.o" "gcc" "CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/bigNum_utils.c" "CMakeFiles/bigInt.dir/internal_utils/bigNum_utils.c.o" "gcc" "CMakeFiles/bigInt.dir/internal_utils/bigNum_utils.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/misc_utils.c" "CMakeFiles/bigInt.dir/internal_utils/misc_utils.c.o" "gcc" "CMakeFiles/bigInt.dir/internal_utils/misc_utils.c.o.d"
   "/Users/admin/Desktop/Programming/Passion Projects/Dynamol/internal_utils/str_parse.c" "CMakeFiles/bigInt.dir/internal_utils/str_parse.c.o" "gcc" "CMakeFiles/bigInt.dir/internal_utils/str_parse.c.o.d"
