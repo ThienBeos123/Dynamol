@@ -262,8 +262,6 @@ static inline void __BIGINT_MAGNITUDED_DIVMOD__
     const bigInt *__a__, const bigInt *__b__);
 /* ------- Magnituded Core Number-Theoretic ------- */
 uint64_t ___GCD_UI64___(uint64_t a, uint64_t b);
-static void __BIGINT_MAGNITUDED_GCD_UI64__(uint64_t *res, const bigInt a, uint64_t val);
-static void __BIGINT_MAGNITUDED_LCM_UI64__(bigInt *res, const bigInt a, uint64_t val);
 static void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt *a, const bigInt *b);
 static void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt *a, const bigInt *b);
 static void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt *a, uint64_t modulus);
