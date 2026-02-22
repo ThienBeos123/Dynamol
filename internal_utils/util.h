@@ -54,6 +54,7 @@ inline uint8_t __BIGINT_INTERNAL_SVALID__(const bigInt *x);
 inline uint8_t __BIGINT_INTERNAL_PVALID__(const bigInt *x);
 bigInt __BIGINT_ERROR_VALUE__(void);
 
+inline void __BIGINT_INTERNAL_COPY__(bigInt *dst, const bigInt *source);
 void __BIGINT_INTERNAL_TRIM_LZ__(bigInt *x);
 inline void __BIGINT_INTERNAL_ZSET__(bigInt *x);
 size_t __BIGINT_COUNTDB__(const bigInt *x, uint8_t base);
