@@ -2,9 +2,11 @@
 #define ___DNML_NUM_CONFIG_H___
 
 #include <stdint.h>
+#include <stddef.h>
 #include <limits.h>
 #define BYTES_IN_UINT64_T sizeof(uint64_t)
 #define BITS_IN_UINT64_T ((sizeof(uint64_t)) * CHAR_BIT)
+#define BITS_IN_SIZE_T ((sizeof(size_t)) * CHAR_BIT)
 #define I64_MAX_BIT_MASK 0x7FFFFFFFFFFFFFFFULL
 #define I64_MIN_BIT_MASK 0x8000000000000000ULL
 

@@ -910,7 +910,7 @@ dnml_status __BIGINT_GET_STRING__(bigInt *x, const char *str) {
     limb_t *tmp_limbs = arena_alloc(_DASI_GET_STRING_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,       .n     = cap
+        .cap   = cap,       .n     = 0
     };
 
     //* ============= 5. Parsing and Initiating Value ================ *//
@@ -923,8 +923,7 @@ dnml_status __BIGINT_GET_STRING__(bigInt *x, const char *str) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
-    x->n = cap; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = cap; // For safety measures
     arena_reset(_DASI_GET_STRING_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -958,7 +957,7 @@ dnml_status __BIGINT_GET_BASE__(bigInt *x, const char *str, uint8_t base) {
     limb_t *tmp_limbs = arena_alloc(_DASI_GET_BASE_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .cap   = cap,      .n     = 0
     };
 
 
@@ -972,8 +971,7 @@ dnml_status __BIGINT_GET_BASE__(bigInt *x, const char *str, uint8_t base) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
-    x->n = cap; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = cap; // For safety measures
     arena_reset(_DASI_GET_BASE_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -1019,7 +1017,7 @@ dnml_status __BIGINT_GET_STRNLEN__(bigInt *x, const char *str, size_t len) {
     limb_t *tmp_limbs = arena_alloc(_DASI_GET_STRNLEN_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .cap   = cap,      .n     = 0
     };
 
     //* ============= 5. Parsing and Initiating Value ================ *//
@@ -1032,8 +1030,7 @@ dnml_status __BIGINT_GET_STRNLEN__(bigInt *x, const char *str, size_t len) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
-    x->n = cap; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = cap; // For safety measures
     arena_reset(_DASI_GET_STRNLEN_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -1069,7 +1066,7 @@ dnml_status __BIGINT_GET_BASENLEN__(bigInt *x, const char *str, uint8_t base, si
     limb_t *tmp_limbs = arena_alloc(_DASI_GET_BASENLEN_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
         .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .cap   = cap,      .n     = 0
     };
 
     //* ============= 4. Parsing and Initiating Value ================ *//
@@ -1082,8 +1079,7 @@ dnml_status __BIGINT_GET_BASENLEN__(bigInt *x, const char *str, uint8_t base, si
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T);
-    x->n = cap; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = cap; // For safety measures
     arena_reset(_DASI_GET_BASENLEN_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -1123,12 +1119,13 @@ dnml_status __BIGINT_TGET_STRING__(bigInt *x, const char *str) {
     size_t bits = __BITCOUNT___(d - curr_pos, base);
     size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
     size_t limit = (cap > x->cap) ? d - __BIGINT_COUNTDB__(x, 10): curr_pos;
+    size_t ranged_cap = (cap > x->cap) ? x->cap : cap;
     // Initializing BigInt buffer
     size_t tmp_mark = arena_mark(_DASI_TGET_STRING_ARENA);
-    limb_t *tmp_limbs = arena_alloc(_DASI_TGET_STRING_ARENA, cap * BYTES_IN_UINT64_T);
+    limb_t *tmp_limbs = arena_alloc(_DASI_TGET_STRING_ARENA, ranged_cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
-        .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .limbs = tmp_limbs,     .sign = sign,
+        .cap   = ranged_cap,    .n    = 0
     };
 
     //* ============= 5. Parsing and Initiating Value ================ *//
@@ -1141,7 +1138,7 @@ dnml_status __BIGINT_TGET_STRING__(bigInt *x, const char *str) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T); x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = ranged_cap; // For safety measures
     arena_reset(_DASI_TGET_STRING_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -1171,12 +1168,13 @@ dnml_status __BIGINT_TGET_BASE__(bigInt *x, const char *str, uint8_t base) {
     size_t bits = __BITCOUNT___(d, base);
     size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
     size_t limit = (cap > x->cap) ? d - __BIGINT_COUNTDB__(x, 10): curr_pos;
+    size_t ranged_cap = (cap > x->cap) ? x->cap : cap;
     // Initializing BigInt buffer
     size_t tmp_mark = arena_mark(_DASI_TGET_BASE_ARENA);
     limb_t *tmp_limbs = arena_alloc(_DASI_TGET_BASE_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
-        .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .limbs = tmp_limbs,     .sign = sign,
+        .cap   = ranged_cap,    .n     = 0
     };
 
     //* ============= 4. Parsing and Initiating Value ================ *//
@@ -1189,7 +1187,7 @@ dnml_status __BIGINT_TGET_BASE__(bigInt *x, const char *str, uint8_t base) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T); x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = ranged_cap; // For safety measures
     arena_reset(_DASI_TGET_BASE_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -1231,12 +1229,13 @@ dnml_status __BIGINT_TGET_STRNLEN__(bigInt *x, const char *str, size_t len) {
     size_t bits = __BITCOUNT___(len - curr_pos, base);
     size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
     size_t limit = (cap > x->cap) ? len - __BIGINT_COUNTDB__(x, 10): curr_pos;
+    size_t ranged_cap = (cap > x->cap) ? x->cap : cap;
     // Initializing BigInt buffer
     size_t tmp_mark = arena_mark(_DASI_TGET_STRNLEN_ARENA);
     limb_t *tmp_limbs = arena_alloc(_DASI_TGET_STRNLEN_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
-        .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .limbs = tmp_limbs,     .sign = sign,
+        .cap   = ranged_cap,    .n     = 0
     };
 
     //* ============= 5. Parsing and Initiating Value ================ *//
@@ -1249,7 +1248,7 @@ dnml_status __BIGINT_TGET_STRNLEN__(bigInt *x, const char *str, size_t len) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T); x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = ranged_cap; // For safety measures
     arena_reset(_DASI_TGET_STRNLEN_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -1281,12 +1280,13 @@ dnml_status __BIGINT_TGET_BASENLEN__(bigInt *x, const char *str, uint8_t base, s
     size_t bits = __BITCOUNT___(len, base);
     size_t cap = __BIGINT_LIMBS_NEEDED__(bits);
     size_t limit = (cap > x->cap) ? len - __BIGINT_COUNTDB__(x, 10): curr_pos;
+    size_t ranged_cap = (cap > x->cap) ? x->cap : cap;
     // Initializing BigInt buffer
     size_t tmp_mark = arena_mark(_DASI_TGET_BASENLEN_ARENA);
     limb_t *tmp_limbs = arena_alloc(_DASI_TGET_BASENLEN_ARENA, cap * BYTES_IN_UINT64_T);
     bigInt tmp_buf = {
-        .limbs = tmp_limbs, .sign = sign,
-        .cap   = cap,      .n     = cap
+        .limbs = tmp_limbs,     .sign = sign,
+        .cap   = ranged_cap,    .n     = 0
     };
 
     //* ============= 4. Parsing and Initiating Value ================ *//
@@ -1299,7 +1299,7 @@ dnml_status __BIGINT_TGET_BASENLEN__(bigInt *x, const char *str, uint8_t base, s
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, _VALUE_LOOKUP_[lookup_index]);
     }
-    memcpy(x->limbs, tmp_limbs, cap * BYTES_IN_UINT64_T); x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->n = ranged_cap; // For safety measures
     arena_reset(_DASI_TGET_BASENLEN_ARENA, tmp_mark);
     return STR_SUCCESS;
 }
@@ -2020,9 +2020,7 @@ dnml_status __BIGINT_GET__(bigInt *x) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
     }
-    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     __BIGINT_INTERNAL_FREE__(&tmp_buf);
     return STR_SUCCESS;
 }
@@ -2057,9 +2055,7 @@ dnml_status __BIGINT_GETB__(bigInt *x, uint8_t base) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
     }
-    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     __BIGINT_INTERNAL_FREE__(&tmp_buf);
     return STR_SUCCESS;
 }
@@ -2112,8 +2108,7 @@ dnml_status __BIGINT_SGET__(bigInt *x) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
     }
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_SGET_ARENA, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2156,8 +2151,7 @@ dnml_status __BIGINT_SGETB__(bigInt *x, uint8_t base) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
     }
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_SGETB_ARENA, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2209,8 +2203,7 @@ dnml_status __BIGINT_TGET__(bigInt *x) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
     }
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_TGET_ARENA, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2252,8 +2245,7 @@ dnml_status __BIGINT_TGETB__(bigInt *x, uint8_t base) {
         __BIGINT_INTERNAL_MUL_UI64__(&tmp_buf, base);
         __BIGINT_INTERNAL_ADD_UI64__(&tmp_buf, numerical_val);
     }
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_TGETB_ARENA, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2339,9 +2331,7 @@ dnml_status __BIGINT_FGET__(FILE *stream, bigInt *x) {
             } else if (feof(stream)) break;
         }
     }
-    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     __BIGINT_INTERNAL_FREE__(&tmp_buf);
     return STR_SUCCESS;
 }
@@ -2393,9 +2383,7 @@ dnml_status __BIGINT_FGETB__(FILE *stream, bigInt *x, uint8_t base) {
             } else if (feof(stream)) break;
         }
     }
-    __BIGINT_INTERNAL_ENSCAP__(x, tmp_buf.n);
-    memcpy(x->limbs, tmp_buf.limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     __BIGINT_INTERNAL_FREE__(&tmp_buf);
     return STR_SUCCESS;
 }
@@ -2486,8 +2474,7 @@ dnml_status __BIGINT_FSGET__(FILE *stream, bigInt *x) {
             } else if (feof(stream)) break;
         }
     }
-    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_FSGET, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2545,8 +2532,7 @@ dnml_status __BIGINT_FSGETB__(FILE *stream, bigInt *x, uint8_t base) {
             } else if (feof(stream)) break;
         }
     }
-    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_FSGETB, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2638,8 +2624,7 @@ dnml_status __BIGINT_FTGET__(FILE *stream, bigInt *x) {
             } else if (feof(stream)) break;
         } else if (terminate_loop) break;
     }
-    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_FSGET, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
@@ -2698,8 +2683,7 @@ dnml_status __BIGINT_FTGETB__(FILE *stream, bigInt *x, uint8_t base) {
             } else if (feof(stream)) break;
         } else if (terminate_loop) break;
     }
-    memcpy(x->limbs, tmp_limbs, tmp_buf.n * BYTES_IN_UINT64_T);
-    x->n = tmp_buf.n; x->sign = sign;
+    __BIGINT_INTERNAL_COPY__(x, &tmp_buf); x->sign = sign;
     arena_reset(_DASI_FSGETB, tmp_mark);
     tmp_limbs = NULL; return STR_SUCCESS;
 }
