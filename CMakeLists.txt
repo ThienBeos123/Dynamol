@@ -28,6 +28,7 @@ add_executable(bigInt
     intrinsics/limb_math.c
     calculation_algorithms/src/mul.c
     calculation_algorithms/src/div.c
+    calculation_algorithms/src/num_theory.c
 )
 
 target_compile_options(bigInt PRIVATE -Wno-unused-function)

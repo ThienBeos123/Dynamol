@@ -262,21 +262,19 @@ static inline void __BIGINT_MAGNITUDED_DIVMOD__
     const bigInt *__a__, const bigInt *__b__);
 /* ------- Magnituded Core Number-Theoretic ------- */
 uint64_t ___GCD_UI64___(uint64_t a, uint64_t b);
-static void __BIGINT_MAGNITUDED_GCD_UI64__(uint64_t *res, const bigInt a, uint64_t val);
-static void __BIGINT_MAGNITUDED_LCM_UI64__(bigInt *res, const bigInt a, uint64_t val);
-static void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt a, const bigInt b);
-static void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt a, const bigInt b);
-static void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt a, uint64_t modulus);
-static void __BIGINT_MAGNITUDED_EUCMOD__(bigInt *res, const bigInt a, const bigInt modulus);
-static void __BIGINT_MAGNITUDED_PRIMATEST__(const bigInt x);
+static void __BIGINT_MAGNITUDED_GCD__(bigInt *res, const bigInt *a, const bigInt *b);
+static void __BIGINT_MAGNITUDED_LCM__(bigInt *res, const bigInt *a, const bigInt *b);
+static void __BIGINT_MAGNITUDED_EUCMOD_UI64__(uint64_t *res, const bigInt *a, uint64_t modulus);
+static void __BIGINT_MAGNITUDED_EUCMOD__(bigInt *res, const bigInt *a, const bigInt *modulus);
+static void __BIGINT_MAGNITUDED_PRIMATEST__(const bigInt *x);
 /* ------- Magnituded Modular Arithmetic ------- */
-static void __BIGINT_MAGNITUDED_MODADD__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
-static void __BIGINT_MAGNITUDED_MODSUB__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
-static void __BIGINT_MAGNITUDED_MODMUL__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
-static void __BIGINT_MAGNITUDED_MODDIV__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
-static void __BIGINT_MAGNITUDED_MODEXP__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
-static void __BIGINT_MAGNITUDED_MODSQR__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
-static void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt a, const bigInt b, const bigInt mod);
+static void __BIGINT_MAGNITUDED_MODADD__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+static void __BIGINT_MAGNITUDED_MODSUB__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+static void __BIGINT_MAGNITUDED_MODMUL__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+static void __BIGINT_MAGNITUDED_MODDIV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+static void __BIGINT_MAGNITUDED_MODEXP__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+static void __BIGINT_MAGNITUDED_MODSQR__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
+static void __BIGINT_MAGNITUDED_MODINV__(bigInt *res, const bigInt *a, const bigInt *b, const bigInt *mod);
 
 
 
@@ -321,13 +319,13 @@ bigInt __BIGINT_MOD__(const bigInt x, const bigInt y, dnml_status *err);
 
 //* -------------------- SIGNED NUMBER-THEORETIC --------------------- */
 /* -------------- Pure Number Theoretic -------------- */
-uint64_t __BIGINT_GCD_UI64__(const bigInt x, uint64_t val);
-int64_t __BIGINT_GCD_I64__(const bigInt x, int64_t val);
+bigInt __BIGINT_GCD_UI64__(const bigInt x, uint64_t val);
+bigInt __BIGINT_GCD_I64__(const bigInt x, int64_t val);
 bigInt __BIGINT_GCD__(const bigInt x, const bigInt y);
 bigInt __BIGINT_LCM_UI64__(const bigInt x, uint64_t val);
 bigInt __BIGINT_LCM_I64__(const bigInt x, int64_t val);
 bigInt __BIGINT_LCM__(const bigInt x, const bigInt y);
-uint8_t __BIGINT_IS_PRIME__(const bigInt x);
+bool __BIGINT_IS_PRIME__(const bigInt x);
 /* ---------------- Modular Reduction ---------------- */
 void __BIGINT_MUT_MODULO_UI64__(bigInt *x, uint64_t modulus);
 void __BIGINT_MUT_MODULO_I64__(bigInt *x, int64_t modulus);

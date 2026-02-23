@@ -225,6 +225,30 @@ calculation_algorithms/src/mul.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/calculation_algorithms/src/mul.c.s
 .PHONY : calculation_algorithms/src/mul.c.s
 
+calculation_algorithms/src/num_theory.o: calculation_algorithms/src/num_theory.c.o
+.PHONY : calculation_algorithms/src/num_theory.o
+
+# target to build an object file
+calculation_algorithms/src/num_theory.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.o
+.PHONY : calculation_algorithms/src/num_theory.c.o
+
+calculation_algorithms/src/num_theory.i: calculation_algorithms/src/num_theory.c.i
+.PHONY : calculation_algorithms/src/num_theory.i
+
+# target to preprocess a source file
+calculation_algorithms/src/num_theory.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.i
+.PHONY : calculation_algorithms/src/num_theory.c.i
+
+calculation_algorithms/src/num_theory.s: calculation_algorithms/src/num_theory.c.s
+.PHONY : calculation_algorithms/src/num_theory.s
+
+# target to generate assembly for a file
+calculation_algorithms/src/num_theory.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bigInt.dir/build.make CMakeFiles/bigInt.dir/calculation_algorithms/src/num_theory.c.s
+.PHONY : calculation_algorithms/src/num_theory.c.s
+
 internal_utils/bigNum_utils.o: internal_utils/bigNum_utils.c.o
 .PHONY : internal_utils/bigNum_utils.o
 
@@ -366,6 +390,9 @@ help:
 	@echo "... calculation_algorithms/src/mul.o"
 	@echo "... calculation_algorithms/src/mul.i"
 	@echo "... calculation_algorithms/src/mul.s"
+	@echo "... calculation_algorithms/src/num_theory.o"
+	@echo "... calculation_algorithms/src/num_theory.i"
+	@echo "... calculation_algorithms/src/num_theory.s"
 	@echo "... internal_utils/bigNum_utils.o"
 	@echo "... internal_utils/bigNum_utils.i"
 	@echo "... internal_utils/bigNum_utils.s"
